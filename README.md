@@ -19,12 +19,15 @@ You will also need a file archiver like 7zip, winzip, winrar, etc.
 7zip is an open-source file archiver and a good one too.
 http://www.7-zip.org/download.html
 
-# How to use
+# How to install
 
-1) Unzip the contents of the zipped file you downloaded.
-2) Open the PasswordMaster.jar file.
-    Double-click it.
-    Press Windows Key + R 
-      Type cmd
-      navigate to the folder you unzipped the contents of the 
-      
+Unzip the contents of the compressed archive you downloaded.
+ 
+# How to use
+Open the PasswordMaster.jar file. Either:
+  1) Double-click it.
+  2) Press Windows Key + R 
+    Type cmd and press enter.
+    Navigate to the folder you unzipped the contents of the compressed archive, using cd C:/"your path goes here".
+    Type java -jar PasswordMaster.jar
+  3)
