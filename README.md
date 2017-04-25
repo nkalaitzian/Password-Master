@@ -5,9 +5,7 @@ A login manager, created with Java.
 Saves your logins and encrypts them using the AES cipher.
 
 # Download
-https://github.com/nikoskalai/Password-Master/blob/master/Zipped%20executables/PasswordMaster.7z
-
-https://github.com/nikoskalai/Password-Master/blob/master/Zipped%20executables/PasswordMaster.zip
+https://github.com/nikoskalai/Password-Master/releases
 
 # Prerequisites
 You need to have the newest version of Java installed.
