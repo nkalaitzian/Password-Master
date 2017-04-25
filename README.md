@@ -4,9 +4,6 @@ A login manager, created with Java.
 
 Saves your logins and encrypts them using the AES cipher.
 
-Features i want to add:
-  Import login info from Chrome, Firefox, IE, Opera, Safari, etc.
-
 # Download
 https://github.com/nikoskalai/Password-Master/blob/master/Zipped%20executables/PasswordMaster.7z
 https://github.com/nikoskalai/Password-Master/blob/master/Zipped%20executables/PasswordMaster.zip
@@ -24,10 +21,10 @@ http://www.7-zip.org/download.html
 Unzip the contents of the compressed archive you downloaded.
  
 # How to use
-Open the PasswordMaster.jar file. Either:
+1) Open the PasswordMaster.jar file. Either:
   1) Double-click it.
   2) Press Windows Key + R 
-    Type cmd and press enter.
-    Navigate to the folder you unzipped the contents of the compressed archive, using cd C:/"your path goes here".
-    Type java -jar PasswordMaster.jar
-  3)
+      Type cmd and press enter.
+      Navigate to the folder you unzipped the contents of the compressed archive, using cd C:/"your path goes here".
+      Type java -jar PasswordMaster.jar
+2) ToDo.
