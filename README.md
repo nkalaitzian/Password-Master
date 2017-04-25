@@ -6,6 +6,7 @@ Saves your logins and encrypts them using the AES cipher.
 
 # Download
 https://github.com/nikoskalai/Password-Master/blob/master/Zipped%20executables/PasswordMaster.7z
+
 https://github.com/nikoskalai/Password-Master/blob/master/Zipped%20executables/PasswordMaster.zip
 
 # Prerequisites
