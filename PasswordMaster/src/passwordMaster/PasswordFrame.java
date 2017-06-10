@@ -27,28 +27,17 @@ public class PasswordFrame extends javax.swing.JFrame {
      * Creates new form PasswordFrame
      * @param file
      */
-    public PasswordFrame(String file) {
+    public PasswordFrame(String file, int mode) {
         initComponents();
         initSettings();
         fileField.setVisible(true);
         fileSelection.setVisible(false);
         fileField.setText(file);
-        setTitle("Enter Encryption Key");
-        pack();
-    }
-
-    /**
-     *
-     * @param file
-     * @param title
-     */
-    public PasswordFrame(String file, String title) {
-        initComponents();
-        initSettings();
-        fileField.setVisible(true);
-        fileSelection.setVisible(false);
-        fileField.setText(file);
-        setTitle(title);
+        if(mode == 1){
+            setTitle("Enter a new encryption key.");
+        } else if( mode == 2){
+            setTitle("Verify existing encryption key.");
+        }
         pack();
     }
 

@@ -4,7 +4,9 @@ import java.awt.Desktop;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
@@ -22,6 +24,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Comparator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.AbstractAction;
@@ -144,17 +147,22 @@ public class MainWindow extends javax.swing.JFrame {
         jSeparator8 = new javax.swing.JPopupMenu.Separator();
         openLinkMenuItem1 = new javax.swing.JMenuItem();
         jSeparator10 = new javax.swing.JPopupMenu.Separator();
-        jMenuItem4 = new javax.swing.JMenuItem();
-        jMenuItem5 = new javax.swing.JMenuItem();
-        jMenuItem6 = new javax.swing.JMenuItem();
+        copyWebsiteMenuItem = new javax.swing.JMenuItem();
+        copyUsernameMenuItem = new javax.swing.JMenuItem();
+        copyPasswordMenuItem = new javax.swing.JMenuItem();
+        pasteMenuItem = new javax.swing.JMenuItem();
+        moveUpMenuItem = new javax.swing.JMenuItem();
+        moveDownMenuItem = new javax.swing.JMenuItem();
         loginPanel = new javax.swing.JPanel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        loginTable = new RXTable();
         jPanel1 = new javax.swing.JPanel();
         statusLabel = new javax.swing.JLabel();
         addLoginButton = new javax.swing.JButton();
         deleteLoginButton = new javax.swing.JButton();
         idleLabel = new javax.swing.JLabel();
+        moveUpButton = new javax.swing.JButton();
+        moveDownButton = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        loginTable = new RXTable();
         menuBar = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
         openFileMenuItem = new javax.swing.JMenuItem();
@@ -215,52 +223,31 @@ public class MainWindow extends javax.swing.JFrame {
         popupMenu.add(openLinkMenuItem1);
         popupMenu.add(jSeparator10);
 
-        jMenuItem4.setAction(copyWebsiteAction);
-        jMenuItem4.setText("Copy Website");
-        popupMenu.add(jMenuItem4);
+        copyWebsiteMenuItem.setAction(copyWebsiteAction);
+        copyWebsiteMenuItem.setText("Copy Website");
+        popupMenu.add(copyWebsiteMenuItem);
 
-        jMenuItem5.setAction(copyUsernameAction);
-        jMenuItem5.setText("Copy Username");
-        popupMenu.add(jMenuItem5);
+        copyUsernameMenuItem.setAction(copyUsernameAction);
+        copyUsernameMenuItem.setText("Copy Username");
+        popupMenu.add(copyUsernameMenuItem);
 
-        jMenuItem6.setAction(copyPasswordAction);
-        jMenuItem6.setText("Copy Password");
-        popupMenu.add(jMenuItem6);
+        copyPasswordMenuItem.setAction(copyPasswordAction);
+        copyPasswordMenuItem.setText("Copy Password");
+        popupMenu.add(copyPasswordMenuItem);
+
+        pasteMenuItem.setAction(pasteAction);
+        pasteMenuItem.setText("Paste");
+        popupMenu.add(pasteMenuItem);
+
+        moveUpMenuItem.setAction(moveUpAction);
+        moveUpMenuItem.setText("Move Up");
+        popupMenu.add(moveUpMenuItem);
+
+        moveDownMenuItem.setAction(moveDownAction);
+        moveDownMenuItem.setText("Move Down");
+        popupMenu.add(moveDownMenuItem);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
-
-        loginTable.setAutoCreateRowSorter(true);
-        loginTable.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-
-            },
-            new String [] {
-                "#", "Name/Website", "Username", "Password", "Other"
-            }
-        ) {
-            Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
-            };
-            boolean[] canEdit = new boolean [] {
-                false, true, true, true, true
-            };
-
-            public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
-            }
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
-        });
-        loginTable.setCellEditor(new MyTableCellEditor());
-        loginTable.setColumnSelectionAllowed(true);
-        jScrollPane1.setViewportView(loginTable);
-        loginTable.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        if (loginTable.getColumnModel().getColumnCount() > 0) {
-            loginTable.getColumnModel().getColumn(0).setPreferredWidth(30);
-            loginTable.getColumnModel().getColumn(0).setMaxWidth(70);
-        }
 
         statusLabel.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
         statusLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -281,46 +268,94 @@ public class MainWindow extends javax.swing.JFrame {
         idleLabel.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         idleLabel.setEnabled(false);
 
+        moveUpButton.setText("Move Up");
+        moveUpButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                moveUpButtonActionPerformed(evt);
+            }
+        });
+
+        moveDownButton.setText("Move Down");
+        moveDownButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                moveDownButtonActionPerformed(evt);
+            }
+        });
+
+        loginTable.setAutoCreateRowSorter(true);
+        loginTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "#", "Name/Website", "Username", "Password", "Other"
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+        });
+        loginTable.setCellEditor(new MyTableCellEditor());
+        loginTable.setColumnSelectionAllowed(true);
+        jScrollPane1.setViewportView(loginTable);
+        loginTable.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        if (loginTable.getColumnModel().getColumnCount() > 0) {
+            loginTable.getColumnModel().getColumn(0).setPreferredWidth(30);
+            loginTable.getColumnModel().getColumn(0).setMaxWidth(70);
+        }
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(idleLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(statusLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(addLoginButton)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(deleteLoginButton)
-                .addContainerGap())
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(moveUpButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(moveDownButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(addLoginButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(deleteLoginButton)
+                        .addContainerGap(514, Short.MAX_VALUE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(idleLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(statusLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+            .addComponent(jScrollPane1)
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(deleteLoginButton)
-                    .addComponent(addLoginButton)
                     .addComponent(statusLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(idleLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(moveDownButton)
+                    .addComponent(moveUpButton)
+                    .addComponent(addLoginButton)
+                    .addComponent(deleteLoginButton))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 381, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout loginPanelLayout = new javax.swing.GroupLayout(loginPanel);
         loginPanel.setLayout(loginPanelLayout);
         loginPanelLayout.setHorizontalGroup(
             loginPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 774, Short.MAX_VALUE)
             .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         loginPanelLayout.setVerticalGroup(
             loginPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(loginPanelLayout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 409, Short.MAX_VALUE))
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         fileMenu.setText("File");
@@ -461,6 +496,14 @@ public class MainWindow extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void moveUpButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_moveUpButtonActionPerformed
+        moveUp();
+    }//GEN-LAST:event_moveUpButtonActionPerformed
+
+    private void moveDownButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_moveDownButtonActionPerformed
+        moveDown();
+    }//GEN-LAST:event_moveDownButtonActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -488,6 +531,9 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JMenuItem addLoginMenuItem;
     private javax.swing.JMenuItem addLoginMenuItem1;
     private javax.swing.JMenuItem chromeImportMenuItem;
+    private javax.swing.JMenuItem copyPasswordMenuItem;
+    private javax.swing.JMenuItem copyUsernameMenuItem;
+    private javax.swing.JMenuItem copyWebsiteMenuItem;
     private javax.swing.JButton deleteLoginButton;
     private javax.swing.JMenuItem deleteLoginMenuItem;
     private javax.swing.JMenuItem deleteLoginMenuItem1;
@@ -503,9 +549,6 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem3;
-    private javax.swing.JMenuItem jMenuItem4;
-    private javax.swing.JMenuItem jMenuItem5;
-    private javax.swing.JMenuItem jMenuItem6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JPopupMenu.Separator jSeparator1;
@@ -521,11 +564,16 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JPanel loginPanel;
     private javax.swing.JTable loginTable;
     private javax.swing.JMenuBar menuBar;
+    private javax.swing.JButton moveDownButton;
+    private javax.swing.JMenuItem moveDownMenuItem;
+    private javax.swing.JButton moveUpButton;
+    private javax.swing.JMenuItem moveUpMenuItem;
     private javax.swing.JMenuItem newFileMenuItem;
     private javax.swing.JMenuItem openFileMenuItem;
     private javax.swing.JMenuItem openLinkMenuItem;
     private javax.swing.JMenuItem openLinkMenuItem1;
     private javax.swing.JMenuItem operaImportMenuItem;
+    private javax.swing.JMenuItem pasteMenuItem;
     private javax.swing.JPopupMenu popupMenu;
     private javax.swing.JMenuItem redoMenuItem;
     private javax.swing.JMenuItem redoMenuItem1;
@@ -534,7 +582,7 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JMenuItem saveMenuItem;
     private javax.swing.JMenuItem settingsMenuItem;
     private javax.swing.JCheckBoxMenuItem showPasswordsMenuItem;
-    private javax.swing.JLabel statusLabel;
+    public javax.swing.JLabel statusLabel;
     private javax.swing.JMenuItem undoMenuItem;
     private javax.swing.JMenuItem undoMenuItem1;
     private javax.swing.JMenu viewMenu;
@@ -606,7 +654,8 @@ public class MainWindow extends javax.swing.JFrame {
         loginList = new ArrayList();
         for (Login l : temp) {
             if (model.getRowCount() >= loginList.size() && model.getRowCount() > 0) {
-                Login t = new Login(l.getWebsite(), l.getUsername(), l.getPassword(), l.getOther());
+                Login t = new Login(new Integer(l.getId()), l.getWebsite(), l.getUsername(), l.getPassword(), l.getOther());
+                t.setId((String) model.getValueAt(i, 0));
                 t.setWebsite((String) model.getValueAt(i, 1));
                 t.setUsername((String) model.getValueAt(i, 2));
                 if (showPasswords) {
@@ -619,6 +668,7 @@ public class MainWindow extends javax.swing.JFrame {
                 break;
             }
         }
+        loginList.sort(new LoginComparator());
         updateHistory();
         statusLabel.setText(" ");
     }
@@ -705,24 +755,18 @@ public class MainWindow extends javax.swing.JFrame {
                 fis = new FileInputStream(file);
                 fis.read(result);
                 String res = cipher.decrypt(result, encryptionKey).substring(16);
+                fis.close();
                 String[] logins = res.split("--!--");
                 for (String l : logins) {
-                    String[] temp = l.split("---");
-                    if (temp.length == 4) {
-                        String website = temp[0].replace("website:", "");
-                        String username = temp[1].replace("username:", "");
-                        String password = temp[2].replace("password:", "");
-                        String other = temp[3].replace("other:", "");
-                        Login login = new Login(website, username, password, other);
-                        loginList.add(login);
-                    }
+                    Login login = Login.fromString(l);
+                    loginList.add(login);
                 }
-                fis.close();
+                updateHistory();
+                showPasswords();
             } catch (IOException ex) {
                 LOG.log(Level.SEVERE, null, ex);
             }
         }
-        updateHistory();
         updateTable();
         fileUnsaved = false;
         statusLabel.setText("File " + file.getPath() + " opened successfully.");
@@ -730,8 +774,7 @@ public class MainWindow extends javax.swing.JFrame {
     }
 
     private boolean getPassword(boolean open) {
-
-        PasswordFrame pf = new PasswordFrame(file.getPath());
+        PasswordFrame pf = new PasswordFrame(file.getPath(), 1);
         while (true) {
             if (pf.done) {
                 break;
@@ -743,11 +786,9 @@ public class MainWindow extends javax.swing.JFrame {
                 }
             }
         }
-
         if (pf.cancel) {
             return false;
         }
-
         encryptionKey = pf.getPassword();
         if (!open) {
             if (encryptionKey.length() < 8) {
@@ -871,12 +912,17 @@ public class MainWindow extends javax.swing.JFrame {
             }
         }
     }
+    
+    int rows = 0;
 
     private final Action addLoginAction = new AbstractAction("") {
         @Override
         public void actionPerformed(ActionEvent ae) {
             stopTableEditing();
-            loginList.add(Settings.standardLogin);
+            Login newLogin = Login.fromString(Settings.standardLogin.toString().replace("--!--", ""));
+            rows = model.getRowCount() + 1;
+            newLogin.setId(rows);
+            loginList.add(newLogin);
             updateTable();
             fileUnsaved = true;
         }
@@ -924,7 +970,7 @@ public class MainWindow extends javax.swing.JFrame {
         if (encryptionKey == null) {
             return true;
         }
-        PasswordFrame pf = new PasswordFrame(file.getPath(), "Verify Encryption Key.");
+        PasswordFrame pf = new PasswordFrame(file.getPath(), 2);
         while (true) {
             if (pf.done) {
                 break;
@@ -965,7 +1011,6 @@ public class MainWindow extends javax.swing.JFrame {
             }
             if (checkPassword()) {
                 showPasswords();
-                startIdleTimer();
             } else {
                 JOptionPane.showMessageDialog(null, "Wrong encryption key.", "Wrong Input.", JOptionPane.WARNING_MESSAGE);
                 showPasswordsMenuItem.setSelected(false);
@@ -982,9 +1027,12 @@ public class MainWindow extends javax.swing.JFrame {
     }
 
     private void showPasswords() {
+        idleLabel.setEnabled(true);
+        idleTimer = true;
         showPasswords = true;
         showPasswordsMenuItem.setSelected(showPasswords);
         updateTable();
+        startIdleTimer();
     }
 
     private void updateTable() {
@@ -994,9 +1042,9 @@ public class MainWindow extends javax.swing.JFrame {
         for (Login l : loginList) {
             String iStr = mkStr(i);
             if (showPasswords) {
-                model.addRow(l.toObject(iStr));
+                model.addRow(l.toObject());
             } else {
-                model.addRow(l.toObjectHidden(iStr));
+                model.addRow(l.toObjectHidden());
             }
             i++;
         }
@@ -1067,6 +1115,7 @@ public class MainWindow extends javax.swing.JFrame {
             }
         } catch (IndexOutOfBoundsException ex) {
         }
+        updateTable();
     }
 
     private void displayHistory() {
@@ -1105,6 +1154,7 @@ public class MainWindow extends javax.swing.JFrame {
             if (checkPassword()) {
                 getPassword(false);
                 saveFile();
+                JOptionPane.showMessageDialog(null, "Encryption key changed and file saved successfully.", "Completed Action.", JOptionPane.INFORMATION_MESSAGE);
             }
         }
     }
@@ -1271,5 +1321,104 @@ public class MainWindow extends javax.swing.JFrame {
                 }
             }
         }
+    }
+
+    private final Action pasteAction = new AbstractAction("") {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            Clipboard clpbrd = Toolkit.getDefaultToolkit().getSystemClipboard();
+            try {
+                model.setValueAt(clpbrd.getData(DataFlavor.stringFlavor), row, col);
+                statusLabel.setText("Pasted text:" + clpbrd.getData(DataFlavor.stringFlavor));
+            } catch (UnsupportedFlavorException | IOException ex) {
+                Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    };
+
+    class LoginComparator implements Comparator {
+
+        @Override
+        public int compare(Object o1, Object o2) {
+            Login l1 = (Login) o1;
+            Login l2 = (Login) o2;
+            int id1 = new Integer(l1.getId());
+            int id2 = new Integer(l2.getId());
+            if (id1 == id2) {
+                return 0;
+            } else if (id1 > id2) {
+                return 1;
+            } else {
+                return -1;
+            }
+        }
+    }
+
+    private final Action moveUpAction = new AbstractAction("") {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            moveUp();
+        }
+    };
+    
+    private void moveUp() {
+        if(!showPasswords){
+            return;
+        }
+        if (row == 0) {
+            return;
+        }
+        int selectedId = new Integer((String) model.getValueAt(row, 0));
+        Login selectedLogin = null;
+        Login aboveLogin = null;
+        for (Login l : loginList) {
+            if (l.getIntId() < selectedId) {
+                aboveLogin = l;
+            }
+            if (l.getIntId() == selectedId) {
+                selectedLogin = l;
+                break;
+            }
+        }
+        selectedLogin.setId(aboveLogin.getIntId());
+        aboveLogin.setId(selectedLogin.getIntId() + 1);
+        loginList.sort(new LoginComparator());
+        updateHistory();
+        fileUnsaved = true;
+        row--;
+    }
+
+    private final Action moveDownAction = new AbstractAction("") {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            moveDown();
+        }
+    };
+
+    private void moveDown() {
+        if(!showPasswords){
+            return;
+        }
+        if (row == model.getRowCount()) {
+            return;
+        }
+        int selectedId = new Integer((String) model.getValueAt(row, 0));
+        Login selectedLogin = null;
+        Login belowLogin = null;
+        for (Login l : loginList) {
+            if (l.getIntId() > selectedId) {
+                belowLogin = l;
+                break;
+            }
+            if (l.getIntId() == selectedId) {
+                selectedLogin = l;
+            }
+        }
+        selectedLogin.setId(belowLogin.getIntId());
+        belowLogin.setId(selectedLogin.getIntId() - 1);
+        loginList.sort(new LoginComparator());
+        updateHistory();
+        fileUnsaved = true;
+        row++;
     }
 }

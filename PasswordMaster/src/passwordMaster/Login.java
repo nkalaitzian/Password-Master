@@ -5,7 +5,7 @@ package passwordMaster;
  * @author Nikos
  */
 public class Login {
-
+    private int id;
     private String website = "";
     private String username = "";
     private String password = "";
@@ -14,28 +14,14 @@ public class Login {
 
     /**
      *
-     * @param website
-     * @param username
-     * @param password
-     */
-    public Login(String website, String username, String password) {
-        this.website = website;
-        this.username = username;
-        this.password = password;
-        for (int i = 0; i < 10; i++) {
-            passwordHidden += "●";
-        }
-        this.other = "";
-    }
-
-    /**
-     *
+     * @param id
      * @param website
      * @param username
      * @param password
      * @param other
      */
-    public Login(String website, String username, String password, String other) {
+    public Login(int id, String website, String username, String password, String other) {
+        this.id = id;
         this.website = website;
         this.username = username;
         this.password = password;
@@ -43,6 +29,30 @@ public class Login {
             passwordHidden += "●";
         }
         this.other = other;
+    }
+
+    public Login() {
+    }
+    
+    public static Login fromString(String s){
+        String[] temp = s.split("---");
+        if (temp.length == 5) {
+            int id = new Integer(temp[0].replace("id:", ""));
+            String website = temp[1].replace("website:", "");
+            String username = temp[2].replace("username:", "");
+            String password = temp[3].replace("password:", "");
+            String other = temp[4].replace("other:", "");
+            Login login = new Login(id, website, username, password, other);
+            return login;
+        } else if (temp.length == 4) {
+            String website = temp[0].replace("website:", "");
+            String username = temp[1].replace("username:", "");
+            String password = temp[2].replace("password:", "");
+            String other = temp[3].replace("other:", "");
+            Login login = new Login(0, website, username, password, other);
+            return login;
+        }
+        return null;
     }
 
     /**
@@ -108,10 +118,44 @@ public class Login {
     public void setOther(String other) {
         this.other = other;
     }
+    
+    /**
+     *
+     * @return 
+     */
+    public int getIntId() {
+        return id;
+    }
+    
+    /**
+     *
+     * @return 
+     */
+    public String getId() {
+        return id+"";
+    }
+    
+    /**
+     *
+     * @param id
+     */
+    public void setId(int id) {
+        this.id = id;
+    }
+    
+    /**
+     *
+     * @param id
+     */
+    public void setId(String id) {
+        this.id = new Integer(id);
+    }
+    
+    
 
     @Override
     public String toString() {
-        return "website:" + website + "---username:" + username + "---password:" + password + "---other:" + other + "--!--";
+        return "id:" + id + "---website:" + website + "---username:" + username + "---password:" + password + "---other:" + other + "--!--";
     }
 
     /**
@@ -119,18 +163,17 @@ public class Login {
      * @param i
      * @return
      */
-    public Object[] toObject(String i) {
-        Object[] obj = new Object[]{i, website, username, password, other};
+    public Object[] toObject() {
+        Object[] obj = new Object[]{id+"", website, username, password, other};
         return obj;
     }
 
     /**
      *
-     * @param i
      * @return
      */
-    public Object[] toObjectHidden(String i) {
-        Object[] obj = new Object[]{i, website, username, passwordHidden, other};
+    public Object[] toObjectHidden() {
+        Object[] obj = new Object[]{id+"", website, username, passwordHidden, other};
         return obj;
     }
 

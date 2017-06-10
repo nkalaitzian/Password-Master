@@ -14,7 +14,7 @@ import java.util.logging.Logger;
  */
 public class Settings {
 
-    public static Login standardLogin = new Login("https://www.website.com", "username", "password", "comment");
+    public static Login standardLogin = new Login(0,"https://www.website.com", "username", "password", "comment");
 
     /**
      * The app name.
@@ -29,7 +29,7 @@ public class Settings {
     /**
      * The app version.
      */
-    public static double version = 2.0;
+    public static double version = 2.5;
 
     private String theme = "Windows";
     private String defaultTheme = "Windows";

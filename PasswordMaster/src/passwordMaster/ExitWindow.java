@@ -94,15 +94,7 @@ public class ExitWindow extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void saveExitButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveExitButtonActionPerformed
-        mw.saveFile();
-        try {
-            Thread.sleep(100);
-        } catch (InterruptedException ex) {
-            LOG.log(Level.SEVERE, null, ex);
-        }
-        if (!mw.fileUnsaved) {
-            mw.exitApp();
-        }
+        new SaveAndExit().start();
     }//GEN-LAST:event_saveExitButtonActionPerformed
 
     private void exitButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitButtonActionPerformed
@@ -127,6 +119,25 @@ public class ExitWindow extends javax.swing.JFrame {
         setAlwaysOnTop(visibility);
         setVisible(visibility);
         setEnabled(visibility);
+    }
+    
+    private class SaveAndExit extends Thread{
+        @Override
+        public void run() {
+            dispose();
+            mw.saveFile();
+            while(true){
+                try {
+                    Thread.sleep(200);
+                } catch (InterruptedException ex) {
+                    LOG.log(Level.SEVERE, null, ex);
+                }
+                if (!mw.fileUnsaved) {
+                    break;
+                }
+            }
+            mw.exitApp();
+        }
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
