@@ -29,7 +29,7 @@ public class Settings {
     /**
      * The app version.
      */
-    public static double version = 2.5;
+    public static double version = 2.6;
 
     private String theme = "Windows";
     private String defaultTheme = "Windows";

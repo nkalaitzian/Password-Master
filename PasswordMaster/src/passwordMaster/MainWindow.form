@@ -26,6 +26,24 @@
         </MenuItem>
         <Component class="javax.swing.JPopupMenu$Separator" name="jSeparator5">
         </Component>
+        <MenuItem class="javax.swing.JMenuItem" name="moveUpMenuItem">
+          <Properties>
+            <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+              <Connection code="moveUpAction" type="code"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Move Up"/>
+          </Properties>
+        </MenuItem>
+        <MenuItem class="javax.swing.JMenuItem" name="moveDownMenuItem">
+          <Properties>
+            <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+              <Connection code="moveDownAction" type="code"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Move Down"/>
+          </Properties>
+        </MenuItem>
+        <Component class="javax.swing.JPopupMenu$Separator" name="jSeparator11">
+        </Component>
         <MenuItem class="javax.swing.JMenuItem" name="undoMenuItem1">
           <Properties>
             <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
@@ -92,24 +110,10 @@
             <Property name="text" type="java.lang.String" value="Paste"/>
           </Properties>
         </MenuItem>
-        <MenuItem class="javax.swing.JMenuItem" name="moveUpMenuItem">
-          <Properties>
-            <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-              <Connection code="moveUpAction" type="code"/>
-            </Property>
-            <Property name="text" type="java.lang.String" value="Move Up"/>
-          </Properties>
-        </MenuItem>
-        <MenuItem class="javax.swing.JMenuItem" name="moveDownMenuItem">
-          <Properties>
-            <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-              <Connection code="moveDownAction" type="code"/>
-            </Property>
-            <Property name="text" type="java.lang.String" value="Move Down"/>
-          </Properties>
-        </MenuItem>
       </SubComponents>
     </Container>
+    <Component class="javax.swing.JSeparator" name="jSeparator12">
+    </Component>
     <Menu class="javax.swing.JMenuBar" name="menuBar">
       <SubComponents>
         <Menu class="javax.swing.JMenu" name="fileMenu">

@@ -450,7 +450,7 @@ public class SettingsWindow extends javax.swing.JFrame {
                 }
                 s.fromString(string);
                 br.close();
-                applySettingsFromSettings();
+                applySettingsFromFile();
             }
         } catch (IOException ex) {
             LOG.log(Level.SEVERE, null, ex);
@@ -459,7 +459,7 @@ public class SettingsWindow extends javax.swing.JFrame {
 
     private boolean applyingSettings = false;
 
-    private void applySettingsFromSettings() {
+    private void applySettingsFromFile() {
         try {
             applyingSettings = true;
             updateTheme(s.getTheme());
@@ -475,6 +475,7 @@ public class SettingsWindow extends javax.swing.JFrame {
 
     private void updateWindowSize(Dimension userSize) {
         mw.setPreferredSize(userSize);
+        mw.setSize(userSize);
         mw.setLocationRelativeTo(null);
     }
 

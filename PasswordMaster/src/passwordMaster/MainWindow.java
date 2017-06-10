@@ -142,6 +142,9 @@ public class MainWindow extends javax.swing.JFrame {
         addLoginMenuItem1 = new javax.swing.JMenuItem();
         deleteLoginMenuItem1 = new javax.swing.JMenuItem();
         jSeparator5 = new javax.swing.JPopupMenu.Separator();
+        moveUpMenuItem = new javax.swing.JMenuItem();
+        moveDownMenuItem = new javax.swing.JMenuItem();
+        jSeparator11 = new javax.swing.JPopupMenu.Separator();
         undoMenuItem1 = new javax.swing.JMenuItem();
         redoMenuItem1 = new javax.swing.JMenuItem();
         jSeparator8 = new javax.swing.JPopupMenu.Separator();
@@ -151,8 +154,7 @@ public class MainWindow extends javax.swing.JFrame {
         copyUsernameMenuItem = new javax.swing.JMenuItem();
         copyPasswordMenuItem = new javax.swing.JMenuItem();
         pasteMenuItem = new javax.swing.JMenuItem();
-        moveUpMenuItem = new javax.swing.JMenuItem();
-        moveDownMenuItem = new javax.swing.JMenuItem();
+        jSeparator12 = new javax.swing.JSeparator();
         loginPanel = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
         statusLabel = new javax.swing.JLabel();
@@ -207,6 +209,15 @@ public class MainWindow extends javax.swing.JFrame {
         popupMenu.add(deleteLoginMenuItem1);
         popupMenu.add(jSeparator5);
 
+        moveUpMenuItem.setAction(moveUpAction);
+        moveUpMenuItem.setText("Move Up");
+        popupMenu.add(moveUpMenuItem);
+
+        moveDownMenuItem.setAction(moveDownAction);
+        moveDownMenuItem.setText("Move Down");
+        popupMenu.add(moveDownMenuItem);
+        popupMenu.add(jSeparator11);
+
         undoMenuItem1.setAction(undoAction);
         undoMenuItem1.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Z, java.awt.event.InputEvent.CTRL_MASK));
         undoMenuItem1.setText("Undo");
@@ -238,14 +249,6 @@ public class MainWindow extends javax.swing.JFrame {
         pasteMenuItem.setAction(pasteAction);
         pasteMenuItem.setText("Paste");
         popupMenu.add(pasteMenuItem);
-
-        moveUpMenuItem.setAction(moveUpAction);
-        moveUpMenuItem.setText("Move Up");
-        popupMenu.add(moveUpMenuItem);
-
-        moveDownMenuItem.setAction(moveDownAction);
-        moveDownMenuItem.setText("Move Down");
-        popupMenu.add(moveDownMenuItem);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
 
@@ -553,6 +556,8 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JPopupMenu.Separator jSeparator10;
+    private javax.swing.JSeparator jSeparator11;
+    private javax.swing.JSeparator jSeparator12;
     private javax.swing.JPopupMenu.Separator jSeparator2;
     private javax.swing.JPopupMenu.Separator jSeparator3;
     private javax.swing.JPopupMenu.Separator jSeparator4;
