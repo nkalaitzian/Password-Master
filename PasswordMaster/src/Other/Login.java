@@ -1,4 +1,4 @@
-package passwordMaster;
+package Other;
 
 /**
  *
@@ -35,6 +35,7 @@ public class Login {
     }
     
     public static Login fromString(String s){
+        s = s.replace("--!--", "");
         String[] temp = s.split("---");
         if (temp.length == 5) {
             int id = new Integer(temp[0].replace("id:", ""));

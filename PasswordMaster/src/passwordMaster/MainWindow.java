@@ -1,5 +1,12 @@
 package passwordMaster;
 
+import Other.Win32IdleTime;
+import Other.AES;
+import Other.History;
+import Other.Settings;
+import Other.RXTable;
+import Other.MyTableCellEditor;
+import Other.Login;
 import java.awt.Desktop;
 import java.awt.Point;
 import java.awt.Toolkit;
@@ -8,6 +15,7 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -31,8 +39,12 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
 import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellEditor;
 import org.json.JSONArray;
@@ -63,9 +75,8 @@ public class MainWindow extends javax.swing.JFrame {
     private String encryptionKey = null;
 
     private ArrayList<Login> loginList;
-
-    private int changeCounter = -1;
-    private ArrayList<ArrayList<Login>> history;
+    
+    private History history;
 
     boolean showPasswords = false;
     boolean fileUnsaved = false;
@@ -153,8 +164,8 @@ public class MainWindow extends javax.swing.JFrame {
         copyWebsiteMenuItem = new javax.swing.JMenuItem();
         copyUsernameMenuItem = new javax.swing.JMenuItem();
         copyPasswordMenuItem = new javax.swing.JMenuItem();
+        jSeparator12 = new javax.swing.JPopupMenu.Separator();
         pasteMenuItem = new javax.swing.JMenuItem();
-        jSeparator12 = new javax.swing.JSeparator();
         loginPanel = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
         statusLabel = new javax.swing.JLabel();
@@ -245,6 +256,7 @@ public class MainWindow extends javax.swing.JFrame {
         copyPasswordMenuItem.setAction(copyPasswordAction);
         copyPasswordMenuItem.setText("Copy Password");
         popupMenu.add(copyPasswordMenuItem);
+        popupMenu.add(jSeparator12);
 
         pasteMenuItem.setAction(pasteAction);
         pasteMenuItem.setText("Paste");
@@ -285,6 +297,8 @@ public class MainWindow extends javax.swing.JFrame {
             }
         });
 
+        jScrollPane1.setComponentPopupMenu(popupMenu);
+
         loginTable.setAutoCreateRowSorter(true);
         loginTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -304,6 +318,7 @@ public class MainWindow extends javax.swing.JFrame {
         });
         loginTable.setCellEditor(new MyTableCellEditor());
         loginTable.setColumnSelectionAllowed(true);
+        loginTable.setComponentPopupMenu(popupMenu);
         jScrollPane1.setViewportView(loginTable);
         loginTable.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         if (loginTable.getColumnModel().getColumnCount() > 0) {
@@ -556,7 +571,7 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JPopupMenu.Separator jSeparator10;
-    private javax.swing.JSeparator jSeparator11;
+    private javax.swing.JPopupMenu.Separator jSeparator11;
     private javax.swing.JSeparator jSeparator12;
     private javax.swing.JPopupMenu.Separator jSeparator2;
     private javax.swing.JPopupMenu.Separator jSeparator3;
@@ -593,6 +608,8 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JMenu viewMenu;
     // End of variables declaration//GEN-END:variables
 
+
+    boolean popupToClose = false;
     private void initSettings() {
         setLocationRelativeTo(null);
         setTitle(Settings.app_name + " v" + Settings.version);
@@ -619,11 +636,8 @@ public class MainWindow extends javax.swing.JFrame {
         model = (DefaultTableModel) loginTable.getModel();
 
         cipher = new AES();
-
-        jScrollPane1.setComponentPopupMenu(popupMenu);
-        loginTable.setComponentPopupMenu(popupMenu);
-
-        loginTable.addMouseListener(new java.awt.event.MouseAdapter() {
+        
+        loginTable.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 row = loginTable.rowAtPoint(evt.getPoint());
@@ -632,21 +646,27 @@ public class MainWindow extends javax.swing.JFrame {
 
             @Override
             public void mousePressed(MouseEvent e) {
+                Point mousePoint = e.getPoint();
                 if (SwingUtilities.isLeftMouseButton(e)) {
+                    row = loginTable.rowAtPoint(mousePoint);
+                    col = loginTable.columnAtPoint(mousePoint);
                 } else if (SwingUtilities.isRightMouseButton(e)) {
-                    Point p = e.getPoint();
-                    row = loginTable.rowAtPoint(p);
-                    col = loginTable.columnAtPoint(p);
+                    row = loginTable.rowAtPoint(mousePoint);
+                    col = loginTable.columnAtPoint(mousePoint);
                     loginTable.changeSelection(row, col, false, false);
                 }
             }
         });
 
-        model.addTableModelListener((TableModelEvent e) -> {
-            updateList();
+        model.addTableModelListener(new TableModelListener() {
+            @Override
+            public void tableChanged(TableModelEvent e) {
+                updateList();
+            }
         });
+        
         loginList = new ArrayList();
-        history = new ArrayList();
+        history = new History();
     }
 
     private void updateList() {
@@ -658,7 +678,7 @@ public class MainWindow extends javax.swing.JFrame {
         ArrayList<Login> temp = loginList;
         loginList = new ArrayList();
         for (Login l : temp) {
-            if (model.getRowCount() >= loginList.size() && model.getRowCount() > 0) {
+            if (model.getRowCount() > 0) {
                 Login t = new Login(new Integer(l.getId()), l.getWebsite(), l.getUsername(), l.getPassword(), l.getOther());
                 t.setId((String) model.getValueAt(i, 0));
                 t.setWebsite((String) model.getValueAt(i, 1));
@@ -675,7 +695,6 @@ public class MainWindow extends javax.swing.JFrame {
         }
         loginList.sort(new LoginComparator());
         updateHistory();
-        statusLabel.setText(" ");
     }
 
     /**
@@ -928,8 +947,7 @@ public class MainWindow extends javax.swing.JFrame {
             rows = model.getRowCount() + 1;
             newLogin.setId(rows);
             loginList.add(newLogin);
-            updateTable();
-            fileUnsaved = true;
+            updateHistory();
         }
     };
 
@@ -950,16 +968,18 @@ public class MainWindow extends javax.swing.JFrame {
                 return;
             }
             try {
+                String id = (String) model.getValueAt(row, 0);
                 String website = (String) model.getValueAt(row, 1);
                 String username = (String) model.getValueAt(row, 2);
                 String password = (String) model.getValueAt(row, 3);
                 String other = (String) model.getValueAt(row, 4);
                 for (Login l : loginList) {
+                    boolean idSame = id.equals(l.getId());
                     boolean websiteSame = website.equals(l.getWebsite());
                     boolean usernameSame = username.equals(l.getUsername());
                     boolean passwordSame = password.equals(l.getPassword());
                     boolean otherSame = other.equals(l.getOther());
-                    if (websiteSame && usernameSame && passwordSame && otherSame) {
+                    if (idSame && websiteSame && usernameSame && passwordSame && otherSame) {
                         loginList.remove(l);
                         break;
                     }
@@ -967,7 +987,7 @@ public class MainWindow extends javax.swing.JFrame {
             } catch (ArrayIndexOutOfBoundsException ex) {
             }
             fileUnsaved = true;
-            updateTable();
+            updateHistory();
         }
     };
 
@@ -1007,7 +1027,6 @@ public class MainWindow extends javax.swing.JFrame {
     };
 
     private class ShowPasswords extends Thread {
-
         @Override
         public void run() {
             if (!showPasswordsMenuItem.isSelected()) {
@@ -1043,28 +1062,14 @@ public class MainWindow extends javax.swing.JFrame {
     private void updateTable() {
         bypassListChange = true;
         model.setRowCount(0);
-        int i = 1;
         for (Login l : loginList) {
-            String iStr = mkStr(i);
             if (showPasswords) {
                 model.addRow(l.toObject());
             } else {
                 model.addRow(l.toObjectHidden());
             }
-            i++;
         }
         bypassListChange = false;
-    }
-
-    private String mkStr(int i) {
-        String iStr = "";
-        int log10 = (int) Math.log10(loginList.size());
-        int ilog10 = (int) Math.log10(i);
-        for (int y = 0; y < log10 - ilog10; y++) {
-            iStr += "0";
-        }
-        iStr += "" + i;
-        return iStr;
     }
 
     private final Action undoAction = new AbstractAction("") {
@@ -1078,12 +1083,9 @@ public class MainWindow extends javax.swing.JFrame {
     };
 
     private void undo() {
-        if (changeCounter > 0) {
-            changeCounter--;
-            loginList = history.get(changeCounter);
-            updateTable();
-            statusLabel.setText("Undo. State: " + changeCounter);
-        }
+        loginList = history.undo();
+        statusLabel.setText("Undo.");
+        updateTable();
     }
 
     private final Action redoAction = new AbstractAction("") {
@@ -1097,42 +1099,15 @@ public class MainWindow extends javax.swing.JFrame {
     };
 
     private void redo() {
-        if (changeCounter < history.size() - 1) {
-            changeCounter++;
-            loginList = history.get(changeCounter);
-            updateTable();
-            statusLabel.setText("Redo. State: " + changeCounter);
-        }
-    }
-
-    private void updateHistory() {
-        changeCounter++;
-        history.add(changeCounter, loginList);
-        try {
-            int i = changeCounter + 1;
-            while (true) {
-                if (history.get(i) != null) {
-                    history.remove(i);
-                    i++;
-                } else {
-                    break;
-                }
-            }
-        } catch (IndexOutOfBoundsException ex) {
-        }
+        loginList = history.redo();
+        statusLabel.setText("Redo.");
         updateTable();
     }
 
-    private void displayHistory() {
-        int counter = 0;
-        System.out.println("-----HISTORY:" + changeCounter + "-----");
-        for (ArrayList<Login> arl : history) {
-            System.out.println("CHANGE:" + counter++);
-            for (Login l : arl) {
-                System.out.println("HISTORY:" + l.toString());
-            }
-        }
-        System.out.println("-----ENDHISTORY-----");
+    private void updateHistory() {
+        history.insert(loginList);
+        statusLabel.setText(" ");
+        updateTable();
     }
 
     private final Action settingsAction = new AbstractAction("") {
@@ -1319,7 +1294,7 @@ public class MainWindow extends javax.swing.JFrame {
                 }
                 int idleTime = Win32IdleTime.getIdleTimeSeconds();
                 idleLabel.setText("Idle for:" + idleTime + "/" + sw.s.getUserIdleSeconds());
-                System.out.println("Idle for:" + idleTime + "s");
+//                System.out.println("Idle for:" + idleTime + "s");
                 if (idleTime >= sw.s.getUserIdleSeconds()) {
                     idleLabel.setText("Idle for:" + idleTime + "s");
                     hidePasswords();
