@@ -1256,7 +1256,7 @@ public class MainWindow extends javax.swing.JFrame {
                 StringSelection stringSelection = new StringSelection((String) model.getValueAt(row, 3));
                 Clipboard clpbrd = Toolkit.getDefaultToolkit().getSystemClipboard();
                 clpbrd.setContents(stringSelection, null);
-                statusLabel.setText("Password: " + (String) model.getValueAt(row, 3) + " copied to clipboard.");
+                statusLabel.setText("Password for website: " + (String) model.getValueAt(row, 1) + " copied to clipboard.");
             } else {
                 statusLabel.setText("Cannot copy password. Press 'Show Passwords' first.");
             }
