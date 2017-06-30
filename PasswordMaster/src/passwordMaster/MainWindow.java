@@ -98,6 +98,7 @@ public class MainWindow extends javax.swing.JFrame {
         initComponents();
         initSettings();
         new TryToOpenFiles().start();
+        showPasswords();
     }
 
     private class TryToOpenFiles extends Thread {
@@ -785,7 +786,6 @@ public class MainWindow extends javax.swing.JFrame {
                     loginList.add(login);
                 }
                 updateHistory();
-                showPasswords();
             } catch (IOException | NullPointerException ex) {
                 LOG.log(Level.SEVERE, null, ex);
             }
