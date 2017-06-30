@@ -78,6 +78,9 @@ public class MainWindow extends javax.swing.JFrame {
     boolean showPasswords = false;
     boolean fileUnsaved = false;
 
+    /**
+     * The ExitWindow variable.
+     */
     public ExitWindow ew;
     private SettingsWindow sw;
     private PasswordGenerator pg;
@@ -1392,6 +1395,10 @@ public class MainWindow extends javax.swing.JFrame {
         row++;
     }
     
+    /**
+     * Shows a status text in the Status Label.
+     * @param status
+     */
     public void showStatus(String status){
         statusLabel.setText(status);
     }
