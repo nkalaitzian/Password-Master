@@ -29,7 +29,7 @@ Unzip the contents of the compressed archive you downloaded.
 2) Add and edit logins with the "+" button.
 3) Save the file:
    1) Enter a file name.
-   2) Enter an encryption key preferrably more than 10 characters long.
+   2) Enter an encryption key preferably more than 10 characters long.
 4) You're done!
 
 For extra security you can change your current passwords to passwords generated from the program:
