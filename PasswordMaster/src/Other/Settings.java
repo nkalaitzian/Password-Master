@@ -31,7 +31,7 @@ public class Settings {
     /**
      * The app version.
      */
-    public static double version = 2.9;
+    public static double version = 3.0;
 
     private static String theme = "Windows";
     public static final String defaultTheme = "Windows";
