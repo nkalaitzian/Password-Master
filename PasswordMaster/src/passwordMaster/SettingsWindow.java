@@ -376,7 +376,7 @@ public class SettingsWindow extends javax.swing.JFrame {
             bw = new BufferedWriter(new FileWriter(settingsFile));
             bw.write(Settings.getString());
             bw.close();
-            mw.statusLabel.setText("Settings file saved successfully.");
+            mw.showStatus("Settings file saved successfully.");
         } catch (IOException ex) {
             LOG.log(Level.SEVERE, null, ex);
         }

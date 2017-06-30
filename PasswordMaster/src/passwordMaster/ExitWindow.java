@@ -124,7 +124,7 @@ public class ExitWindow extends javax.swing.JFrame {
     private class SaveAndExit extends Thread{
         @Override
         public void run() {
-            dispose();
+            
             mw.saveFile();
             while(true){
                 try {
@@ -136,7 +136,9 @@ public class ExitWindow extends javax.swing.JFrame {
                     break;
                 }
             }
+            dispose();
             mw.exitApp();
+            
         }
     }
 

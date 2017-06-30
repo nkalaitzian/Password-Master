@@ -39,10 +39,7 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
-import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
-import javax.swing.event.PopupMenuEvent;
-import javax.swing.event.PopupMenuListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
@@ -81,8 +78,9 @@ public class MainWindow extends javax.swing.JFrame {
     boolean showPasswords = false;
     boolean fileUnsaved = false;
 
-    ExitWindow ew;
+    public ExitWindow ew;
     private SettingsWindow sw;
+    private PasswordGenerator pg;
 
     private AES cipher;
 
@@ -260,7 +258,7 @@ public class MainWindow extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
 
-        statusLabel.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
+        statusLabel.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         statusLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         statusLabel.setText(" ");
         statusLabel.setBorder(javax.swing.BorderFactory.createEtchedBorder());
@@ -568,7 +566,7 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JPopupMenu.Separator jSeparator10;
     private javax.swing.JPopupMenu.Separator jSeparator11;
-    private javax.swing.JSeparator jSeparator12;
+    private javax.swing.JPopupMenu.Separator jSeparator12;
     private javax.swing.JPopupMenu.Separator jSeparator2;
     private javax.swing.JPopupMenu.Separator jSeparator3;
     private javax.swing.JPopupMenu.Separator jSeparator4;
@@ -613,6 +611,7 @@ public class MainWindow extends javax.swing.JFrame {
 
         ew = new ExitWindow(MainWindow.this);
         sw = new SettingsWindow(MainWindow.this);
+        pg = new PasswordGenerator();
 
         WindowListener exitListener = new WindowAdapter() {
             @Override
@@ -698,6 +697,7 @@ public class MainWindow extends javax.swing.JFrame {
      */
     public void exitApp() {
         Settings.setUserSize(getSize());
+        pg.saveAndDispose();
         sw.saveSettingsToFile();
         System.exit(0);
     }
@@ -783,13 +783,13 @@ public class MainWindow extends javax.swing.JFrame {
                 }
                 updateHistory();
                 showPasswords();
-            } catch (IOException ex) {
+            } catch (IOException | NullPointerException ex) {
                 LOG.log(Level.SEVERE, null, ex);
             }
         }
         updateTable();
         fileUnsaved = false;
-        statusLabel.setText("File " + file.getPath() + " opened successfully.");
+        showStatus("File " + file.getPath() + " opened successfully.");
         Settings.setDirectory(file.getParent());
     }
 
@@ -856,14 +856,13 @@ public class MainWindow extends javax.swing.JFrame {
      */
     public void saveFile() {
         if (!showPasswords) {
-            statusLabel.setText("Cannot save. Press 'Show Passwords' first.");
+            showStatus("Cannot save. Press 'Show Passwords' first.");
             return;
         }
         new SaveFile().start();
     }
 
     private class SaveFile extends Thread {
-
         @Override
         public void run() {
             boolean result = true;
@@ -876,7 +875,7 @@ public class MainWindow extends javax.swing.JFrame {
                 }
                 writeLogins();
             }
-            statusLabel.setText("Saved file " + file.getPath());
+            showStatus("Saved file " + file.getPath());
         }
     }
 
@@ -889,14 +888,13 @@ public class MainWindow extends javax.swing.JFrame {
 
     private void saveAsFile() {
         if (!showPasswords) {
-            statusLabel.setText("Cannot save. Press 'Show Passwords' first.");
+            showStatus("Cannot save. Press 'Show Passwords' first.");
             return;
         }
         new SaveAsFile().start();
     }
 
     private class SaveAsFile extends Thread {
-
         @Override
         public void run() {
             if (getFile()) {
@@ -905,7 +903,7 @@ public class MainWindow extends javax.swing.JFrame {
                 }
                 writeLogins();
             }
-            statusLabel.setText("Saved file " + file.getPath());
+            showStatus("Saved file " + file.getPath());
         }
     }
 
@@ -947,7 +945,7 @@ public class MainWindow extends javax.swing.JFrame {
         @Override
         public void actionPerformed(ActionEvent ae) {
             stopTableEditing();
-            new PasswordGenerator();
+            pg.showWindow(true);
         }
     };
 
@@ -956,7 +954,7 @@ public class MainWindow extends javax.swing.JFrame {
         public void actionPerformed(ActionEvent ae) {
             stopTableEditing();
             if (!showPasswords) {
-                statusLabel.setText("Cannot delete logins. Press 'Show Passwords' first.");
+                showStatus("Cannot delete logins. Press 'Show Passwords' first.");
                 return;
             }
             try {
@@ -1076,7 +1074,7 @@ public class MainWindow extends javax.swing.JFrame {
 
     private void undo() {
         loginList = history.undo();
-        statusLabel.setText("Undo.");
+        showStatus("Undo.");
         updateTable();
     }
 
@@ -1092,13 +1090,13 @@ public class MainWindow extends javax.swing.JFrame {
 
     private void redo() {
         loginList = history.redo();
-        statusLabel.setText("Redo.");
+        showStatus("Redo.");
         updateTable();
     }
 
     private void updateHistory() {
         history.insert(loginList);
-        statusLabel.setText(" ");
+        showStatus("");
         updateTable();
     }
 
@@ -1198,13 +1196,13 @@ public class MainWindow extends javax.swing.JFrame {
             if (Desktop.isDesktopSupported()) {
                 try {
                     Desktop.getDesktop().browse(new URI(website));
-                    statusLabel.setText("Website " + website + " opened.");
+                    showStatus("Website " + website + " opened.");
                 } catch (URISyntaxException | IOException ex) {
-                    statusLabel.setText("Could not open website" + website + ".");
+                    showStatus("Could not open website" + website + ".");
                     LOG.log(Level.SEVERE, null, ex);
                 }
             } else {
-                statusLabel.setText("Could not open website" + website + ".");
+                showStatus("Could not open website" + website + ".");
             }
         }
     };
@@ -1227,7 +1225,7 @@ public class MainWindow extends javax.swing.JFrame {
             StringSelection stringSelection = new StringSelection(getWebsite());
             Clipboard clpbrd = Toolkit.getDefaultToolkit().getSystemClipboard();
             clpbrd.setContents(stringSelection, null);
-            statusLabel.setText("Website: " + getWebsite() + " copied to clipboard.");
+            showStatus("Website: " + getWebsite() + " copied to clipboard.");
         }
     };
 
@@ -1237,7 +1235,7 @@ public class MainWindow extends javax.swing.JFrame {
             StringSelection stringSelection = new StringSelection((String) model.getValueAt(row, 2));
             Clipboard clpbrd = Toolkit.getDefaultToolkit().getSystemClipboard();
             clpbrd.setContents(stringSelection, null);
-            statusLabel.setText("Username: " + (String) model.getValueAt(row, 2) + " copied to clipboard.");
+            showStatus("Username: " + (String) model.getValueAt(row, 2) + " copied to clipboard.");
         }
     };
 
@@ -1248,9 +1246,9 @@ public class MainWindow extends javax.swing.JFrame {
                 StringSelection stringSelection = new StringSelection((String) model.getValueAt(row, 3));
                 Clipboard clpbrd = Toolkit.getDefaultToolkit().getSystemClipboard();
                 clpbrd.setContents(stringSelection, null);
-                statusLabel.setText("Password for website: " + (String) model.getValueAt(row, 1) + " copied to clipboard.");
+                showStatus("Password for website: " + (String) model.getValueAt(row, 1) + " copied to clipboard.");
             } else {
-                statusLabel.setText("Cannot copy password. Press 'Show Passwords' first.");
+                showStatus("Cannot copy password. Press 'Show Passwords' first.");
             }
         }
     };
@@ -1301,7 +1299,7 @@ public class MainWindow extends javax.swing.JFrame {
             Clipboard clpbrd = Toolkit.getDefaultToolkit().getSystemClipboard();
             try {
                 model.setValueAt(clpbrd.getData(DataFlavor.stringFlavor), row, col);
-                statusLabel.setText("Pasted text:" + clpbrd.getData(DataFlavor.stringFlavor));
+                showStatus("Pasted text:" + clpbrd.getData(DataFlavor.stringFlavor));
             } catch (UnsupportedFlavorException | IOException ex) {
                 Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -1392,5 +1390,9 @@ public class MainWindow extends javax.swing.JFrame {
         updateHistory();
         fileUnsaved = true;
         row++;
+    }
+    
+    public void showStatus(String status){
+        statusLabel.setText(status);
     }
 }
