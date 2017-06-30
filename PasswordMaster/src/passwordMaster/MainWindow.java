@@ -490,7 +490,7 @@ public class MainWindow extends javax.swing.JFrame {
         helpMenu.setText("Help");
 
         generatePasswordMenuItem.setAction(generatePasswordAction);
-        generatePasswordMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_G, java.awt.event.InputEvent.CTRL_MASK));
+        generatePasswordMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F1, 0));
         generatePasswordMenuItem.setText("Generate Password");
         helpMenu.add(generatePasswordMenuItem);
 
