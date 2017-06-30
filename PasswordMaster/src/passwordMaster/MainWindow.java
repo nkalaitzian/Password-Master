@@ -104,11 +104,7 @@ public class MainWindow extends javax.swing.JFrame {
         @Override
         public void run() {
             File parent;
-            if (sw.s.getUserDir().equals("")) {
-                parent = new File(System.getProperty(sw.s.defaultDir));
-            } else {
-                parent = new File(sw.s.getUserDir());
-            }
+            parent = new File(Settings.getDirectory());
             ArrayList<String> files = new ArrayList();
             int i = 0;
             for (File f : parent.listFiles()) {
@@ -627,7 +623,7 @@ public class MainWindow extends javax.swing.JFrame {
         WindowStateListener wsl = new WindowAdapter() {
             @Override
             public void windowStateChanged(WindowEvent e) {
-                sw.informWindowState(e.getNewState());
+                Settings.setWindowState(e.getNewState());
             }
         };
         addWindowListener(exitListener);
@@ -701,8 +697,8 @@ public class MainWindow extends javax.swing.JFrame {
      * This method exits the program.
      */
     public void exitApp() {
-        sw.s.setUserSize(getSize());
-        sw.saveSettings();
+        Settings.setUserSize(getSize());
+        sw.saveSettingsToFile();
         System.exit(0);
     }
 
@@ -794,7 +790,7 @@ public class MainWindow extends javax.swing.JFrame {
         updateTable();
         fileUnsaved = false;
         statusLabel.setText("File " + file.getPath() + " opened successfully.");
-        sw.updateDirectory(file.getParent());
+        Settings.setDirectory(file.getParent());
     }
 
     private boolean getPassword(boolean open) {
@@ -831,11 +827,7 @@ public class MainWindow extends javax.swing.JFrame {
 
     private boolean getFile() {
         JFileChooser fc = new JFileChooser();
-        if (sw.s.getUserDir().equals("")) {
-            fc.setCurrentDirectory(new File(System.getProperty(sw.s.defaultDir)));
-        } else {
-            fc.setCurrentDirectory(new File(sw.s.getUserDir()));
-        }
+        fc.setCurrentDirectory(new File(Settings.getDirectory()));
         fc.setMultiSelectionEnabled(false);
         fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
         int returnVal = fc.showOpenDialog(null);
@@ -1114,7 +1106,7 @@ public class MainWindow extends javax.swing.JFrame {
         @Override
         public void actionPerformed(ActionEvent e) {
             stopTableEditing();
-            sw.setVisible(true);
+            sw.setVisible();
         }
     };
 
@@ -1265,7 +1257,7 @@ public class MainWindow extends javax.swing.JFrame {
 
     private void startIdleTimer() {
         if (System.getProperty("os.name").contains("Windows")) {
-            if (sw.s.getUserIdleSeconds() != 0) {
+            if (Settings.getUserIdleSeconds() != 0) {
                 idleLabel.setVisible(true);
                 idleLabel.setEnabled(true);
                 idleTimer = true;
@@ -1293,9 +1285,9 @@ public class MainWindow extends javax.swing.JFrame {
                     LOG.log(Level.SEVERE, null, ex);
                 }
                 int idleTime = Win32IdleTime.getIdleTimeSeconds();
-                idleLabel.setText("Idle for:" + idleTime + "/" + sw.s.getUserIdleSeconds());
+                idleLabel.setText("Idle for:" + idleTime + "/" + Settings.getUserIdleSeconds());
 //                System.out.println("Idle for:" + idleTime + "s");
-                if (idleTime >= sw.s.getUserIdleSeconds()) {
+                if (idleTime >= Settings.getUserIdleSeconds()) {
                     idleLabel.setText("Idle for:" + idleTime + "s");
                     hidePasswords();
                 }

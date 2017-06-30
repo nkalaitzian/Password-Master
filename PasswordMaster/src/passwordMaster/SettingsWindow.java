@@ -28,7 +28,8 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 /**
- * @see <a href="https://tips4java.wordpress.com/2008/10/20/table-select-all-editor/">RXTable</a>
+ * @see
+ * <a href="https://tips4java.wordpress.com/2008/10/20/table-select-all-editor/">RXTable</a>
  * @author Nikos
  */
 public class SettingsWindow extends javax.swing.JFrame {
@@ -37,10 +38,10 @@ public class SettingsWindow extends javax.swing.JFrame {
 
     private MainWindow mw;
 
-    /**
-     *
-     */
-    public Settings s;
+    private String directory;
+    private String theme;
+    private Dimension size;
+    private int inactiveSeconds;
 
     /**
      * Creates new form SettingsWindow
@@ -48,11 +49,11 @@ public class SettingsWindow extends javax.swing.JFrame {
      * @param mw
      */
     public SettingsWindow(MainWindow mw) {
-        s = new Settings();
         this.mw = mw;
         initComponents();
-        initThemeChange();
-        initSettings();
+        initThemes();
+        initWindowSettings();
+        initIdleSeconds();
         importSettings();
     }
 
@@ -71,14 +72,15 @@ public class SettingsWindow extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
-        fileManagerButton = new javax.swing.JButton();
-        directoryField = new javax.swing.JTextField();
+        selectDirectoryButton = new javax.swing.JButton();
+        directoryTF = new javax.swing.JTextField();
         defaultDirectoryButton = new javax.swing.JButton();
-        closeButton = new javax.swing.JButton();
-        jButton1 = new javax.swing.JButton();
+        applyCloseButton = new javax.swing.JButton();
+        defaultWindowSizeButton = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
         idleSecondsTextField = new javax.swing.JTextField();
+        cancelButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
 
@@ -122,19 +124,19 @@ public class SettingsWindow extends javax.swing.JFrame {
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel2.setText("Select Directory:");
 
-        fileManagerButton.setText("File Manager");
-        fileManagerButton.addActionListener(new java.awt.event.ActionListener() {
+        selectDirectoryButton.setText("Select Directory");
+        selectDirectoryButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                fileManagerButtonActionPerformed(evt);
+                selectDirectoryButtonActionPerformed(evt);
             }
         });
 
-        directoryField.setEditable(false);
-        directoryField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        directoryField.setText("user.dir");
-        directoryField.setBorder(null);
+        directoryTF.setEditable(false);
+        directoryTF.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        directoryTF.setText("user.dir");
+        directoryTF.setBorder(null);
 
-        defaultDirectoryButton.setText("Default Directory");
+        defaultDirectoryButton.setText("Set Default Directory");
         defaultDirectoryButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 defaultDirectoryButtonActionPerformed(evt);
@@ -156,8 +158,8 @@ public class SettingsWindow extends javax.swing.JFrame {
                             .addGroup(jPanel2Layout.createSequentialGroup()
                                 .addComponent(defaultDirectoryButton)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(fileManagerButton))
-                            .addComponent(directoryField))))
+                                .addComponent(selectDirectoryButton))
+                            .addComponent(directoryTF))))
                 .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
@@ -166,25 +168,25 @@ public class SettingsWindow extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(directoryField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(directoryTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(fileManagerButton)
+                    .addComponent(selectDirectoryButton)
                     .addComponent(defaultDirectoryButton))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        closeButton.setText("Close");
-        closeButton.addActionListener(new java.awt.event.ActionListener() {
+        applyCloseButton.setText("Apply & Close");
+        applyCloseButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                closeButtonActionPerformed(evt);
+                applyCloseButtonActionPerformed(evt);
             }
         });
 
-        jButton1.setText("Default Window Size");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        defaultWindowSizeButton.setText("Default Main Window Size");
+        defaultWindowSizeButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                defaultWindowSizeButtonActionPerformed(evt);
             }
         });
 
@@ -213,6 +215,13 @@ public class SettingsWindow extends javax.swing.JFrame {
                 .addGap(0, 10, Short.MAX_VALUE))
         );
 
+        cancelButton.setText("Cancel");
+        cancelButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cancelButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -224,9 +233,11 @@ public class SettingsWindow extends javax.swing.JFrame {
                     .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(changeEncKeyButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jButton1)
+                        .addComponent(defaultWindowSizeButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(closeButton))
+                        .addComponent(cancelButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(applyCloseButton))
                     .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -243,8 +254,9 @@ public class SettingsWindow extends javax.swing.JFrame {
                 .addComponent(changeEncKeyButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(closeButton)
-                    .addComponent(jButton1))
+                    .addComponent(applyCloseButton)
+                    .addComponent(defaultWindowSizeButton)
+                    .addComponent(cancelButton))
                 .addContainerGap())
         );
 
@@ -255,85 +267,74 @@ public class SettingsWindow extends javax.swing.JFrame {
         mw.changeEncryptionKey();
     }//GEN-LAST:event_changeEncKeyButtonActionPerformed
 
-    private void fileManagerButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fileManagerButtonActionPerformed
-        JFileChooser jfc = new JFileChooser();
-        if (s.userDir.equals("")) {
-            jfc.setCurrentDirectory(new File(System.getProperty(s.defaultDir)));
-        } else {
-            jfc.setCurrentDirectory(new File(s.userDir));
-        }
-        jfc.setMultiSelectionEnabled(false);
-        jfc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+    private void selectDirectoryButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectDirectoryButtonActionPerformed
+        selectDirectory();
+    }//GEN-LAST:event_selectDirectoryButtonActionPerformed
 
-        int returnVal = jfc.showOpenDialog(null);
-        if (returnVal == JFileChooser.APPROVE_OPTION) {
-            File file = jfc.getSelectedFile();
-            if (!file.exists()) {
-                file.mkdir();
-            }
-            updateDirectory(file.getPath());
-        }
-    }//GEN-LAST:event_fileManagerButtonActionPerformed
-
-    private void closeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_closeButtonActionPerformed
-        saveSettings();
+    private void applyCloseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_applyCloseButtonActionPerformed
+        setSettings();
+        loadSettings();
+        saveSettingsToFile();
         setVisible(false);
-    }//GEN-LAST:event_closeButtonActionPerformed
+    }//GEN-LAST:event_applyCloseButtonActionPerformed
 
     private void defaultDirectoryButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_defaultDirectoryButtonActionPerformed
-        updateDirectory(s.defaultDir);
+        getDirectory(Settings.defaultDir);
     }//GEN-LAST:event_defaultDirectoryButtonActionPerformed
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        updateWindowSize(s.defaultSize);
-    }//GEN-LAST:event_jButton1ActionPerformed
+    private void defaultWindowSizeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_defaultWindowSizeButtonActionPerformed
+        size = Settings.defaultSize;
+        setWindowSize(size);
+    }//GEN-LAST:event_defaultWindowSizeButtonActionPerformed
+
+    private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelButtonActionPerformed
+        setVisible(false);
+    }//GEN-LAST:event_cancelButtonActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton applyCloseButton;
+    private javax.swing.JButton cancelButton;
     private javax.swing.JButton changeEncKeyButton;
-    private javax.swing.JButton closeButton;
     private javax.swing.JButton defaultDirectoryButton;
-    private javax.swing.JTextField directoryField;
-    private javax.swing.JButton fileManagerButton;
+    private javax.swing.JButton defaultWindowSizeButton;
+    private javax.swing.JTextField directoryTF;
     private javax.swing.JTextField idleSecondsTextField;
-    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
+    private javax.swing.JButton selectDirectoryButton;
     private javax.swing.JComboBox<String> themeComboBox;
     // End of variables declaration//GEN-END:variables
 
     boolean themeChanging = false;
 
-    private void initThemeChange() {
+    private void initThemes() {
+        themeChanging = false;
         themeComboBox.removeAllItems();
         for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
             themeComboBox.addItem(info.getName());
             if (UIManager.getSystemLookAndFeelClassName().equals(info.getClassName())) {
-                s.setTheme(info.getName());
+                Settings.setTheme(info.getName());
             }
         }
 
-        themeComboBox.setSelectedItem(s.getTheme());
+        themeComboBox.setSelectedItem(Settings.getTheme());
         themeComboBox.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent e) {
                 if (!themeChanging) {
-                    String theme = themeComboBox.getItemAt(themeComboBox.getSelectedIndex());
-                    try {
-                        updateTheme(theme);
-                    } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
-                        LOG.log(java.util.logging.Level.SEVERE, null, ex);
-                    }
+                    theme = themeComboBox.getItemAt(themeComboBox.getSelectedIndex());
+                    setTheme(theme);
                 }
             }
         });
     }
 
-    private void initSettings() {
+    private void initWindowSettings() {
         setTitle(Settings.app_name + " v" + Settings.version + " - " + Settings.settings_name);
         setLocationRelativeTo(null);
         setResizable(false);
@@ -344,62 +345,36 @@ public class SettingsWindow extends javax.swing.JFrame {
             }
         };
         addWindowListener(exitListener);
+    }
+
+    private void initIdleSeconds() {
         idleSecondsTextField.getDocument().addDocumentListener(new DocumentListener() {
             public void changedUpdate(DocumentEvent e) {
-                updateIdleSecondsFromTF();
+                setInactiveSeconds();
             }
 
             public void removeUpdate(DocumentEvent e) {
-                updateIdleSecondsFromTF();
+                setInactiveSeconds();
             }
 
             public void insertUpdate(DocumentEvent e) {
-                updateIdleSecondsFromTF();
+                setInactiveSeconds();
             }
         });
-    }
-
-    private void updateTheme(String theme) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException {
-        for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-            if (theme.equals(info.getName())) {
-                javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                SwingUtilities.updateComponentTreeUI(SettingsWindow.this);
-                setLocationRelativeTo(null);
-                pack();
-
-                mw.setLocationRelativeTo(null);
-                SwingUtilities.updateComponentTreeUI(mw);
-                mw.pack();
-                mw.setExtendedState(s.getWindowState());
-
-                SwingUtilities.updateComponentTreeUI(mw.ew);
-                mw.ew.pack();
-                mw.ew.setLocationRelativeTo(null);
-                mw.ew.setResizable(false);
-                mw.ew.setEnabled(false);
-
-                s.setTheme(theme);
-                themeChanging = true;
-                themeComboBox.setSelectedItem(theme);
-                themeChanging = false;
-                break;
-            }
-        }
     }
 
     /**
      * This method saves the settings that are applied by the user.
      */
-    public void saveSettings() {
+    public void saveSettingsToFile() {
         BufferedWriter bw = null;
         try {
-            File settingsFile = new File(System.getProperty(s.defaultDir) + s.getFolderSlash() + "PasswordMaster.ini");
+            File settingsFile = new File(Settings.getDirectory() + Settings.getFolderSlash() + "PasswordMaster.ini");
             if (!settingsFile.exists()) {
                 settingsFile.createNewFile();
             }
             bw = new BufferedWriter(new FileWriter(settingsFile));
-            bw.write(s.toString());
-            System.out.println(s.toString());
+            bw.write(Settings.getString());
             bw.close();
             mw.statusLabel.setText("Settings file saved successfully.");
         } catch (IOException ex) {
@@ -407,37 +382,10 @@ public class SettingsWindow extends javax.swing.JFrame {
         }
     }
 
-    public void updateDirectory(String userdir) {
-        if (userdir == null) {
-            directoryField.setText(s.defaultDir);
-            s.setUserDir("");
-        } else if (userdir.equals("")) {
-            directoryField.setText(s.defaultDir);
-            s.setUserDir("");
-        } else {
-            directoryField.setText(userdir);
-            s.setUserDir(userdir);
-        }
-    }
-
-    /**
-     *
-     * @param windowState
-     */
-    public void informWindowState(int windowState) {
-        s.setWindowState(windowState);
-    }
-
-    private void updateWindowState(int windowState) {
-        mw.pack();
-        mw.setExtendedState(windowState);
-        s.setWindowState(windowState);
-    }
-
     private void importSettings() {
         BufferedReader br = null;
         try {
-            File settingsFile = new File(System.getProperty(s.defaultDir) + "\\PasswordMaster.ini");
+            File settingsFile = new File(Settings.defaultDir + Settings.getFolderSlash() +  "PasswordMaster.ini");
             if (settingsFile.exists()) {
                 br = new BufferedReader(new FileReader(settingsFile));
                 String string = br.readLine();
@@ -449,52 +397,126 @@ public class SettingsWindow extends javax.swing.JFrame {
                         string += t;
                     }
                 }
-                s.fromString(string);
+                Settings.setFromString(string);
                 br.close();
-                applySettingsFromFile();
+                loadSettings();
             }
         } catch (IOException ex) {
             LOG.log(Level.SEVERE, null, ex);
         }
     }
 
-    private boolean applyingSettings = false;
+    private void setSettings() {
+        Settings.setTheme(theme);
+        Settings.setUserSize(size);
+        Settings.setDirectory(directory);
+        Settings.setUserIdleSeconds(inactiveSeconds);
+    }
+    
+    private void loadSettings() {
+        setTheme(Settings.getTheme());
+        applyWindowSize(Settings.getUserSize());
+        applyWindowState(Settings.getWindowState());
+    }
 
-    private void applySettingsFromFile() {
+    private void applyWindowSize(Dimension userSize) {
+        mw.setPreferredSize(userSize);
+        mw.setSize(userSize);
+        mw.pack();
+    }
+
+    private void applyWindowState(int windowState) {
+        mw.setExtendedState(windowState);
+        mw.pack();
+    }
+
+    private void selectDirectory() {
+        JFileChooser jfc = new JFileChooser();
+        jfc.setCurrentDirectory(new File(Settings.getDirectory()));
+        jfc.setMultiSelectionEnabled(false);
+        jfc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+
+        int returnVal = jfc.showOpenDialog(null);
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            File file = jfc.getSelectedFile();
+            if (!file.exists()) {
+                file.mkdir();
+            }
+            directory = file.getPath();
+        }
+    }
+
+    void setVisible() {
+        setVisible(true);
+        getTheme();
+        getDirectory(Settings.getDirectory());
+        getUserSize();
+        getInactiveSeconds();
+    }
+
+    private void getTheme() {
+        themeChanging = true;
+        theme = Settings.getTheme();
+        themeComboBox.setSelectedItem(theme);
+        themeChanging = false;
+    }
+    
+    private void setTheme(String theme) {
         try {
-            applyingSettings = true;
-            updateTheme(s.getTheme());
-            updateWindowSize(s.getUserSize());
-            updateWindowState(s.getWindowState());
-            updateDirectory(s.getUserDir());
-            updateIdleSeconds(s.getUserIdleSeconds());
-            applyingSettings = false;
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if (theme.equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    SwingUtilities.updateComponentTreeUI(SettingsWindow.this);
+                    pack();
+
+                    SwingUtilities.updateComponentTreeUI(mw);
+                    mw.setExtendedState(Settings.getWindowState());
+                    mw.pack();
+
+                    SwingUtilities.updateComponentTreeUI(mw.ew);
+                    mw.ew.setResizable(false);
+                    mw.ew.setEnabled(false);
+                    mw.ew.setVisible(false);
+                    mw.ew.pack();
+                    
+                    themeChanging = true;
+                    themeComboBox.setSelectedItem(theme);
+                    themeChanging = false;
+                    break;
+                }
+            }
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
             LOG.log(Level.SEVERE, null, ex);
         }
     }
 
-    private void updateWindowSize(Dimension userSize) {
-        mw.setPreferredSize(userSize);
-        mw.setSize(userSize);
+    private void getDirectory(String directory) {
+        this.directory = directory;
+        directoryTF.setText(directory);
+    }
+
+    private void getUserSize() {
+        size = mw.getSize();
+    }
+
+    private void setWindowSize(Dimension size) {
+        mw.setPreferredSize(size);
+        mw.setSize(size);
+        mw.pack();
         mw.setLocationRelativeTo(null);
     }
 
-    private void updateIdleSeconds(int seconds) {
-        idleSecondsTextField.setText(seconds + "");
+    private void getInactiveSeconds() {
+        inactiveSeconds = Settings.getUserIdleSeconds();
+        idleSecondsTextField.setText(inactiveSeconds + "");
     }
 
-    private void updateIdleSecondsFromTF() {
-        if (applyingSettings) {
-            return;
-        }
-        Integer idleSeconds = s.defaultIdleSeconds;
+    private void setInactiveSeconds() {
         try {
             String idleSecondsSTR = idleSecondsTextField.getText();
-            idleSeconds = new Integer(idleSecondsSTR);
+            inactiveSeconds = new Integer(idleSecondsSTR);
         } catch (NumberFormatException ex) {
-            idleSeconds = -1;
+            inactiveSeconds = -1;
         }
-        s.setUserIdleSeconds(idleSeconds);
     }
 }

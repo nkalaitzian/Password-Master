@@ -14,7 +14,9 @@ import java.util.logging.Logger;
  */
 public class Settings {
 
-    public static Login standardLogin = new Login(0,"https://www.website.com", "username", "password", "comment");
+    private static final Logger LOG = Logger.getLogger(Settings.class.getName());
+
+    public static Login standardLogin = new Login(0, "https://www.website.com", "username", "password", "comment");
 
     /**
      * The app name.
@@ -29,40 +31,37 @@ public class Settings {
     /**
      * The app version.
      */
-    public static double version = 2.7;
+    public static double version = 2.9;
 
-    private String theme = "Windows";
-    private String defaultTheme = "Windows";
+    private static String theme = "Windows";
+    public static final String defaultTheme = "Windows";
 
     /**
      * The default directory.
      */
-    public String defaultDir = "user.dir";
-
-    /**
-     * The directory specified by the user.
-     */
-    public String userDir = "";
+    public static String defaultDir = System.getProperty("user.dir");
+    
+    private static String userDir = "";
 
     /**
      *
      */
-    public Dimension defaultSize = new Dimension(850, 550);
-    private Dimension userSize;
+    public static final Dimension defaultSize = new Dimension(850, 550);
+    private static Dimension userSize;
 
     /**
      *
      */
-    public int windowState;
+    public static int windowState;
 
-    public int defaultIdleSeconds = 30;
-    private int userIdleSeconds = -1;
+    public static int defaultIdleSeconds = 30;
+    private static int userIdleSeconds = -1;
 
     /**
      *
      * @param fromString
      */
-    public void fromString(String fromString) {
+    public static void setFromString(String fromString) {
         fromString = fromString.replaceAll("Settings", "");
         fromString = fromString.replaceAll("\\{", "");
         fromString = fromString.replaceAll("\\}", "");
@@ -71,7 +70,7 @@ public class Settings {
             if (s.startsWith("theme=")) {
                 setTheme(s.replaceAll("theme=", ""));
             } else if (s.contains("userDir=")) {
-                setUserDir(s.replaceAll("userDir=", "").trim());
+                setDirectory(s.replaceAll("userDir=", "").trim());
             } else if (s.contains("windowState=")) {
                 setWindowState(s.replaceAll("windowState=", "").trim());
             } else if (s.contains("userSize=")) {
@@ -86,7 +85,7 @@ public class Settings {
      *
      * @return
      */
-    public String getTheme() {
+    public static String getTheme() {
         if (theme == null || theme.equals("")) {
             return defaultTheme;
         } else {
@@ -98,11 +97,11 @@ public class Settings {
      *
      * @param theme
      */
-    public void setTheme(String theme) {
+    public static void setTheme(String theme) {
         if (theme == null) {
-            this.theme = "";
+            Settings.theme = "";
         } else {
-            this.theme = theme;
+            Settings.theme = theme;
         }
     }
 
@@ -113,8 +112,8 @@ public class Settings {
      *
      * @return
      */
-    public String getUserDir() {
-        if (System.getProperty(defaultDir).contains("\\")) {
+    public static String getDirectory() {
+        if (defaultDir.contains("\\")) {
             if (userDir.contains("\\")) {
                 return userDir;
             } else {
@@ -127,20 +126,20 @@ public class Settings {
                 return userDir;
             }
         }
-        return userDir;
+        return defaultDir;
     }
 
     /**
      *
      * @param userDir
      */
-    public void setUserDir(String userDir) {
+    public static void setDirectory(String userDir) {
         if (userDir == null) {
-            this.userDir = "";
+            Settings.userDir = "";
         } else if (userDir.equals(defaultDir)) {
-            this.userDir = "";
+            Settings.userDir = "";
         } else {
-            this.userDir = userDir;
+            Settings.userDir = userDir;
         }
     }
 
@@ -148,7 +147,7 @@ public class Settings {
      *
      * @return
      */
-    public int getWindowState() {
+    public static int getWindowState() {
         return windowState;
     }
 
@@ -156,19 +155,19 @@ public class Settings {
      *
      * @param windowState
      */
-    public void setWindowState(int windowState) {
-        this.windowState = windowState;
+    public static void setWindowState(int windowState) {
+        Settings.windowState = windowState;
     }
 
     /**
      *
      * @param windowState
      */
-    public void setWindowState(String windowState) {
+    public static void setWindowState(String windowState) {
         try {
-            this.windowState = new Integer(windowState);
+            Settings.windowState = new Integer(windowState);
         } catch (NumberFormatException ex) {
-            this.windowState = javax.swing.JFrame.MAXIMIZED_BOTH;
+            Settings.windowState = javax.swing.JFrame.MAXIMIZED_BOTH;
         }
     }
 
@@ -176,7 +175,7 @@ public class Settings {
      *
      * @return
      */
-    public Dimension getUserSize() {
+    public static Dimension getUserSize() {
         if (userSize == null) {
             return defaultSize;
         } else {
@@ -188,11 +187,11 @@ public class Settings {
      *
      * @return
      */
-    public String getUserSizeString() {
+    public static String getUserSizeString() {
         return "userSize=[width=" + getUserSize().width + "-height=" + getUserSize().height + "]";
     }
 
-    private void setUserSizeFromString(String str) {
+    private static void setUserSizeFromString(String str) {
         str = str.replaceAll("\\[", "");
         str = str.replaceAll("\\]", "");
         String[] s = str.split("-");
@@ -205,14 +204,13 @@ public class Settings {
             LOG.log(java.util.logging.Level.SEVERE, null, ex);
         }
     }
-    private static final Logger LOG = Logger.getLogger(Settings.class.getName());
 
     /**
      *
      * @param userSize
      */
-    public void setUserSize(Dimension userSize) {
-        this.userSize = userSize;
+    public static void setUserSize(Dimension userSize) {
+        Settings.userSize = userSize;
     }
 
     /**
@@ -220,29 +218,28 @@ public class Settings {
      * @param width
      * @param height
      */
-    public void setUserSize(int width, int height) {
-        this.userSize = new Dimension(width, height);
+    private static void setUserSize(int width, int height) {
+        Settings.userSize = new Dimension(width, height);
     }
 
-    @Override
-    public String toString() {
+    public static String getString() {
         return "Settings{"
                 + "theme=" + getTheme()
-                + ",userDir=" + getUserDir()
+                + ",userDir=" + getDirectory()
                 + ",windowState=" + getWindowState()
                 + "," + getUserSizeString() + "}"
                 + ",userIdleSeconds=" + getUserIdleSeconds() + "}";
     }
 
-    public String getFolderSlash() {
-        if (System.getProperty(defaultDir).contains("\\")) {
+    public static String getFolderSlash() {
+        if (defaultDir.contains("\\")) {
             return "\\";
         } else {
             return "/";
         }
     }
 
-    public int getUserIdleSeconds() {
+    public static int getUserIdleSeconds() {
         if (userIdleSeconds == -1) {
             return defaultIdleSeconds;
         } else {
@@ -250,10 +247,10 @@ public class Settings {
         }
     }
 
-    public void setUserIdleSeconds(int userIdleSeconds) {
-        if(userIdleSeconds == defaultIdleSeconds){
+    public static void setUserIdleSeconds(int userIdleSeconds) {
+        if (userIdleSeconds == defaultIdleSeconds) {
             userIdleSeconds = -1;
         }
-        this.userIdleSeconds = userIdleSeconds;
+        Settings.userIdleSeconds = userIdleSeconds;
     }
 }
