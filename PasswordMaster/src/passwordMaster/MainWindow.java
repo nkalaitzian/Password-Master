@@ -108,7 +108,6 @@ public class MainWindow extends javax.swing.JFrame {
     }
 
     private class TryToOpenFiles extends Thread {
-
         @Override
         public void run() {
             File parent;
@@ -122,7 +121,7 @@ public class MainWindow extends javax.swing.JFrame {
                 }
             }
             if (i > 0) {
-                PasswordFrame pf = new PasswordFrame(files);
+                PasswordFrame pf = new PasswordFrame(files, pg);
                 while (true) {
                     if (pf.done) {
                         break;

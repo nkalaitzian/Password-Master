@@ -411,6 +411,8 @@ public class PasswordGenerator extends javax.swing.JFrame {
 
     public void saveAndDispose() {
         setArrays();
+        setLength();
+        setSelectedArrays();
         showWindow(false);
     }
 }

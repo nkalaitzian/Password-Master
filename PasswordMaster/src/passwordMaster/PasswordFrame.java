@@ -50,8 +50,10 @@ public class PasswordFrame extends javax.swing.JFrame {
      * Creates new form PasswordFrame
      *
      * @param files
+     * @param pg
      */
-    public PasswordFrame(ArrayList<String> files) {
+    public PasswordFrame(ArrayList<String> files, PasswordGenerator pg) {
+        this.pg = pg;
         initComponents();
         initSettings();
         fileField.setVisible(false);
