@@ -104,6 +104,7 @@ public class MainWindow extends javax.swing.JFrame {
         initSettings();
         new TryToOpenFiles().start();
         showPasswords();
+        addListeners();
     }
 
     private class TryToOpenFiles extends Thread {
@@ -614,15 +615,23 @@ public class MainWindow extends javax.swing.JFrame {
 
     boolean popupToClose = false;
     private void initSettings() {
-        setTitle(Settings.app_name + " v" + Settings.version);
         
+        setTitle(Settings.app_name + " v" + Settings.version);
         FileManagement.importSettingsFromFile();
 
         ew = new ExitWindow(MainWindow.this);
         pg = new PasswordGenerator();
         sw = new SettingsWindow(this);
+        cipher = new AES();
         
 
+        model = (DefaultTableModel) loginTable.getModel();
+
+        loginList = new ArrayList();
+        history = new History();
+    }
+    
+    private void addListeners(){
         WindowListener windowListener = new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
@@ -630,30 +639,22 @@ public class MainWindow extends javax.swing.JFrame {
             }
         };
         addWindowListener(windowListener);
-        WindowStateListener wsl = new WindowAdapter() {
-            @Override
-            public void windowStateChanged(WindowEvent e) {
-                Settings.setWindowState(e.getNewState());
-                if(e.getNewState() != JFrame.MAXIMIZED_BOTH){
-                    setLocationRelativeTo(null);
-                }
-            }
-        };
-        addWindowStateListener(wsl);
         ComponentListener componentListener = new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
-                if(getState() != JFrame.MAXIMIZED_BOTH){
+                if(getExtendedState() != JFrame.MAXIMIZED_BOTH){
                     Settings.setUserSize(getSize());
                 }
             }
         };
+        WindowStateListener wsl = new WindowAdapter() {
+            @Override
+            public void windowStateChanged(WindowEvent e) {
+                Settings.setWindowState(getExtendedState());
+            }
+        };
+        addWindowStateListener(wsl);
         addComponentListener(componentListener);
-
-        model = (DefaultTableModel) loginTable.getModel();
-
-        cipher = new AES();
-        
         loginTable.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -681,10 +682,6 @@ public class MainWindow extends javax.swing.JFrame {
                 updateList();
             }
         });
-        
-        loginList = new ArrayList();
-        history = new History();
-        setLocationRelativeTo(null);
     }
 
     private void updateList() {
@@ -722,6 +719,7 @@ public class MainWindow extends javax.swing.JFrame {
         if(Settings.getWindowState() != JFrame.MAXIMIZED_BOTH){
             Settings.setUserSize(getSize());
         }
+        Settings.setWindowState(getExtendedState());
         FileManagement.saveSettingsToFile();
         System.exit(0);
     }

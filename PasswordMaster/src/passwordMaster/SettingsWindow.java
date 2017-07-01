@@ -16,6 +16,7 @@ import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
@@ -373,12 +374,17 @@ public class SettingsWindow extends javax.swing.JFrame {
     private void applyWindowSize(Dimension userSize) {
         mw.setPreferredSize(userSize);
         mw.setSize(userSize);
-        mw.pack();
+        mw.setLocationRelativeTo(null);
+        try {
+            Thread.sleep(10);
+        } catch (InterruptedException ex) {
+            LOG.log(Level.SEVERE, null, ex);
+        }
     }
 
     private void applyWindowState(int windowState) {
-        mw.setExtendedState(windowState);
         mw.pack();
+        mw.setExtendedState(mw.getExtendedState() | windowState); 
     }
 
     private void selectDirectory() {

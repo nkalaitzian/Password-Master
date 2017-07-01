@@ -13,7 +13,7 @@ import java.util.Random;
  * @author pasto
  */
 public class Generator {
-    
+
     public final static String[] defaultLowercase = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"};
     public final static String[] defaultUppercase = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"};
     public final static String[] defaultNumbers = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"};
@@ -23,14 +23,14 @@ public class Generator {
     static String[] uppercase = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"};
     static String[] numbers = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"};
     static String[] symbols = {"!", "@", "#", "$", "%", "^", "&", "*", "-", "_", "=", "+", "[", "]", "{", "}", "(", ")", "?", "|"};
-    
+
     static boolean lowercaseSelected = true,
             uppercaseSelected = false,
             numbersSelected = true,
             symbolsSelected = false;
 
     private static ArrayList<String> password;
-    
+
     private static int length = 8;
 
     private static final Random random = new Random();
@@ -112,25 +112,25 @@ public class Generator {
     }
 
     public static void setLength(String length) {
-        try{
+        try {
             Generator.length = new Integer(length);
-        } catch(NumberFormatException ex){
+        } catch (NumberFormatException ex) {
             Generator.length = 8;
         }
     }
-    
-    public static void setLength(int length){
+
+    public static void setLength(int length) {
         Generator.length = length;
     }
-    
-    public static void setDefault(){
+
+    public static void setDefault() {
         setLength(8);
         setLowercase(defaultLowercase);
         setUppercase(defaultUppercase);
         setNumbers(defaultNumbers);
         setSymbols(defaultSymbols);
     }
-    
+
     private static void getRandomLowercaseLetters(int counter) {
         for (int i = 0; i < counter; i++) {
             int index = random.nextInt(lowercase.length - 1);
@@ -201,15 +201,16 @@ public class Generator {
         }
         return output.toString();
     }
-    
+
     public static void setFromString(String string) {
-        if(!string.contains("Generator")){
+        if (!string.contains("Generator")) {
             return;
         }
         string = string.replaceAll("Generator", "");
-        string = string.replaceFirst("\\{", "");
+        string = string.replaceAll("\\{", "");
+        string = string.replaceAll("\\}", "");
         String[] stringArray = string.split(",");
-        for(String str: stringArray){
+        for (String str : stringArray) {
             if (str.contains("lowercase=")) {
                 str = str.replace("lowercase=", "");
                 setLowercase(str.split(""));
@@ -222,9 +223,9 @@ public class Generator {
             } else if (str.contains("symbols=")) {
                 str = str.replace("symbols=", "");
                 setSymbols(str.split(""));
-            } else if (str.contains("length")){
+            } else if (str.contains("length")) {
                 str = str.replace("length=", "");
-                setLength(str.replace("\\}", ""));
+                setLength(str);
             } else if (str.contains("lowercaseSelected=")) {
                 str = str.replace("lowercaseSelected=", "");
                 setLowercaseSelected(Boolean.valueOf(str));
@@ -240,8 +241,8 @@ public class Generator {
             }
         }
     }
-    
-    public static String getString(){
+
+    public static String getString() {
         String string = "Generator{";
         StringBuilder sb = new StringBuilder();
         for (String s : getLowercase()) {
@@ -263,7 +264,7 @@ public class Generator {
             sb.append(s);
         }
         string += ",symbols=" + sb.toString() + ",symbolsSelected=" + isSymbolsSelected();
-        string += ",length="+getLength() + "}";
+        string += ",length=" + getLength() + "}";
         return string;
     }
 }
