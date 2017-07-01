@@ -12,12 +12,7 @@ import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
@@ -35,7 +30,7 @@ import javax.swing.event.DocumentListener;
 public class SettingsWindow extends javax.swing.JFrame {
 
     private static final Logger LOG = Logger.getLogger(SettingsWindow.class.getName());
-
+    
     private MainWindow mw;
 
     private String directory;
@@ -54,7 +49,7 @@ public class SettingsWindow extends javax.swing.JFrame {
         initThemes();
         initWindowSettings();
         initIdleSeconds();
-        importSettings();
+        loadSettings();
     }
 
     /**
@@ -274,7 +269,6 @@ public class SettingsWindow extends javax.swing.JFrame {
     private void applyCloseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_applyCloseButtonActionPerformed
         setSettings();
         loadSettings();
-        saveSettingsToFile();
         setVisible(false);
     }//GEN-LAST:event_applyCloseButtonActionPerformed
 
@@ -361,49 +355,6 @@ public class SettingsWindow extends javax.swing.JFrame {
                 setInactiveSeconds();
             }
         });
-    }
-
-    /**
-     * This method saves the settings that are applied by the user.
-     */
-    public void saveSettingsToFile() {
-        BufferedWriter bw = null;
-        try {
-            File settingsFile = new File(Settings.getDirectory() + Settings.getFolderSlash() + "PasswordMaster.ini");
-            if (!settingsFile.exists()) {
-                settingsFile.createNewFile();
-            }
-            bw = new BufferedWriter(new FileWriter(settingsFile));
-            bw.write(Settings.getString());
-            bw.close();
-            mw.showStatus("Settings file saved successfully.");
-        } catch (IOException ex) {
-            LOG.log(Level.SEVERE, null, ex);
-        }
-    }
-
-    private void importSettings() {
-        BufferedReader br = null;
-        try {
-            File settingsFile = new File(Settings.defaultDir + Settings.getFolderSlash() +  "PasswordMaster.ini");
-            if (settingsFile.exists()) {
-                br = new BufferedReader(new FileReader(settingsFile));
-                String string = br.readLine();
-                while (true) {
-                    String t = br.readLine();
-                    if (t == null) {
-                        break;
-                    } else {
-                        string += t;
-                    }
-                }
-                Settings.setFromString(string);
-                br.close();
-                loadSettings();
-            }
-        } catch (IOException ex) {
-            LOG.log(Level.SEVERE, null, ex);
-        }
     }
 
     private void setSettings() {

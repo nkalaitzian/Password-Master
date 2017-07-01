@@ -31,7 +31,7 @@ public class Settings {
     /**
      * The app version.
      */
-    public static double version = 3.0;
+    public static double version = 3.1;
 
     private static String theme = "Windows";
     public static final String defaultTheme = "Windows";
@@ -39,8 +39,8 @@ public class Settings {
     /**
      * The default directory.
      */
-    public static String defaultDir = System.getProperty("user.dir");
-    
+    public static final String defaultDir = System.getProperty("user.dir");
+
     private static String userDir = "";
 
     /**
@@ -52,9 +52,9 @@ public class Settings {
     /**
      *
      */
-    public static int windowState;
+    public static int windowState = 0;
 
-    public static int defaultIdleSeconds = 30;
+    public static final int defaultIdleSeconds = 30;
     private static int userIdleSeconds = -1;
 
     /**
@@ -62,6 +62,9 @@ public class Settings {
      * @param fromString
      */
     public static void setFromString(String fromString) {
+        if (!fromString.contains("Settings")) {
+            return;
+        }
         fromString = fromString.replaceAll("Settings", "");
         fromString = fromString.replaceAll("\\{", "");
         fromString = fromString.replaceAll("\\}", "");

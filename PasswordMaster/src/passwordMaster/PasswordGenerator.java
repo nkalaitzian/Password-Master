@@ -5,67 +5,26 @@
  */
 package passwordMaster;
 
-import Other.Settings;
+import Other.Generator;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Random;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
  * @author nikos
  */
 public class PasswordGenerator extends javax.swing.JFrame {
-
-    private static final Logger LOG = Logger.getLogger(PasswordGenerator.class.getName());
-
-    private final File pmg = new File(Settings.getDirectory() + Settings.getFolderSlash() + "PasswordMasterGenerator.ini");
-
-    private final String[] defaultLowercase = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"};
-    private final String[] defaultUppercase = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"};
-    private final String[] defaultNumbers = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"};
-    private final String[] defaultSymbols = {"!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "-", "_", "=", "+", "[", "{", "]", "}", "?", "|"};
-
-    String[] lowercase = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"};
-    String[] uppercase = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"};
-    String[] numbers = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"};
-    String[] symbols = {"!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "-", "_", "=", "+", "[", "{", "]", "}", "?", "|"};
-    
-    boolean lowercaseSelected,
-            uppercaseSelected,
-            numbersSelected,
-            symbolsSelected;
-
-    ArrayList<String> password;
-    
-    int length;
-
-    Random rnd = new Random();
-
     /**
      * Creates new form PasswordGenerator
+     * @param gen
      */
     public PasswordGenerator() {
-        length = 8;
-        lowercaseSelected = true;
-        uppercaseSelected = false;
-        numbersSelected = true;
-        symbolsSelected = false;
         initComponents();
         initSettings();
-        importGenerator();
         initGenerator();
     }
 
@@ -287,7 +246,7 @@ public class PasswordGenerator extends javax.swing.JFrame {
     }//GEN-LAST:event_copyButtonActionPerformed
 
     private void restoreDefaultsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_restoreDefaultsButtonActionPerformed
-        initDefaultTextFields();
+        initDefaults();
     }//GEN-LAST:event_restoreDefaultsButtonActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -341,28 +300,28 @@ public class PasswordGenerator extends javax.swing.JFrame {
         passwordField.setText("");
 
         StringBuilder temp = new StringBuilder();
-        for (String s : lowercase) {
+        for (String s : Generator.getLowercase()) {
             temp.append("," + s);
         }
         String tempS = temp.toString();
         lowercaseField.setText(tempS.replaceFirst(",", ""));
 
         temp = new StringBuilder();
-        for (String s : uppercase) {
+        for (String s : Generator.getUppercase()) {
             temp.append("," + s);
         }
         tempS = temp.toString();
         uppercaseField.setText(tempS.replaceFirst(",", ""));
 
         temp = new StringBuilder();
-        for (String s : numbers) {
+        for (String s : Generator.getNumbers()) {
             temp.append("," + s);
         }
         tempS = temp.toString();
         numberField.setText(tempS.replaceFirst(",", ""));
 
         temp = new StringBuilder();
-        for (String s : symbols) {
+        for (String s : Generator.getSymbols()) {
             temp.append("," + s);
         }
         tempS = temp.toString();
@@ -370,288 +329,88 @@ public class PasswordGenerator extends javax.swing.JFrame {
     }
     
     private void initCheckBoxes(){
-        lowercaseCB.setSelected(lowercaseSelected);
-        uppercaseCB.setSelected(uppercaseSelected);
-        symbolCB.setSelected(symbolsSelected);
-        numberCB.setSelected(numbersSelected);
+        lowercaseCB.setSelected(Generator.isLowercaseSelected());
+        uppercaseCB.setSelected(Generator.isUppercaseSelected());
+        symbolCB.setSelected(Generator.isSymbolsSelected());
+        numberCB.setSelected(Generator.isNumbersSelected());
     }
     
     private void initLength(){
-        lengthField.setText(length+"");
+        lengthField.setText(Generator.getLength()+"");
     }
 
-    private void initDefaultTextFields() {
+    private void initDefaults() {
         passwordField.setText("");
 
         StringBuilder temp = new StringBuilder();
-        for (String s : defaultLowercase) {
+        for (String s : Generator.defaultLowercase) {
             temp.append("," + s);
         }
         String tempS = temp.toString();
         lowercaseField.setText(tempS.replaceFirst(",", ""));
 
         temp = new StringBuilder();
-        for (String s : defaultUppercase) {
+        for (String s : Generator.defaultUppercase) {
             temp.append("," + s);
         }
         tempS = temp.toString();
         uppercaseField.setText(tempS.replaceFirst(",", ""));
 
         temp = new StringBuilder();
-        for (String s : defaultNumbers) {
+        for (String s : Generator.defaultNumbers) {
             temp.append("," + s);
         }
         tempS = temp.toString();
         numberField.setText(tempS.replaceFirst(",", ""));
 
         temp = new StringBuilder();
-        for (String s : defaultSymbols) {
+        for (String s : Generator.defaultSymbols) {
             temp.append("," + s);
         }
         tempS = temp.toString();
         symbolField.setText(tempS.replaceFirst(",", ""));
-
-        lengthField.setText("8");
+        Generator.setLength(8+"");
+        
     }
 
     private void createPassword() {
-        getEverything();
-        password = new ArrayList();
-        int selectedArrays = 0;
-        if (lowercaseSelected) {
-            selectedArrays++;
-        }
-        if (uppercaseSelected) {
-            selectedArrays++;
-        }
-        if (symbolsSelected) {
-            selectedArrays++;
-        }
-        if (numbersSelected) {
-            selectedArrays++;
-        }
-
-        int counter = length / selectedArrays;
-
-        if (lowercaseSelected) {
-            getRandomLowercaseLetters(counter);
-        }
-        if (uppercaseSelected) {
-            getRandomUppercaseLetters(counter);
-        }
-        if (symbolsSelected) {
-            getRandomSymbols(counter);
-        }
-        if (numbersSelected) {
-            getRandomNumbers(counter);
-        }
-
-        if (password.size() < length) {
-            getRandomLowercaseLetters(length - password.size());
-        }
-
-        StringBuilder output = new StringBuilder(password.size());
-        while (!password.isEmpty()) {
-            int randPicker = rnd.nextInt(password.size());
-            output.append(password.remove(randPicker));
-        }
-        passwordField.setText(output.toString());
+        setEverything();
+        passwordField.setText(Generator.createPassword());
     }
     
-    private void getEverything(){
-        getArrays();
-        getSelectedCheckBoxes();
-        getLength();
+    private void setEverything(){
+        setArrays();
+        setSelectedArrays();
+        setLength();
     }
     
-    private void getSelectedCheckBoxes(){
-        if (lowercaseCB.isSelected()) {
-            lowercaseSelected = true;
-        }
-        if (uppercaseCB.isSelected()) {
-            uppercaseSelected = true;
-        }
-        if (symbolCB.isSelected()) {
-            symbolsSelected = true;
-        }
-        if (numberCB.isSelected()) {
-            numbersSelected = true;
-        }
+    private void setSelectedArrays(){
+        Generator.setLowercaseSelected(lowercaseCB.isSelected());
+        Generator.setUppercaseSelected(uppercaseCB.isSelected());
+        Generator.setNumbersSelected(numberCB.isSelected());
+        Generator.setSymbolsSelected(symbolCB.isSelected());
     }
     
-    private void getLength(){
-        length = 0;
-        try {
-            length = new Integer(lengthField.getText());
-        } catch (NumberFormatException ex) {
-            length = 8;
-        }
+    private void setLength(){
+        Generator.setLength(lengthField.getText());
     }
 
-    private void getRandomLowercaseLetters(int counter) {
-        for (int i = 0; i < counter; i++) {
-            int index = rnd.nextInt(lowercase.length - 1);
-            password.add(lowercase[index]);
-        }
-    }
-
-    private void getRandomUppercaseLetters(int counter) {
-        for (int i = 0; i < counter; i++) {
-            int index = rnd.nextInt(uppercase.length - 1);
-            password.add(uppercase[index]);
-        }
-    }
-
-    private void getRandomSymbols(int counter) {
-        for (int i = 0; i < counter; i++) {
-            int index = rnd.nextInt(symbols.length - 1);
-            password.add(symbols[index]);
-        }
-    }
-
-    private void getRandomNumbers(int counter) {
-        for (int i = 0; i < counter; i++) {
-            int index = rnd.nextInt(numbers.length - 1);
-            password.add(numbers[index]);
-        }
-    }
-
-    private void getArrays() {
+    private void setArrays() {
         String lc = lowercaseField.getText();
-        lowercase = lc.split(",");
+        Generator.setLowercase(lc.split(","));
 
         String uc = uppercaseField.getText();
-        uppercase = uc.split(",");
+        Generator.setUppercase(uc.split(","));
 
         String s = symbolField.getText();
-        symbols = s.split(",");
+        Generator.setSymbols(s.split(","));
 
         String n = numberField.getText();
-        numbers = n.split(",");
-        getLength();
+        Generator.setNumbers(n.split(","));
     }
 
     public void saveAndDispose() {
-        getArrays();
-        BufferedWriter bw = null;
-        try {
-            if (!pmg.exists()) {
-                pmg.createNewFile();
-            }
-            bw = new BufferedWriter(new FileWriter(pmg));
-            writeLowercaseString(bw);
-            writeUppercaseString(bw);
-            writeNumbersString(bw);
-            writeSymbolsString(bw);
-            bw.write("length="+length);
-            bw.close();
-        } catch (IOException ex) {
-            LOG.log(Level.SEVERE, null, ex);
-        }
+        setArrays();
         showWindow(false);
-    }
-
-    private void writeLowercaseString(BufferedWriter bw) throws IOException {
-        String result = "";
-        StringBuilder sb = new StringBuilder();
-        for (String s : lowercase) {
-            sb.append("," + s);
-        }
-        result += "lowercase=" + sb.toString().replaceFirst(",", "");
-        bw.write(result);
-        bw.newLine();
-        bw.write("lowercaseSelected=" + lowercaseSelected);
-        bw.newLine();
-    }
-
-    private void writeUppercaseString(BufferedWriter bw) throws IOException {
-        String result = "";
-        StringBuilder sb = new StringBuilder();
-        for (String s : uppercase) {
-            sb.append("," + s);
-        }
-        result += "uppercase=" + sb.toString().replaceFirst(",", "");
-        bw.write(result);
-        bw.newLine();
-        bw.write("uppercaseSelected=" + uppercaseSelected);
-        bw.newLine();
-    }
-
-    private void writeNumbersString(BufferedWriter bw) throws IOException {
-        String result = "";
-        StringBuilder sb = new StringBuilder();
-        for (String s : numbers) {
-            sb.append("," + s);
-        }
-        result += "numbers=" + sb.toString().replaceFirst(",", "");
-        bw.write(result);
-        bw.newLine();
-        bw.write("numbersSelected=" + numbersSelected);
-        bw.newLine();
-    }
-
-    private void writeSymbolsString(BufferedWriter bw) throws IOException {
-        String result = "";
-        StringBuilder sb = new StringBuilder();
-        for (String s : symbols) {
-            sb.append("," + s);
-        }
-        result += "symbols=" + sb.toString().replaceFirst(",", "");
-        bw.write(result);
-        bw.newLine();
-        bw.write("symbolsSelected=" + symbolsSelected);
-        bw.newLine();
-    }
-
-    private void importGenerator() {
-        BufferedReader br = null;
-        try {
-            if (!pmg.exists()) {
-                return;
-            }
-            br = new BufferedReader(new FileReader(pmg));
-            String str = "";
-            while ((str = br.readLine()) != null) {
-                handleString(str);
-            }
-        } catch (IOException ex) {
-            LOG.log(Level.SEVERE, null, ex);
-        }
-        showWindow(false);
-    }
-
-    private void handleString(String str) {
-        if (str.contains("lowercase=")) {
-            str = str.replace("lowercase=", "");
-            lowercase = str.split(",");
-        } else if (str.contains("uppercase=")) {
-            str = str.replace("uppercase=", "");
-            uppercase = str.split(",");
-        } else if (str.contains("numbers=")) {
-            str = str.replace("numbers=", "");
-            numbers = str.split(",");
-        } else if (str.contains("symbols=")) {
-            str = str.replace("symbols=", "");
-            symbols = str.split(",");
-        } else if (str.contains("length")){
-            str = str.replace("length=", "");
-            try{
-                length = new Integer(str);
-            } catch(NumberFormatException ex){
-                length = 8;
-            }
-        } else if (str.contains("lowercaseSelected=")) {
-            str = str.replace("lowercaseSelected=", "");
-            lowercaseSelected = Boolean.valueOf(str);
-        } else if (str.contains("uppercaseSelected=")) {
-            str = str.replace("uppercaseSelected=", "");
-            uppercaseSelected = Boolean.valueOf(str);
-        } else if (str.contains("numbersSelected=")) {
-            str = str.replace("numbersSelected=", "");
-            numbersSelected = Boolean.valueOf(str);
-        } else if (str.contains("symbolsSelected=")) {
-            str = str.replace("symbolsSelected=", "");
-            symbolsSelected = Boolean.valueOf(str);
-        } 
     }
 }

@@ -2,6 +2,7 @@ package passwordMaster;
 
 import Other.Win32IdleTime;
 import Other.AES;
+import Other.FileManagement;
 import Other.History;
 import Other.Settings;
 import Other.RXTable;
@@ -15,6 +16,9 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
@@ -38,6 +42,7 @@ import java.util.logging.Logger;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.event.TableModelEvent;
@@ -609,28 +614,41 @@ public class MainWindow extends javax.swing.JFrame {
 
     boolean popupToClose = false;
     private void initSettings() {
-        setLocationRelativeTo(null);
         setTitle(Settings.app_name + " v" + Settings.version);
-        setExtendedState(getExtendedState() | javax.swing.JFrame.MAXIMIZED_BOTH);
+        
+        FileManagement.importSettingsFromFile();
 
         ew = new ExitWindow(MainWindow.this);
-        sw = new SettingsWindow(MainWindow.this);
         pg = new PasswordGenerator();
+        sw = new SettingsWindow(this);
+        
 
-        WindowListener exitListener = new WindowAdapter() {
+        WindowListener windowListener = new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
                 ew.visible(true);
             }
         };
+        addWindowListener(windowListener);
         WindowStateListener wsl = new WindowAdapter() {
             @Override
             public void windowStateChanged(WindowEvent e) {
                 Settings.setWindowState(e.getNewState());
+                if(e.getNewState() != JFrame.MAXIMIZED_BOTH){
+                    setLocationRelativeTo(null);
+                }
             }
         };
-        addWindowListener(exitListener);
         addWindowStateListener(wsl);
+        ComponentListener componentListener = new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                if(getState() != JFrame.MAXIMIZED_BOTH){
+                    Settings.setUserSize(getSize());
+                }
+            }
+        };
+        addComponentListener(componentListener);
 
         model = (DefaultTableModel) loginTable.getModel();
 
@@ -666,6 +684,7 @@ public class MainWindow extends javax.swing.JFrame {
         
         loginList = new ArrayList();
         history = new History();
+        setLocationRelativeTo(null);
     }
 
     private void updateList() {
@@ -700,9 +719,10 @@ public class MainWindow extends javax.swing.JFrame {
      * This method exits the program.
      */
     public void exitApp() {
-        Settings.setUserSize(getSize());
-        pg.saveAndDispose();
-        sw.saveSettingsToFile();
+        if(Settings.getWindowState() != JFrame.MAXIMIZED_BOTH){
+            Settings.setUserSize(getSize());
+        }
+        FileManagement.saveSettingsToFile();
         System.exit(0);
     }
 
@@ -797,7 +817,7 @@ public class MainWindow extends javax.swing.JFrame {
     }
 
     private boolean getPassword(boolean open) {
-        PasswordFrame pf = new PasswordFrame(file.getPath(), 1);
+        PasswordFrame pf = new PasswordFrame(file.getPath(), 1, pg);
         while (true) {
             if (pf.done) {
                 break;
@@ -988,7 +1008,7 @@ public class MainWindow extends javax.swing.JFrame {
         if (encryptionKey == null) {
             return true;
         }
-        PasswordFrame pf = new PasswordFrame(file.getPath(), 2);
+        PasswordFrame pf = new PasswordFrame(file.getPath(), 2, pg);
         while (true) {
             if (pf.done) {
                 break;

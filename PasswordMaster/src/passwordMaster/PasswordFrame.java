@@ -20,14 +20,19 @@ import javax.swing.event.ChangeListener;
  */
 public class PasswordFrame extends javax.swing.JFrame {
 
+    
+    PasswordGenerator pg;
     boolean done = false;
     boolean cancel = false;
 
     /**
      * Creates new form PasswordFrame
      * @param file
+     * @param mode
+     * @param pg
      */
-    public PasswordFrame(String file, int mode) {
+    public PasswordFrame(String file, int mode, PasswordGenerator pg) {
+        this.pg = pg;
         initComponents();
         initSettings();
         fileField.setVisible(true);
@@ -161,7 +166,7 @@ public class PasswordFrame extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void generatePasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_generatePasswordActionPerformed
-        PasswordGenerator pg = new PasswordGenerator();
+        pg.showWindow(true);
     }//GEN-LAST:event_generatePasswordActionPerformed
 
     private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okButtonActionPerformed
