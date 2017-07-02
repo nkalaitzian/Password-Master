@@ -20,11 +20,10 @@ import javax.swing.event.ChangeListener;
  */
 public class PasswordFrame extends javax.swing.JFrame {
 
-    
     PasswordGenerator pg;
     boolean done = false;
     boolean cancel = false;
-
+    
     /**
      * Creates new form PasswordFrame
      * @param file
@@ -183,7 +182,6 @@ public class PasswordFrame extends javax.swing.JFrame {
         dispose();
     }//GEN-LAST:event_cancelButtonActionPerformed
 
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton cancelButton;
     private javax.swing.JTextField fileField;
@@ -196,7 +194,6 @@ public class PasswordFrame extends javax.swing.JFrame {
     // End of variables declaration//GEN-END:variables
 
     private void initSettings() {
-        
         WindowListener exitListener = new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
@@ -209,7 +206,7 @@ public class PasswordFrame extends javax.swing.JFrame {
         passwordField.addKeyListener(new KeyListener() {
             @Override
             public void keyTyped(KeyEvent e) {
-                if(e.getKeyChar()=='\n'){
+                if(e.getKeyChar()==KeyEvent.VK_ENTER){
                     done = true;
                     cancel = false;
                     dispose();
@@ -232,7 +229,6 @@ public class PasswordFrame extends javax.swing.JFrame {
                 }
             }
         });
-        
         setVisible(true);
         setResizable(false);
         setAlwaysOnTop(true);

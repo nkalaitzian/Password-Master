@@ -488,7 +488,7 @@ public class MainWindow extends javax.swing.JFrame {
 
         showPasswordsMenuItem.setAction(showPasswordsAction);
         showPasswordsMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_H, java.awt.event.InputEvent.CTRL_MASK));
-        showPasswordsMenuItem.setText("Show Hidden");
+        showPasswordsMenuItem.setText("Hide Information");
         viewMenu.add(showPasswordsMenuItem);
 
         menuBar.add(viewMenu);
@@ -688,6 +688,7 @@ public class MainWindow extends javax.swing.JFrame {
             return;
         }
         if (!showHidden) {
+            updateTable();
             return;
         }
         fileUnsaved = true;
@@ -1043,7 +1044,7 @@ public class MainWindow extends javax.swing.JFrame {
     public class ShowPasswords extends Thread {
         @Override
         public void run() {
-            if (!showPasswordsMenuItem.isSelected()) {
+            if (showPasswordsMenuItem.isSelected()) {
                 hidePasswords();
                 return;
             }
@@ -1071,7 +1072,7 @@ public class MainWindow extends javax.swing.JFrame {
         idleLabel.setEnabled(enable);
         idleTimer = enable;
         showHidden = enable;
-        showPasswordsMenuItem.setSelected(enable);
+        showPasswordsMenuItem.setSelected(!enable);
         editMenu.setEnabled(enable);
         moveUpButton.setEnabled(enable);
         moveDownButton.setEnabled(enable);
@@ -1448,7 +1449,7 @@ public class MainWindow extends javax.swing.JFrame {
     }
 
     public void showHidden(String action) {
-        showStatus("Cannot " + action + ". Press 'Show Hidden' first.");
+        showStatus("Cannot " + action + ". You need to click on 'Hide Information' first in order to deselect it.");
     }
 
     /**
@@ -1458,5 +1459,6 @@ public class MainWindow extends javax.swing.JFrame {
      */
     public void showStatus(String status) {
         statusLabel.setText(status);
+        statusLabel.setToolTipText(status);
     }
 }

@@ -332,8 +332,8 @@ public class SettingsWindow extends javax.swing.JFrame {
 
     private void applyCloseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_applyCloseButtonActionPerformed
         if(!mw.showHidden){
-            JOptionPane.showMessageDialog(null, "Cannot save settings while 'Show Hidden' is not selected.\n"
-                    + "Press cancel, then 'Show Hidden' and try again.\n", "Unauthorised access.", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Cannot save settings while 'Hide Information' is selected.\n"
+                    + "Press cancel, then click on 'Hide Information' and try again.\n", "Unauthorised access.", JOptionPane.WARNING_MESSAGE);
         } else {
             setSettings();
             loadSettings();

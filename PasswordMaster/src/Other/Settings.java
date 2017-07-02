@@ -31,7 +31,7 @@ public class Settings {
     /**
      * The app version.
      */
-    public static String version = "3.2";
+    public static String version = "3.2.1";
 
     private static String theme = "Windows";
     public static final String defaultTheme = "Windows";
@@ -54,7 +54,7 @@ public class Settings {
      */
     public static int windowState = 0;
 
-    public static final int defaultIdleSeconds = 30;
+    public static final int defaultIdleSeconds = 20;
     private static int userIdleSeconds = -1;
 
     /**
