@@ -5,6 +5,7 @@
  */
 package passwordMaster;
 
+import Other.Login;
 import Other.Settings;
 import java.awt.Dimension;
 import java.awt.event.ItemEvent;
@@ -16,12 +17,15 @@ import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
-import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import passwordMaster.MainWindow.ShowPasswords;
 
 /**
  * @see
@@ -38,6 +42,7 @@ public class SettingsWindow extends javax.swing.JFrame {
     private String theme;
     private Dimension size;
     private int inactiveSeconds;
+    private boolean hideWebsites, hideUsernames, hideOthers;
 
     /**
      * Creates new form SettingsWindow
@@ -77,6 +82,11 @@ public class SettingsWindow extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         idleSecondsTextField = new javax.swing.JTextField();
         cancelButton = new javax.swing.JButton();
+        jPanel4 = new javax.swing.JPanel();
+        jLabel4 = new javax.swing.JLabel();
+        hideWebsitesCheckBox = new javax.swing.JCheckBox();
+        hideUsernamesCheckBox = new javax.swing.JCheckBox();
+        hideOthersCheckBox = new javax.swing.JCheckBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
 
@@ -198,7 +208,7 @@ public class SettingsWindow extends javax.swing.JFrame {
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, 418, Short.MAX_VALUE)
+                    .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(idleSecondsTextField))
                 .addContainerGap())
         );
@@ -218,6 +228,48 @@ public class SettingsWindow extends javax.swing.JFrame {
             }
         });
 
+        jPanel4.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+
+        jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel4.setText("What columns to hide when 'Show Hidden' is not selected.");
+        jLabel4.setToolTipText("Passwords are always hidden.");
+
+        hideWebsitesCheckBox.setText("Websites");
+
+        hideUsernamesCheckBox.setText("Usernames");
+
+        hideOthersCheckBox.setText("Others");
+
+        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
+        jPanel4.setLayout(jPanel4Layout);
+        jPanel4Layout.setHorizontalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addComponent(hideWebsitesCheckBox)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(hideUsernamesCheckBox)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(hideOthersCheckBox)
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap())
+        );
+        jPanel4Layout.setVerticalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel4)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(hideWebsitesCheckBox)
+                    .addComponent(hideUsernamesCheckBox)
+                    .addComponent(hideOthersCheckBox))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -225,16 +277,17 @@ public class SettingsWindow extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(changeEncKeyButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(changeEncKeyButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(defaultWindowSizeButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(cancelButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(applyCloseButton))
-                    .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel4, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -246,7 +299,9 @@ public class SettingsWindow extends javax.swing.JFrame {
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(changeEncKeyButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -260,21 +315,38 @@ public class SettingsWindow extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void changeEncKeyButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_changeEncKeyButtonActionPerformed
-        mw.changeEncryptionKey();
+        if(!mw.showHidden){
+            
+        } else {
+            mw.changeEncryptionKey();
+        }
     }//GEN-LAST:event_changeEncKeyButtonActionPerformed
 
     private void selectDirectoryButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectDirectoryButtonActionPerformed
-        selectDirectory();
+        if(!mw.showHidden){
+            
+        } else {
+            selectDirectory();
+        }
     }//GEN-LAST:event_selectDirectoryButtonActionPerformed
 
     private void applyCloseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_applyCloseButtonActionPerformed
-        setSettings();
-        loadSettings();
-        setVisible(false);
+        if(!mw.showHidden){
+            JOptionPane.showMessageDialog(null, "Cannot save settings while 'Show Hidden' is not selected.\n"
+                    + "Press cancel, then 'Show Hidden' and try again.\n", "Unauthorised access.", JOptionPane.WARNING_MESSAGE);
+        } else {
+            setSettings();
+            loadSettings();
+            setVisible(false);
+        }
     }//GEN-LAST:event_applyCloseButtonActionPerformed
 
     private void defaultDirectoryButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_defaultDirectoryButtonActionPerformed
-        getDirectory(Settings.defaultDir);
+        if(!mw.showHidden){
+            
+        } else {
+            getDirectory(Settings.defaultDir);
+        }
     }//GEN-LAST:event_defaultDirectoryButtonActionPerformed
 
     private void defaultWindowSizeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_defaultWindowSizeButtonActionPerformed
@@ -294,13 +366,18 @@ public class SettingsWindow extends javax.swing.JFrame {
     private javax.swing.JButton defaultDirectoryButton;
     private javax.swing.JButton defaultWindowSizeButton;
     private javax.swing.JTextField directoryTF;
+    private javax.swing.JCheckBox hideOthersCheckBox;
+    private javax.swing.JCheckBox hideUsernamesCheckBox;
+    private javax.swing.JCheckBox hideWebsitesCheckBox;
     private javax.swing.JTextField idleSecondsTextField;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
     private javax.swing.JButton selectDirectoryButton;
     private javax.swing.JComboBox<String> themeComboBox;
     // End of variables declaration//GEN-END:variables
@@ -333,6 +410,10 @@ public class SettingsWindow extends javax.swing.JFrame {
         setTitle(Settings.app_name + " v" + Settings.version + " - " + Settings.settings_name);
         setLocationRelativeTo(null);
         setResizable(false);
+        addListeners();
+    }
+    
+    private void addListeners(){
         WindowListener exitListener = new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
@@ -340,6 +421,24 @@ public class SettingsWindow extends javax.swing.JFrame {
             }
         };
         addWindowListener(exitListener);
+        hideWebsitesCheckBox.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                hideWebsites = hideWebsitesCheckBox.isSelected();
+            }
+        });
+        hideUsernamesCheckBox.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                hideUsernames = hideUsernamesCheckBox.isSelected();
+            }
+        });
+        hideOthersCheckBox.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                hideOthers = hideOthersCheckBox.isSelected();
+            }
+        });
     }
 
     private void initIdleSeconds() {
@@ -363,6 +462,10 @@ public class SettingsWindow extends javax.swing.JFrame {
         Settings.setUserSize(size);
         Settings.setDirectory(directory);
         Settings.setUserIdleSeconds(inactiveSeconds);
+        Login.setHideWebsite(hideWebsites);
+        Login.setHideUsername(hideUsernames);
+        Login.setHideOther(hideOthers);
+        mw.updateTable();
     }
     
     private void loadSettings() {
@@ -403,12 +506,13 @@ public class SettingsWindow extends javax.swing.JFrame {
         }
     }
 
-    void setVisible() {
+    void showWindow() {
         setVisible(true);
         getTheme();
         getDirectory(Settings.getDirectory());
         getUserSize();
         getInactiveSeconds();
+        getLoginPreferences();
     }
 
     private void getTheme() {
@@ -475,5 +579,14 @@ public class SettingsWindow extends javax.swing.JFrame {
         } catch (NumberFormatException ex) {
             inactiveSeconds = -1;
         }
+    }
+
+    private void getLoginPreferences() {
+        hideWebsites = Login.isHideWebsite();
+        hideWebsitesCheckBox.setSelected(hideWebsites);
+        hideUsernames = Login.isHideUsername();
+        hideUsernamesCheckBox.setSelected(hideUsernames);
+        hideOthers = Login.isHideOther();
+        hideOthersCheckBox.setSelected(hideOthers);
     }
 }

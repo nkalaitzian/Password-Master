@@ -34,6 +34,8 @@ public class FileManagement {
             bw.write(Settings.getString());
             bw.write("-!-!-");
             bw.write(Generator.getString());
+            bw.write("-!-!-");
+            bw.write(Login.getStringPreferences());
             bw.close();
         } catch (IOException ex) {
             LOG.log(Level.SEVERE, null, ex);
@@ -57,6 +59,7 @@ public class FileManagement {
                 for(String str: string.split("-!-!-")){
                     Settings.setFromString(str);
                     Generator.setFromString(str);
+                    Login.setPreferencesFromString(string);
                 }
                 br.close();
             }

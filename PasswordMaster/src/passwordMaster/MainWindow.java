@@ -77,10 +77,10 @@ public class MainWindow extends javax.swing.JFrame {
     private String encryptionKey = null;
 
     private ArrayList<Login> loginList;
-    
+
     private History history;
 
-    boolean showPasswords = false;
+    boolean showHidden = false;
     boolean fileUnsaved = false;
 
     /**
@@ -108,6 +108,7 @@ public class MainWindow extends javax.swing.JFrame {
     }
 
     private class TryToOpenFiles extends Thread {
+
         @Override
         public void run() {
             File parent;
@@ -487,7 +488,7 @@ public class MainWindow extends javax.swing.JFrame {
 
         showPasswordsMenuItem.setAction(showPasswordsAction);
         showPasswordsMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_H, java.awt.event.InputEvent.CTRL_MASK));
-        showPasswordsMenuItem.setText("Show Passwords");
+        showPasswordsMenuItem.setText("Show Hidden");
         viewMenu.add(showPasswordsMenuItem);
 
         menuBar.add(viewMenu);
@@ -611,10 +612,10 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JMenu viewMenu;
     // End of variables declaration//GEN-END:variables
 
-
     boolean popupToClose = false;
+
     private void initSettings() {
-        
+
         setTitle(Settings.app_name + " v" + Settings.version);
         FileManagement.importSettingsFromFile();
 
@@ -622,15 +623,14 @@ public class MainWindow extends javax.swing.JFrame {
         pg = new PasswordGenerator();
         sw = new SettingsWindow(this);
         cipher = new AES();
-        
 
         model = (DefaultTableModel) loginTable.getModel();
 
         loginList = new ArrayList();
         history = new History();
     }
-    
-    private void addListeners(){
+
+    private void addListeners() {
         WindowListener windowListener = new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
@@ -641,7 +641,7 @@ public class MainWindow extends javax.swing.JFrame {
         ComponentListener componentListener = new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
-                if(getExtendedState() != JFrame.MAXIMIZED_BOTH){
+                if (getExtendedState() != JFrame.MAXIMIZED_BOTH) {
                     Settings.setUserSize(getSize());
                 }
             }
@@ -687,6 +687,9 @@ public class MainWindow extends javax.swing.JFrame {
         if (bypassListChange) {
             return;
         }
+        if (!showHidden) {
+            return;
+        }
         fileUnsaved = true;
         int i = 0;
         ArrayList<Login> temp = loginList;
@@ -697,7 +700,7 @@ public class MainWindow extends javax.swing.JFrame {
                 t.setId((String) model.getValueAt(i, 0));
                 t.setWebsite((String) model.getValueAt(i, 1));
                 t.setUsername((String) model.getValueAt(i, 2));
-                if (showPasswords) {
+                if (showHidden) {
                     t.setPassword((String) model.getValueAt(i, 3));
                 }
                 t.setOther((String) model.getValueAt(i, 4));
@@ -715,7 +718,7 @@ public class MainWindow extends javax.swing.JFrame {
      * This method exits the program.
      */
     public void exitApp() {
-        if(Settings.getWindowState() != JFrame.MAXIMIZED_BOTH){
+        if (Settings.getWindowState() != JFrame.MAXIMIZED_BOTH) {
             Settings.setUserSize(getSize());
         }
         Settings.setWindowState(getExtendedState());
@@ -757,7 +760,7 @@ public class MainWindow extends javax.swing.JFrame {
         file = null;
         encryptionKey = null;
         showPasswordsMenuItem.setSelected(false);
-        showPasswords = false;
+        showHidden = false;
         loginList = new ArrayList();
         updateTable();
     }
@@ -875,14 +878,15 @@ public class MainWindow extends javax.swing.JFrame {
      * Passwords" menu item.
      */
     public void saveFile() {
-        if (!showPasswords) {
-            showStatus("Cannot save. Press 'Show Passwords' first.");
+        if (!showHidden) {
+            showHidden("save");
             return;
         }
         new SaveFile().start();
     }
 
     private class SaveFile extends Thread {
+
         @Override
         public void run() {
             boolean result = true;
@@ -907,14 +911,15 @@ public class MainWindow extends javax.swing.JFrame {
     };
 
     private void saveAsFile() {
-        if (!showPasswords) {
-            showStatus("Cannot save. Press 'Show Passwords' first.");
+        if (!showHidden) {
+            showHidden("save as");
             return;
         }
         new SaveAsFile().start();
     }
 
     private class SaveAsFile extends Thread {
+
         @Override
         public void run() {
             if (getFile()) {
@@ -946,16 +951,15 @@ public class MainWindow extends javax.swing.JFrame {
             }
         }
     }
-    
-    int rows = 0;
 
     private final Action addLoginAction = new AbstractAction("") {
         @Override
         public void actionPerformed(ActionEvent ae) {
             stopTableEditing();
             Login newLogin = Login.fromString(Settings.standardLogin.toString().replace("--!--", ""));
-            rows = model.getRowCount() + 1;
-            newLogin.setId(rows);
+            int rows = model.getRowCount();
+            int lastId = new Integer((String) model.getValueAt(rows - 1, 0));
+            newLogin.setId(++lastId);
             loginList.add(newLogin);
             updateHistory();
         }
@@ -973,8 +977,8 @@ public class MainWindow extends javax.swing.JFrame {
         @Override
         public void actionPerformed(ActionEvent ae) {
             stopTableEditing();
-            if (!showPasswords) {
-                showStatus("Cannot delete logins. Press 'Show Passwords' first.");
+            if (!showHidden) {
+                showHidden("delete logins");
                 return;
             }
             try {
@@ -1036,7 +1040,7 @@ public class MainWindow extends javax.swing.JFrame {
         }
     };
 
-    private class ShowPasswords extends Thread {
+    public class ShowPasswords extends Thread {
         @Override
         public void run() {
             if (!showPasswordsMenuItem.isSelected()) {
@@ -1053,27 +1057,33 @@ public class MainWindow extends javax.swing.JFrame {
     }
 
     private void hidePasswords() {
-        showPasswords = false;
-        idleLabel.setEnabled(false);
-        idleTimer = false;
-        showPasswordsMenuItem.setSelected(showPasswords);
+        updateGUI(false);
         updateTable();
     }
 
     private void showPasswords() {
-        idleLabel.setEnabled(true);
-        idleTimer = true;
-        showPasswords = true;
-        showPasswordsMenuItem.setSelected(showPasswords);
+        updateGUI(true);
         updateTable();
         startIdleTimer();
     }
 
-    private void updateTable() {
+    private void updateGUI(boolean enable) {
+        idleLabel.setEnabled(enable);
+        idleTimer = enable;
+        showHidden = enable;
+        showPasswordsMenuItem.setSelected(enable);
+        editMenu.setEnabled(enable);
+        moveUpButton.setEnabled(enable);
+        moveDownButton.setEnabled(enable);
+        addLoginButton.setEnabled(enable);
+        deleteLoginButton.setEnabled(enable);
+    }
+
+    public void updateTable() {
         bypassListChange = true;
         model.setRowCount(0);
         for (Login l : loginList) {
-            if (showPasswords) {
+            if (showHidden) {
                 model.addRow(l.toObject());
             } else {
                 model.addRow(l.toObjectHidden());
@@ -1085,14 +1095,15 @@ public class MainWindow extends javax.swing.JFrame {
     private final Action undoAction = new AbstractAction("") {
         @Override
         public void actionPerformed(ActionEvent e) {
-            bypassListChange = true;
-            stopTableEditing();
-            bypassListChange = false;
+            if (!showHidden) {
+                return;
+            }
             undo();
         }
     };
 
     private void undo() {
+        stopTableEditing();
         loginList = history.undo();
         showStatus("Undo.");
         updateTable();
@@ -1101,14 +1112,15 @@ public class MainWindow extends javax.swing.JFrame {
     private final Action redoAction = new AbstractAction("") {
         @Override
         public void actionPerformed(ActionEvent e) {
-            bypassListChange = true;
-            stopTableEditing();
-            bypassListChange = false;
+            if (!showHidden) {
+                return;
+            }
             redo();
         }
     };
 
     private void redo() {
+        stopTableEditing();
         loginList = history.redo();
         showStatus("Redo.");
         updateTable();
@@ -1124,7 +1136,7 @@ public class MainWindow extends javax.swing.JFrame {
         @Override
         public void actionPerformed(ActionEvent e) {
             stopTableEditing();
-            sw.setVisible();
+            sw.showWindow();
         }
     };
 
@@ -1242,33 +1254,55 @@ public class MainWindow extends javax.swing.JFrame {
     private final Action copyWebsiteAction = new AbstractAction("") {
         @Override
         public void actionPerformed(ActionEvent e) {
-            StringSelection stringSelection = new StringSelection(getWebsite());
-            Clipboard clpbrd = Toolkit.getDefaultToolkit().getSystemClipboard();
-            clpbrd.setContents(stringSelection, null);
-            showStatus("Website: " + getWebsite() + " copied to clipboard.");
+            if (Login.isHideWebsite()) {
+                if (showHidden) {
+                    StringSelection stringSelection = new StringSelection(getWebsite());
+                    Clipboard clpbrd = Toolkit.getDefaultToolkit().getSystemClipboard();
+                    clpbrd.setContents(stringSelection, null);
+                    showStatus("Website: " + getWebsite() + " copied to clipboard.");
+                } else {
+                    showHidden("copy website");
+                }
+            } else {
+                StringSelection stringSelection = new StringSelection(getWebsite());
+                Clipboard clpbrd = Toolkit.getDefaultToolkit().getSystemClipboard();
+                clpbrd.setContents(stringSelection, null);
+                showStatus("Website: " + getWebsite() + " copied to clipboard.");
+            }
         }
     };
 
     private final Action copyUsernameAction = new AbstractAction("") {
         @Override
         public void actionPerformed(ActionEvent e) {
-            StringSelection stringSelection = new StringSelection((String) model.getValueAt(row, 2));
-            Clipboard clpbrd = Toolkit.getDefaultToolkit().getSystemClipboard();
-            clpbrd.setContents(stringSelection, null);
-            showStatus("Username: " + (String) model.getValueAt(row, 2) + " copied to clipboard.");
+            if (Login.isHideUsername()) {
+                if (showHidden) {
+                    StringSelection stringSelection = new StringSelection((String) model.getValueAt(row, 2));
+                    Clipboard clpbrd = Toolkit.getDefaultToolkit().getSystemClipboard();
+                    clpbrd.setContents(stringSelection, null);
+                    showStatus("Username: " + (String) model.getValueAt(row, 2) + " copied to clipboard.");
+                } else {
+                    showHidden("copy username");
+                }
+            } else {
+                StringSelection stringSelection = new StringSelection((String) model.getValueAt(row, 2));
+                Clipboard clpbrd = Toolkit.getDefaultToolkit().getSystemClipboard();
+                clpbrd.setContents(stringSelection, null);
+                showStatus("Username: " + (String) model.getValueAt(row, 2) + " copied to clipboard.");
+            }
         }
     };
 
     private final Action copyPasswordAction = new AbstractAction("") {
         @Override
         public void actionPerformed(ActionEvent e) {
-            if (showPasswords) {
+            if (showHidden) {
                 StringSelection stringSelection = new StringSelection((String) model.getValueAt(row, 3));
                 Clipboard clpbrd = Toolkit.getDefaultToolkit().getSystemClipboard();
                 clpbrd.setContents(stringSelection, null);
                 showStatus("Password for website: " + (String) model.getValueAt(row, 1) + " copied to clipboard.");
             } else {
-                showStatus("Cannot copy password. Press 'Show Passwords' first.");
+                showHidden("copy password");
             }
         }
     };
@@ -1286,6 +1320,7 @@ public class MainWindow extends javax.swing.JFrame {
                 idleTimer = false;
             }
         } else {
+            showStatus("Cannot calculate user idle time on this OS.");
             idleLabel.setVisible(false);
             idleLabel.setEnabled(false);
             idleTimer = false;
@@ -1350,9 +1385,9 @@ public class MainWindow extends javax.swing.JFrame {
             moveUp();
         }
     };
-    
+
     private void moveUp() {
-        if(!showPasswords){
+        if (!showHidden) {
             return;
         }
         if (row == 0) {
@@ -1386,7 +1421,7 @@ public class MainWindow extends javax.swing.JFrame {
     };
 
     private void moveDown() {
-        if(!showPasswords){
+        if (!showHidden) {
             return;
         }
         if (row == model.getRowCount()) {
@@ -1411,12 +1446,17 @@ public class MainWindow extends javax.swing.JFrame {
         fileUnsaved = true;
         row++;
     }
-    
+
+    public void showHidden(String action) {
+        showStatus("Cannot " + action + ". Press 'Show Hidden' first.");
+    }
+
     /**
      * Shows a status text in the Status Label.
+     *
      * @param status
      */
-    public void showStatus(String status){
+    public void showStatus(String status) {
         statusLabel.setText(status);
     }
 }

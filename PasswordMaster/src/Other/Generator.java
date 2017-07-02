@@ -211,7 +211,6 @@ public class Generator {
         string = string.replaceAll("\\}", "");
         String[] stringArray = string.split(",");
         for (String str : stringArray) {
-            System.out.println(str);
             if (str.contains("lowercase=")) {
                 str = str.replace("lowercase=", "");
                 setLowercase(str.split(""));
@@ -226,7 +225,6 @@ public class Generator {
                 setSymbols(str.split(""));
             } else if (str.contains("length")) {
                 str = str.replace("length=", "");
-                System.out.println("Length="+str);
                 setLength(str);
             } else if (str.contains("lowercaseSelected=")) {
                 str = str.replace("lowercaseSelected=", "");
