@@ -2,10 +2,16 @@
 
 A login manager, created with Java.
 
-Saves your logins and encrypts them using the AES cipher.
-
 # Download
 https://github.com/nikoskalai/Password-Master/releases
+
+# Features
+1) AES encryption on login file.
+2) Hideable login information after the user set inactivity timer expires(only on Windows OS currently).
+
+# TODOs
+1) Import logins from browsers.
+2) Any ideas?
 
 # Prerequisites
 You need to have the newest version of Java installed.
@@ -43,3 +49,4 @@ For extra security you can change your current passwords to passwords generated 
 8) Change the password on the website of your choosing.
 9) Paste the password on the Password Master table interface.
 10) You're done!   
+
