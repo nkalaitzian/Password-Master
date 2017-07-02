@@ -253,9 +253,11 @@ public class Login {
         if (!string.contains("LoginSettings")) {
             return;
         }
+        System.out.println(string);
         string = string.replaceAll("LoginSettings", "");
         string = string.replaceAll("\\{", "");
         string = string.replaceAll("\\}", "");
+        System.out.println(string);
         String[] stringArray = string.split(",");
         for (String str : stringArray) {
             if (str.contains("hideWebsite=")) {

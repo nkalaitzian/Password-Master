@@ -59,7 +59,7 @@ public class FileManagement {
                 for(String str: string.split("-!-!-")){
                     Settings.setFromString(str);
                     Generator.setFromString(str);
-                    Login.setPreferencesFromString(string);
+                    Login.setPreferencesFromString(str);
                 }
                 br.close();
             }
