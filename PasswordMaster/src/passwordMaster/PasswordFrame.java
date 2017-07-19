@@ -15,7 +15,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 /**
- *
+ * 
  * @author Nikos
  */
 public class PasswordFrame extends javax.swing.JFrame {

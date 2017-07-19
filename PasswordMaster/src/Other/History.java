@@ -11,7 +11,6 @@ public class History {
 
     /**
      *
-     * @param maxSize
      */
     public History() {
         head = new HistoryNode(null);
@@ -32,8 +31,7 @@ public class History {
 
     /**
      *
-     * @param rankedTweet
-     * @return
+     * @param list
      */
     public void insert(ArrayList<Login> list) {
         insertNodeAfter(list, getChange());

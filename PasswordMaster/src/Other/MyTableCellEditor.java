@@ -27,16 +27,16 @@ public class MyTableCellEditor extends AbstractCellEditor implements TableCellEd
         System.out.println(value);
         switch (vColIndex - 1) {
             case 0:
-                login = Settings.standardLogin.getWebsite();
+                login = Settings.STANDARD_LOGIN.getWebsite();
                 break;
             case 1:
-                login = Settings.standardLogin.getUsername();
+                login = Settings.STANDARD_LOGIN.getUsername();
                 break;
             case 2:
-                login = Settings.standardLogin.getPassword();
+                login = Settings.STANDARD_LOGIN.getPassword();
                 break;
             default:
-                login = Settings.standardLogin.getOther();
+                login = Settings.STANDARD_LOGIN.getOther();
                 break;
         }
         if (cell.equals(login)) {

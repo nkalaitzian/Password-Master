@@ -16,50 +16,60 @@ public class Settings {
 
     private static final Logger LOG = Logger.getLogger(Settings.class.getName());
 
-    public static Login standardLogin = new Login(0, "https://www.website.com", "username", "password", "comment");
+    /**
+     * A "blank" login variable.
+     */
+    public static final Login STANDARD_LOGIN = new Login(0, "https://www.website.com", "username", "password", "comment");
 
     /**
      * The app name.
      */
-    public static String app_name = "Password Master";
+    public static final String APP_NAME = "Password Master";
 
     /**
      * The Settings Window name.
      */
-    public static String settings_name = "Settings";
+    public static final String SETTINGS_NAME = "Settings";
 
     /**
      * The app version.
      */
-    public static String version = "3.2.3";
+    public static final String APP_VERSION = "3.2.4";
 
     private static String theme = "Windows";
-    public static final String defaultTheme = "Windows";
+
+    /**
+     * The default value for the theme.
+     */
+    public static final String DEFAULT_THEME = "Windows";
 
     /**
      * The default directory.
      */
-    public static final String defaultDir = System.getProperty("user.dir");
+    public static final String DEFAULT_DIR = System.getProperty("user.dir");
 
     private static String userDir = "";
 
     /**
-     *
+     * The default window size.
      */
-    public static final Dimension defaultSize = new Dimension(850, 550);
+    public static final Dimension DEFAULT_SIZE = new Dimension(850, 550);
     private static Dimension userSize;
 
     /**
-     *
+     * The value for the window state.
      */
-    public static int windowState = 0;
+    private static int windowState = 0;
 
-    public static final int defaultIdleSeconds = 20;
+    /**
+     * The default value for the idle seconds timer.
+     */
+    public static final int DEFAULT_IDLE_SECONDS = 20;
     private static int userIdleSeconds = -1;
 
     /**
-     *
-     * @param fromString
+     * This method sets all settings from a String variable.
+     * @param fromString The String variable.
      */
     public static void setFromString(String fromString) {
         if (!fromString.contains("Settings")) {
@@ -85,20 +95,20 @@ public class Settings {
     }
 
     /**
-     *
-     * @return
+     * This method returns the theme the user has selected.
+     * @return The selected theme.
      */
     public static String getTheme() {
-        if (theme == null || theme.equals("")) {
-            return defaultTheme;
+        if (theme.equals("")) {
+            return DEFAULT_THEME;
         } else {
             return theme;
         }
     }
 
     /**
-     *
-     * @param theme
+     * Sets the theme the user has selected.
+     * @param theme The selected theme.
      */
     public static void setTheme(String theme) {
         if (theme == null) {
@@ -109,14 +119,13 @@ public class Settings {
     }
 
     /**
-     * Linux Distros and Windows OS use either / or \ in their file management
-     * system. If the user directory contains \ and the current OS directory
-     * uses /, the user directory will reset.
-     *
-     * @return
+     * This method returns the directory the user has selected.
+     * Linux distros and Windows OS use either / or \ in their file management system.
+     * If the user directory contains \ and the current OS directory uses /, the user directory will reset.
+     * @return The user directory.
      */
     public static String getDirectory() {
-        if (defaultDir.contains("\\")) {
+        if (DEFAULT_DIR.contains("\\")) {
             if (userDir.contains("\\")) {
                 return userDir;
             } else {
@@ -129,17 +138,17 @@ public class Settings {
                 return userDir;
             }
         }
-        return defaultDir;
+        return DEFAULT_DIR;
     }
 
     /**
-     *
-     * @param userDir
+     * This method sets the directory the user has selected.
+     * @param userDir The selected directory.
      */
     public static void setDirectory(String userDir) {
         if (userDir == null) {
             Settings.userDir = "";
-        } else if (userDir.equals(defaultDir)) {
+        } else if (userDir.equals(DEFAULT_DIR)) {
             Settings.userDir = "";
         } else {
             Settings.userDir = userDir;
@@ -147,23 +156,30 @@ public class Settings {
     }
 
     /**
-     *
-     * @return
+     * This method returns the window state for the MainWindow class. If 0, state is normal. If 6, state is maximized.
+     * @see <a href="../passwordMaster/MainWindow.html">MainWindow.class</a>
+     * @return The window state.
      */
     public static int getWindowState() {
         return windowState;
     }
 
     /**
-     *
-     * @param windowState
+     * This method sets the window state for the MainWindow class from an integer.
+     * If 0, state is normal.
+     * If 6, state is maximized.
+     * @see <a href="../passwordMaster/MainWindow.html">MainWindow.class</a>
+     * @param windowState The window state.
      */
     public static void setWindowState(int windowState) {
         Settings.windowState = windowState;
     }
 
     /**
-     *
+     * This method sets the window state for the MainWindow class from a String.
+     * If 0, state is normal.
+     * If 6, state is maximized.
+     * @see <a href="../passwordMaster/MainWindow.html">MainWindow.class</a>
      * @param windowState
      */
     public static void setWindowState(String windowState) {
@@ -175,20 +191,23 @@ public class Settings {
     }
 
     /**
-     *
-     * @return
+     * This method returns the window size for the MainWindow class as a Dimension variable.
+     * @see <a href="../passwordMaster/MainWindow.html">MainWindow.class</a>
+     * @return The window size.
      */
     public static Dimension getUserSize() {
         if (userSize == null) {
-            return defaultSize;
+            return DEFAULT_SIZE;
         } else {
             return userSize;
         }
     }
 
     /**
-     *
-     * @return
+     * This method returns the window size for the MainWindow class as a String variable.
+     * Mainly used for saving methods.
+     * @see <a href="../passwordMaster/MainWindow.html">MainWindow.class</a>
+     * @return The window size in a String variable.
      */
     public static String getUserSizeString() {
         return "userSize=[width=" + getUserSize().width + "-height=" + getUserSize().height + "]";
@@ -209,22 +228,28 @@ public class Settings {
     }
 
     /**
-     *
-     * @param userSize
+     * This method sets the window size for the MainWindow class from a Dimension variable.
+     * @see <a href="../passwordMaster/MainWindow.html">MainWindow.class</a>
+     * @param userSize The window size in a String variable.
      */
     public static void setUserSize(Dimension userSize) {
         Settings.userSize = userSize;
     }
 
     /**
-     *
-     * @param width
-     * @param height
+     * This method sets the window size for the MainWindow class from two integer variables.
+     * @see <a href="../passwordMaster/MainWindow.html">MainWindow.class</a>
+     * @param width The width of the window.
+     * @param height The height of the window.
      */
     private static void setUserSize(int width, int height) {
         Settings.userSize = new Dimension(width, height);
     }
 
+    /**
+     *
+     * @return
+     */
     public static String getString() {
         return "Settings{"
                 + "theme=" + getTheme()
@@ -234,24 +259,36 @@ public class Settings {
                 + ",userIdleSeconds=" + getUserIdleSeconds() + "}";
     }
 
+    /**
+     *
+     * @return
+     */
     public static String getFolderSlash() {
-        if (defaultDir.contains("\\")) {
+        if (DEFAULT_DIR.contains("\\")) {
             return "\\";
         } else {
             return "/";
         }
     }
 
+    /**
+     *
+     * @return
+     */
     public static int getUserIdleSeconds() {
         if (userIdleSeconds == -1) {
-            return defaultIdleSeconds;
+            return DEFAULT_IDLE_SECONDS;
         } else {
             return userIdleSeconds;
         }
     }
 
+    /**
+     *
+     * @param userIdleSeconds
+     */
     public static void setUserIdleSeconds(int userIdleSeconds) {
-        if (userIdleSeconds == defaultIdleSeconds) {
+        if (userIdleSeconds == DEFAULT_IDLE_SECONDS) {
             userIdleSeconds = -1;
         }
         Settings.userIdleSeconds = userIdleSeconds;

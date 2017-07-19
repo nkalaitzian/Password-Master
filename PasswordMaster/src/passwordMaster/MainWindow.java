@@ -616,7 +616,7 @@ public class MainWindow extends javax.swing.JFrame {
 
     private void initSettings() {
 
-        setTitle(Settings.app_name + " v" + Settings.version);
+        setTitle(Settings.APP_NAME + " v" + Settings.APP_VERSION);
         FileManagement.importSettingsFromFile();
 
         ew = new ExitWindow(MainWindow.this);
@@ -810,11 +810,11 @@ public class MainWindow extends javax.swing.JFrame {
             } catch (IOException | NullPointerException ex) {
                 LOG.log(Level.SEVERE, null, ex);
             }
+            updateTable();
+            fileUnsaved = false;
+            showStatus("File " + file.getPath() + " opened successfully.");
+            Settings.setDirectory(file.getParent());
         }
-        updateTable();
-        fileUnsaved = false;
-        showStatus("File " + file.getPath() + " opened successfully.");
-        Settings.setDirectory(file.getParent());
     }
 
     private boolean getPassword(boolean open) {
@@ -860,7 +860,7 @@ public class MainWindow extends javax.swing.JFrame {
             if (!file.getPath().endsWith(".pmaster") && !file.getPath().endsWith(".txt")) {
                 file = new File(file.getPath() + ".pmaster");
             }
-            setTitle(Settings.app_name + " v" + Settings.version + " - File:" + file.getPath());
+            setTitle(Settings.APP_NAME + " v" + Settings.APP_VERSION + " - File:" + file.getPath());
             return true;
         } else {
             return false;
@@ -957,7 +957,7 @@ public class MainWindow extends javax.swing.JFrame {
         @Override
         public void actionPerformed(ActionEvent ae) {
             stopTableEditing();
-            Login newLogin = Login.fromString(Settings.standardLogin.toString().replace("--!--", ""));
+            Login newLogin = Login.fromString(Settings.STANDARD_LOGIN.toString().replace("--!--", ""));
             int rows = model.getRowCount();
             int lastId = new Integer((String) model.getValueAt(rows - 1, 0));
             newLogin.setId(++lastId);
@@ -1079,10 +1079,23 @@ public class MainWindow extends javax.swing.JFrame {
         addLoginButton.setEnabled(enable);
         deleteLoginButton.setEnabled(enable);
     }
+    
+    private void updateIDNumbers(){
+        int maxID = 0;
+        for(Login l:loginList){
+            if(l.getIntId() > maxID)
+                maxID = l.getIntId();
+        }
+        int numberOfZeroes = (int) Math.log10(maxID);
+        for(Login l:loginList){
+            l.setNumberOfZeroes(numberOfZeroes - (int) Math.log10(l.getIntId()));
+        }
+    }
 
     public void updateTable() {
         bypassListChange = true;
         model.setRowCount(0);
+        updateIDNumbers();
         for (Login l : loginList) {
             if (showHidden) {
                 model.addRow(l.toObject());

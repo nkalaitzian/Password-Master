@@ -14,10 +14,25 @@ import java.util.Random;
  */
 public class Generator {
 
-    public final static String[] defaultLowercase = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"};
-    public final static String[] defaultUppercase = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"};
-    public final static String[] defaultNumbers = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"};
-    public final static String[] defaultSymbols = {"!", "@", "#", "$", "%", "^", "&", "*", "-", "_", "=", "+", "[", "]", "{", "}", "(", ")", "?", "|"};
+    /**
+     * The default lowercase letters String array.
+     */
+    public final static String[] DEFAULT_LOWERCASE = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"};
+
+    /**
+     * The default uppercase letters String array.
+     */
+    public final static String[] DEFAULT_UPPERCASE = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"};
+
+    /**
+     * The default numbers String array.
+     */
+    public final static String[] DEFAULT_NUMBERS = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"};
+
+    /**
+     * The default symbols String array.
+     */
+    public final static String[] DEFAULT_SYMBOLS = {"!", "@", "#", "$", "%", "^", "&", "*", "-", "_", "=", "+", "[", "]", "{", "}", "(", ")", "?", "|"};
 
     static String[] lowercase = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"};
     static String[] uppercase = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"};
@@ -125,10 +140,10 @@ public class Generator {
 
     public static void setDefault() {
         setLength(8);
-        setLowercase(defaultLowercase);
-        setUppercase(defaultUppercase);
-        setNumbers(defaultNumbers);
-        setSymbols(defaultSymbols);
+        setLowercase(DEFAULT_LOWERCASE);
+        setUppercase(DEFAULT_UPPERCASE);
+        setNumbers(DEFAULT_NUMBERS);
+        setSymbols(DEFAULT_SYMBOLS);
     }
 
     private static void getRandomLowercaseLetters(int counter) {

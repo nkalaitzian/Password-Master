@@ -22,15 +22,15 @@ public class FileManagement {
 
     private static final Logger LOG = Logger.getLogger(FileManagement.class.getName());
     
-    public static final File settingsFile = new File(Settings.getDirectory() + Settings.getFolderSlash() + "PasswordMaster.ini");
+    public static final File SETTINGS_FILE = new File(Settings.getDirectory() + Settings.getFolderSlash() + "PasswordMaster.ini");
     
     public static void saveSettingsToFile() {
         BufferedWriter bw = null;
         try {
-            if (!settingsFile.exists()) {
-                settingsFile.createNewFile();
+            if (!SETTINGS_FILE.exists()) {
+                SETTINGS_FILE.createNewFile();
             }
-            bw = new BufferedWriter(new FileWriter(settingsFile));
+            bw = new BufferedWriter(new FileWriter(SETTINGS_FILE));
             bw.write(Settings.getString());
             bw.write("-!-!-");
             bw.write(Generator.getString());
@@ -45,8 +45,8 @@ public class FileManagement {
     public static void importSettingsFromFile(){
         BufferedReader br = null;
         try {
-            if (settingsFile.exists()) {
-                br = new BufferedReader(new FileReader(settingsFile));
+            if (SETTINGS_FILE.exists()) {
+                br = new BufferedReader(new FileReader(SETTINGS_FILE));
                 String string = br.readLine();
                 while (true) {
                     String t = br.readLine();

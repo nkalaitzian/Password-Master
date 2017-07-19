@@ -7,6 +7,8 @@ package Other;
 public class Login {
 
     private int id;
+    private String strID;
+    public int numberOfZeroes;
     private String website = "";
     private String websiteHidden = "";
     private static boolean hideWebsite = false;
@@ -159,6 +161,17 @@ public class Login {
     public void setId(int id) {
         this.id = id;
     }
+    
+    public void setNumberOfZeroes(int numberOfZeroes){
+        this.numberOfZeroes = numberOfZeroes;
+        strID = "";
+        if(numberOfZeroes != 0){
+            for(int i = 0; i<numberOfZeroes ; i++){
+                strID += "0";
+            }
+        }
+        strID += getId();
+    }
 
     /**
      *
@@ -199,11 +212,10 @@ public class Login {
 
     /**
      *
-     * @param i
      * @return
      */
     public Object[] toObject() {
-        Object[] obj = new Object[]{id + "", website, username, password, other};
+        Object[] obj = new Object[]{strID + "", website, username, password, other};
         return obj;
     }
 
@@ -224,7 +236,7 @@ public class Login {
         if (isHideOther()) {
             other = otherHidden;
         }
-        Object[] obj = new Object[]{id + "", website, username, passwordHidden, other};
+        Object[] obj = new Object[]{strID + "", website, username, passwordHidden, other};
         return obj;
     }
 

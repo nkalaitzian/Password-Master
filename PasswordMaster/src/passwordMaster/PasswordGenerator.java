@@ -20,7 +20,6 @@ import java.awt.event.WindowListener;
 public class PasswordGenerator extends javax.swing.JFrame {
     /**
      * Creates new form PasswordGenerator
-     * @param gen
      */
     public PasswordGenerator() {
         initComponents();
@@ -343,28 +342,28 @@ public class PasswordGenerator extends javax.swing.JFrame {
         passwordField.setText("");
 
         StringBuilder temp = new StringBuilder();
-        for (String s : Generator.defaultLowercase) {
+        for (String s : Generator.DEFAULT_LOWERCASE) {
             temp.append("," + s);
         }
         String tempS = temp.toString();
         lowercaseField.setText(tempS.replaceFirst(",", ""));
 
         temp = new StringBuilder();
-        for (String s : Generator.defaultUppercase) {
+        for (String s : Generator.DEFAULT_UPPERCASE) {
             temp.append("," + s);
         }
         tempS = temp.toString();
         uppercaseField.setText(tempS.replaceFirst(",", ""));
 
         temp = new StringBuilder();
-        for (String s : Generator.defaultNumbers) {
+        for (String s : Generator.DEFAULT_NUMBERS) {
             temp.append("," + s);
         }
         tempS = temp.toString();
         numberField.setText(tempS.replaceFirst(",", ""));
 
         temp = new StringBuilder();
-        for (String s : Generator.defaultSymbols) {
+        for (String s : Generator.DEFAULT_SYMBOLS) {
             temp.append("," + s);
         }
         tempS = temp.toString();

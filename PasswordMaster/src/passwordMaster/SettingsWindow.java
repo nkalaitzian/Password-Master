@@ -25,7 +25,6 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import passwordMaster.MainWindow.ShowPasswords;
 
 /**
  * @see
@@ -345,12 +344,12 @@ public class SettingsWindow extends javax.swing.JFrame {
         if(!mw.showHidden){
             
         } else {
-            getDirectory(Settings.defaultDir);
+            getDirectory(Settings.DEFAULT_DIR);
         }
     }//GEN-LAST:event_defaultDirectoryButtonActionPerformed
 
     private void defaultWindowSizeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_defaultWindowSizeButtonActionPerformed
-        size = Settings.defaultSize;
+        size = Settings.DEFAULT_SIZE;
         setWindowSize(size);
     }//GEN-LAST:event_defaultWindowSizeButtonActionPerformed
 
@@ -407,7 +406,7 @@ public class SettingsWindow extends javax.swing.JFrame {
     }
 
     private void initWindowSettings() {
-        setTitle(Settings.app_name + " v" + Settings.version + " - " + Settings.settings_name);
+        setTitle(Settings.APP_NAME + " v" + Settings.APP_VERSION + " - " + Settings.SETTINGS_NAME);
         setLocationRelativeTo(null);
         setResizable(false);
         addListeners();

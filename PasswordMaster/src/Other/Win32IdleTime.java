@@ -29,7 +29,7 @@ public class Win32IdleTime {
          * Retrieves the number of milliseconds that have elapsed since the
          * system was started.
          *
-         * @see http://msdn2.microsoft.com/en-us/library/ms724408.aspx
+         * @see <a href="http://msdn2.microsoft.com/en-us/library/ms724408.aspx">GetTickCount function</a>
          * @return number of milliseconds that have elapsed since the system was
          * started.
          */
@@ -42,9 +42,6 @@ public class Win32IdleTime {
 
         /**
          * Contains the time of the last input.
-         *
-         * @see
-         * http://msdn.microsoft.com/library/default.asp?url=/library/en-us/winui/winui/windowsuserinterface/userinput/keyboardinput/keyboardinputreference/keyboardinputstructures/lastinputinfo.asp
          */
         public static class LASTINPUTINFO extends Structure {
 
@@ -62,9 +59,6 @@ public class Win32IdleTime {
 
         /**
          * Retrieves the time of the last input event.
-         *
-         * @see
-         * http://msdn.microsoft.com/library/default.asp?url=/library/en-us/winui/winui/windowsuserinterface/userinput/keyboardinput/keyboardinputreference/keyboardinputfunctions/getlastinputinfo.asp
          * @return time of the last input event, in milliseconds
          */
         public boolean GetLastInputInfo(LASTINPUTINFO result);
