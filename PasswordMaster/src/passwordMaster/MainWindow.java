@@ -801,8 +801,7 @@ public class MainWindow extends javax.swing.JFrame {
                 fis.read(result);
                 String res = cipher.decrypt(result, encryptionKey).substring(16);
                 fis.close();
-                String[] logins = res.split("--!--");
-                for (String l : logins) {
+                for (String l : res.split("--!--")) {
                     Login login = Login.fromString(l);
                     loginList.add(login);
                 }

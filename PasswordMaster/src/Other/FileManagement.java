@@ -22,7 +22,7 @@ public class FileManagement {
 
     private static final Logger LOG = Logger.getLogger(FileManagement.class.getName());
     
-    public static final File SETTINGS_FILE = new File(Settings.getDirectory() + Settings.getFolderSlash() + "PasswordMaster.ini");
+    public static final File SETTINGS_FILE = new File(Settings.getDirectory() + File.separator + "PasswordMaster.ini");
     
     public static void saveSettingsToFile() {
         BufferedWriter bw = null;

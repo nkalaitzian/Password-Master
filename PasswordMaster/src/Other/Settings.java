@@ -263,18 +263,6 @@ public class Settings {
      *
      * @return
      */
-    public static String getFolderSlash() {
-        if (DEFAULT_DIR.contains("\\")) {
-            return "\\";
-        } else {
-            return "/";
-        }
-    }
-
-    /**
-     *
-     * @return
-     */
     public static int getUserIdleSeconds() {
         if (userIdleSeconds == -1) {
             return DEFAULT_IDLE_SECONDS;
