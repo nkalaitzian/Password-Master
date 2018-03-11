@@ -24,7 +24,6 @@ public class MyTableCellEditor extends AbstractCellEditor implements TableCellEd
         // 'value' is value contained in the cell located at (rowIndex, vColIndex)
         String cell = (String) value;
         String login = "";
-        System.out.println(value);
         switch (vColIndex - 1) {
             case 0:
                 login = Settings.STANDARD_LOGIN.getWebsite();
@@ -53,7 +52,6 @@ public class MyTableCellEditor extends AbstractCellEditor implements TableCellEd
     // It must return the new value to be stored in the cell.
     @Override
     public Object getCellEditorValue() {
-        System.out.println(((JTextField) component).getText());
         ((JTextField) component).selectAll();
         return ((JTextField) component).getText();
     }

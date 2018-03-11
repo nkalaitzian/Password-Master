@@ -113,7 +113,7 @@ public class History {
 //    }
 
     public void displayCurrent() {
-        System.out.println("Current Node:" + changeCounter);
+//        System.out.println("Current Node:" + changeCounter);
         getChange().display();
     }
 }

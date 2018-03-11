@@ -1047,8 +1047,6 @@ public class MainWindow extends javax.swing.JFrame {
         @Override
         public void run() {
             if (showPasswordsMenuItem.isSelected()) {
-                //TODO remove sout
-                System.out.println("ShowPasswords Menu Item is selected");
                 hidePasswords();
                 return;
             }
@@ -1230,11 +1228,11 @@ public class MainWindow extends javax.swing.JFrame {
 
         String un = new String(username);
         String pw = new String(password);
-        System.out.println("username: ");
-        System.out.println(un);
-        System.out.println("password: ");
-        System.out.println(pw);
-        System.out.println(website);
+//        System.out.println("username: ");
+//        System.out.println(un);
+//        System.out.println("password: ");
+//        System.out.println(pw);
+//        System.out.println(website);
 
         String other = "imported from firefox";
     }
@@ -1369,12 +1367,9 @@ public class MainWindow extends javax.swing.JFrame {
                 }
                 int idleTime = Win32IdleTime.getIdleTimeSeconds();
                 idleLabel.setText("Idle for:" + idleTime + "/" + Settings.getUserIdleSeconds());
-//                System.out.println("Idle for:" + idleTime + "s");
                 if (idleTime >= Settings.getUserIdleSeconds()) {
                     idleLabel.setText("Idle for:" + idleTime + "s");
                     if(idleTimer){
-                        //TODO remove sout
-                        System.out.println("IdleTimer");
                         hidePasswords();
                     }
                 }
