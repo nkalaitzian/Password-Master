@@ -461,6 +461,13 @@ public class SettingsWindow extends javax.swing.JFrame {
         Settings.setUserSize(size);
         Settings.setDirectory(directory);
         Settings.setUserIdleSeconds(inactiveSeconds);
+        if(inactiveSeconds <= 0){
+            MainWindow.idleTimer = false;
+            MainWindow.startStaticIdleTimer();
+        } else {
+            MainWindow.idleTimer = true;
+            MainWindow.startStaticIdleTimer();
+        }
         Login.setHideWebsite(hideWebsites);
         Login.setHideUsername(hideUsernames);
         Login.setHideOther(hideOthers);

@@ -92,7 +92,7 @@ public class MainWindow extends javax.swing.JFrame {
 
     private AES cipher;
 
-    private boolean idleTimer = false;
+    public static boolean idleTimer = false;
 
     private final Logger LOG = Logger.getLogger(MainWindow.class.getName());
 
@@ -103,7 +103,6 @@ public class MainWindow extends javax.swing.JFrame {
         initComponents();
         initSettings();
         new TryToOpenFiles().start();
-        showPasswords();
         addListeners();
     }
 
@@ -345,11 +344,12 @@ public class MainWindow extends javax.swing.JFrame {
                         .addComponent(addLoginButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(deleteLoginButton)
-                        .addContainerGap(514, Short.MAX_VALUE))
+                        .addGap(0, 504, Short.MAX_VALUE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(idleLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(statusLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                        .addComponent(statusLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addContainerGap())
             .addComponent(jScrollPane1)
         );
         jPanel1Layout.setVerticalGroup(
@@ -526,6 +526,7 @@ public class MainWindow extends javax.swing.JFrame {
         moveDown();
     }//GEN-LAST:event_moveDownButtonActionPerformed
 
+    static MainWindow mw;
     /**
      * @param args the command line arguments
      */
@@ -544,7 +545,8 @@ public class MainWindow extends javax.swing.JFrame {
             java.util.logging.Logger.getLogger(MainWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         java.awt.EventQueue.invokeLater(() -> {
-            new MainWindow().setVisible(true);
+            mw = new MainWindow();
+            mw.setVisible(true);
         });
     }
 
@@ -813,6 +815,7 @@ public class MainWindow extends javax.swing.JFrame {
             fileUnsaved = false;
             showStatus("File " + file.getPath() + " opened successfully.");
             Settings.setDirectory(file.getParent());
+            showPasswords();
         }
     }
 
@@ -1044,6 +1047,8 @@ public class MainWindow extends javax.swing.JFrame {
         @Override
         public void run() {
             if (showPasswordsMenuItem.isSelected()) {
+                //TODO remove sout
+                System.out.println("ShowPasswords Menu Item is selected");
                 hidePasswords();
                 return;
             }
@@ -1319,14 +1324,26 @@ public class MainWindow extends javax.swing.JFrame {
             }
         }
     };
-
+    
+    public static void startStaticIdleTimer(){
+        mw.startIdleTimer();
+    }
+    
+    IdleTimer timer;
     private void startIdleTimer() {
         if (System.getProperty("os.name").contains("Windows")) {
             if (Settings.getUserIdleSeconds() != 0) {
                 idleLabel.setVisible(true);
                 idleLabel.setEnabled(true);
                 idleTimer = true;
-                new IdleTimer().start();
+                if(timer == null){
+                    timer = new IdleTimer();
+                    timer.start();
+                } else {
+                    if(!timer.isAlive()){
+                        timer.start();
+                    }
+                }
             } else {
                 idleLabel.setVisible(false);
                 idleLabel.setEnabled(false);
@@ -1355,7 +1372,11 @@ public class MainWindow extends javax.swing.JFrame {
 //                System.out.println("Idle for:" + idleTime + "s");
                 if (idleTime >= Settings.getUserIdleSeconds()) {
                     idleLabel.setText("Idle for:" + idleTime + "s");
-                    hidePasswords();
+                    if(idleTimer){
+                        //TODO remove sout
+                        System.out.println("IdleTimer");
+                        hidePasswords();
+                    }
                 }
             }
         }

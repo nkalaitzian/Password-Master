@@ -55,6 +55,7 @@ public class PasswordGenerator extends javax.swing.JFrame {
         copyButton = new javax.swing.JButton();
         generatePasswordButton = new javax.swing.JButton();
         restoreDefaultsButton = new javax.swing.JButton();
+        shufflePasswordButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
 
@@ -181,6 +182,13 @@ public class PasswordGenerator extends javax.swing.JFrame {
             }
         });
 
+        shufflePasswordButton.setText("Shuffle Password");
+        shufflePasswordButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                shufflePasswordButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -196,10 +204,13 @@ public class PasswordGenerator extends javax.swing.JFrame {
                     .addComponent(passwordField)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(restoreDefaultsButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 47, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(copyButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(generatePasswordButton)))
+                        .addComponent(shufflePasswordButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(generatePasswordButton)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -221,7 +232,8 @@ public class PasswordGenerator extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(generatePasswordButton)
                     .addComponent(copyButton)
-                    .addComponent(restoreDefaultsButton))
+                    .addComponent(restoreDefaultsButton)
+                    .addComponent(shufflePasswordButton))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -248,6 +260,10 @@ public class PasswordGenerator extends javax.swing.JFrame {
         initDefaults();
     }//GEN-LAST:event_restoreDefaultsButtonActionPerformed
 
+    private void shufflePasswordButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_shufflePasswordButtonActionPerformed
+        passwordField.setText(Generator.shufflePassword());
+    }//GEN-LAST:event_shufflePasswordButtonActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton copyButton;
     private javax.swing.JButton generatePasswordButton;
@@ -264,6 +280,7 @@ public class PasswordGenerator extends javax.swing.JFrame {
     private javax.swing.JTextField numberField;
     private javax.swing.JTextField passwordField;
     private javax.swing.JButton restoreDefaultsButton;
+    private javax.swing.JButton shufflePasswordButton;
     private javax.swing.JCheckBox symbolCB;
     private javax.swing.JTextField symbolField;
     private javax.swing.JCheckBox uppercaseCB;

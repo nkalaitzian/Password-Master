@@ -20,45 +20,17 @@ public class Settings {
      * A "blank" login variable.
      */
     public static final Login STANDARD_LOGIN = new Login(0, "https://www.website.com", "username", "password", "comment");
-
-    /**
-     * The app name.
-     */
     public static final String APP_NAME = "Password Master";
-
-    /**
-     * The Settings Window name.
-     */
     public static final String SETTINGS_NAME = "Settings";
-
-    /**
-     * The app version.
-     */
-    public static final String APP_VERSION = "3.2.4";
-
+    public static final String APP_VERSION = "3.3.1";
+    
     private static String theme = "Windows";
-
-    /**
-     * The default value for the theme.
-     */
     public static final String DEFAULT_THEME = "Windows";
-
-    /**
-     * The default directory.
-     */
     public static final String DEFAULT_DIR = System.getProperty("user.dir");
-
+    
     private static String userDir = "";
-
-    /**
-     * The default window size.
-     */
     public static final Dimension DEFAULT_SIZE = new Dimension(850, 550);
     private static Dimension userSize;
-
-    /**
-     * The value for the window state.
-     */
     private static int windowState = 0;
 
     /**

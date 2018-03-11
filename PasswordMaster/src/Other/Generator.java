@@ -208,13 +208,8 @@ public class Generator {
         if (password.size() < getLength()) {
             getRandomLowercaseLetters(getLength() - password.size());
         }
-
-        StringBuilder output = new StringBuilder(password.size());
-        while (!password.isEmpty()) {
-            int randPicker = random.nextInt(password.size());
-            output.append(password.remove(randPicker));
-        }
-        return output.toString();
+        
+        return shufflePassword();
     }
 
     public static void setFromString(String string) {
@@ -281,5 +276,23 @@ public class Generator {
         string += ",symbols=" + sb.toString() + ",symbolsSelected=" + isSymbolsSelected();
         string += ",length=" + getLength() + "}";
         return string;
+    }
+
+    public static String shufflePassword() {
+        if(password == null){
+            return "";
+        }
+        if(password.isEmpty()){
+            return "";
+        }
+        StringBuilder output = new StringBuilder(password.size());
+        while (!password.isEmpty()) {
+            int randPicker = random.nextInt(password.size());
+            output.append(password.remove(randPicker));
+        }
+        for(String s:output.toString().split("")){
+            password.add(s);
+        }
+        return output.toString();
     }
 }
