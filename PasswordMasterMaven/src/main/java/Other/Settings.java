@@ -1,12 +1,22 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * 	https://github.com/nikoskalai/Password-Master
+ *
+ * 	Copyright (c) 2018 Nikos Kalaitzian
+ * 	Licensed under the WTFPL
+ * 	You may obtain a copy of the License at
+ *
+ * 	http://www.wtfpl.net/about/
+ *
+ * 	Unless required by applicable law or agreed to in writing, software
+ * 	distributed under the License is distributed on an "AS IS" BASIS,
+ * 	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  */
 package Other;
 
 import java.awt.Dimension;
+import java.io.File;
 import java.util.logging.Logger;
+import passwordMaster.MainWindow;
 
 /**
  *
@@ -15,6 +25,7 @@ import java.util.logging.Logger;
 public class Settings {
 
     private static final Logger LOG = Logger.getLogger(Settings.class.getName());
+    public static final String SEPARATOR = ",";
 
     /**
      * A "blank" login variable.
@@ -22,12 +33,17 @@ public class Settings {
     public static final Login STANDARD_LOGIN = new Login(0, "https://www.website.com", "username", "password", "comment");
     public static final String APP_NAME = "Password Master";
     public static final String SETTINGS_NAME = "Settings";
-    public static final String APP_VERSION = "3.4.0";
+    public static String APP_VERSION = "3.5.0";
     
+    public static String getAppTitle() {
+        return APP_NAME + " - " + APP_VERSION;
+    }
+
     private static String theme = "Windows";
     public static final String DEFAULT_THEME = "Windows";
-    public static final String DEFAULT_DIR = System.getProperty("user.dir");
-    
+    public static String DEFAULT_DIR = System.getProperty("user.dir");
+    public static boolean alwaysDefaultDir = false;
+
     private static String userDir = "";
     public static final Dimension DEFAULT_SIZE = new Dimension(850, 550);
     private static Dimension userSize;
@@ -38,6 +54,13 @@ public class Settings {
      */
     public static final int DEFAULT_IDLE_SECONDS = 20;
     private static int userIdleSeconds = -1;
+
+    public static boolean bypassExitWindow = false;
+    public static int bypassMode = 2;
+    public static final int bypassAndExit = 1,
+            bypassAndSaveExit = 2,
+            bypassAndMinimize = 3,
+            bypassAndMinimizeToSysTray = 4;
 
     /**
      * This method sets all settings from a String variable.
@@ -50,7 +73,7 @@ public class Settings {
         fromString = fromString.replaceAll("Settings", "");
         fromString = fromString.replaceAll("\\{", "");
         fromString = fromString.replaceAll("\\}", "");
-        String[] fs = fromString.split(",");
+        String[] fs = fromString.split(SEPARATOR);
         for (String s : fs) {
             if (s.startsWith("theme=")) {
                 setTheme(s.replaceAll("theme=", ""));
@@ -62,6 +85,12 @@ public class Settings {
                 setUserSizeFromString(s.replaceAll("userSize=", "").trim());
             } else if (s.contains("userIdleSeconds=")) {
                 setUserIdleSeconds(new Integer(s.replaceAll("userIdleSeconds=", "")));
+            } else if (s.contains("bypassExitWindow=")) {
+                bypassExitWindow = Boolean.valueOf(s.replace("bypassExitWindow=", ""));
+            } else if (s.contains("bypassMode=")) {
+                bypassMode = Integer.valueOf(s.replace("bypassMode=", ""));
+            } else if (s.contains("alwaysDefaultDir=")){
+                alwaysDefaultDir = Boolean.valueOf(s.replace("alwaysDefaultDir=", ""));
             }
         }
     }
@@ -97,14 +126,17 @@ public class Settings {
      * @return The user directory.
      */
     public static String getDirectory() {
-        if (DEFAULT_DIR.contains("\\")) {
-            if (userDir.contains("\\")) {
+        if(alwaysDefaultDir){
+            return DEFAULT_DIR;
+        }
+        if (DEFAULT_DIR.contains(File.separator)) {
+            if (userDir.contains(File.separator)) {
                 return userDir;
             } else {
                 userDir = "";
             }
         } else {
-            if (userDir.contains("\\")) {
+            if (userDir.contains(File.separator)) {
                 userDir = "";
             } else {
                 return userDir;
@@ -182,7 +214,7 @@ public class Settings {
      * @return The window size in a String variable.
      */
     public static String getUserSizeString() {
-        return "userSize=[width=" + getUserSize().width + "-height=" + getUserSize().height + "]";
+        return "userSize=width=" + getUserSize().width + "-height=" + getUserSize().height;
     }
 
     private static void setUserSizeFromString(String str) {
@@ -195,7 +227,7 @@ public class Settings {
         try {
             setUserSize(new Integer(s[0].replace("width=", "")), new Integer(s[1].replace("height=", "")));
         } catch (ArrayIndexOutOfBoundsException ex) {
-            LOG.log(java.util.logging.Level.SEVERE, null, ex);
+            MainWindow.showError(ex, "Could not convert saved window size properly.");
         }
     }
 
@@ -225,10 +257,20 @@ public class Settings {
     public static String getString() {
         return "Settings{"
                 + "theme=" + getTheme()
-                + ",userDir=" + getDirectory()
-                + ",windowState=" + getWindowState()
-                + "," + getUserSizeString() + "}"
-                + ",userIdleSeconds=" + getUserIdleSeconds() + "}";
+                + SEPARATOR
+                + "userDir=" + getDirectory()
+                + SEPARATOR
+                + "windowState=" + getWindowState()
+                + SEPARATOR
+                + getUserSizeString()
+                + SEPARATOR
+                + "userIdleSeconds=" + getUserIdleSeconds()
+                + SEPARATOR
+                + "bypassExitWindow=" + bypassExitWindow
+                + SEPARATOR
+                + "bypassMode=" + bypassMode
+                + SEPARATOR
+                + "alwaysDefaultDir=" + alwaysDefaultDir + "}";
     }
 
     /**

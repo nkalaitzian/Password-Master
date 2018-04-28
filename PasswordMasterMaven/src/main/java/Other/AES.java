@@ -1,3 +1,16 @@
+/*
+ * 	https://github.com/nikoskalai/Password-Master
+ *
+ * 	Copyright (c) 2018 Nikos Kalaitzian
+ * 	Licensed under the WTFPL
+ * 	You may obtain a copy of the License at
+ *
+ * 	http://www.wtfpl.net/about/
+ *
+ * 	Unless required by applicable law or agreed to in writing, software
+ * 	distributed under the License is distributed on an "AS IS" BASIS,
+ * 	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ */
 package Other;
 
 
@@ -6,7 +19,6 @@ import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -15,6 +27,7 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import javax.swing.JOptionPane;
+import passwordMaster.MainWindow;
 
 /**
  * This class holds the methods used to encrypt and decrypt text using the AES cipher.
@@ -34,8 +47,7 @@ public class AES {
             cipher = Cipher.getInstance("AES/CBC/PKCS5Padding", "SunJCE");
             ivParameter = new IvParameterSpec(IV.getBytes());
         } catch (NoSuchAlgorithmException | NoSuchProviderException | NoSuchPaddingException ex) {
-            LOG.log(Level.SEVERE, null, ex);
-            JOptionPane.showMessageDialog(null,"Error:\n"+ex,"Error!",JOptionPane.ERROR_MESSAGE);
+            MainWindow.showError(ex, "Could not initiate encryption.");
         }
     }    
     
@@ -93,8 +105,7 @@ public class AES {
             cipher.init(Cipher.ENCRYPT_MODE, key, ivParameter);
             result = cipher.doFinal(input);
         }catch(UnsupportedEncodingException | InvalidKeyException | InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException ex){
-            LOG.log(Level.SEVERE, null, ex);
-            JOptionPane.showMessageDialog(null,ex.getMessage()+"\nPossible wrong password.","Error!",JOptionPane.ERROR_MESSAGE);
+            MainWindow.showError(ex, "Could not encrypt file.");
         }
         
         return result;
@@ -106,20 +117,16 @@ public class AES {
      * @param encryptionKey The decryption key with witch the text gets decrypted.
      * @return Returns the decrypted text bytes.
      */
-    public String decrypt(byte[] input, String encryptionKey) {
+    public String decrypt(byte[] input, String encryptionKey) throws InvalidKeyException, InvalidAlgorithmParameterException, UnsupportedEncodingException, IllegalBlockSizeException, BadPaddingException {
         byte[] result = null;
         encryptionKey = checkKey(encryptionKey);
         if(encryptionKey.equals("")){
             return null;
         }
-        try{
-            SecretKeySpec key = new SecretKeySpec(encryptionKey.getBytes("UTF-8"), "AES");
-            cipher.init(Cipher.DECRYPT_MODE, key,ivParameter);
-            result = cipher.doFinal(input);
-        }catch(UnsupportedEncodingException | InvalidKeyException | InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException ex){
-            LOG.log(Level.SEVERE, null, ex);
-            JOptionPane.showMessageDialog(null,ex.getMessage()+"\nPossible wrong password.","Error!",JOptionPane.ERROR_MESSAGE);
-        }
+        
+        SecretKeySpec key = new SecretKeySpec(encryptionKey.getBytes("UTF-8"), "AES");
+        cipher.init(Cipher.DECRYPT_MODE, key,ivParameter);
+        result = cipher.doFinal(input);
         return new String(result);
     }
 }

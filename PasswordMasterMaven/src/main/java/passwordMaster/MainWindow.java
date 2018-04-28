@@ -1,3 +1,16 @@
+/*
+ * 	https://github.com/nikoskalai/Password-Master
+ *
+ * 	Copyright (c) 2018 Nikos Kalaitzian
+ * 	Licensed under the WTFPL
+ * 	You may obtain a copy of the License at
+ *
+ * 	http://www.wtfpl.net/about/
+ *
+ * 	Unless required by applicable law or agreed to in writing, software
+ * 	distributed under the License is distributed on an "AS IS" BASIS,
+ * 	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ */
 package passwordMaster;
 
 import Other.Win32IdleTime;
@@ -40,11 +53,15 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Comparator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JFileChooser;
@@ -100,7 +117,7 @@ public class MainWindow extends javax.swing.JFrame {
 
     public static boolean idleTimer = false;
 
-    private final Logger LOG = Logger.getLogger(MainWindow.class.getName());
+    private static final Logger LOG = Logger.getLogger(MainWindow.class.getName());
 
     /**
      * Creates new form MainWindow
@@ -109,7 +126,6 @@ public class MainWindow extends javax.swing.JFrame {
         initComponents();
         initSettings();
         initSystemTray();
-        showPasswords();
         addListeners();
         new TryToOpenFiles().start();
     }
@@ -147,7 +163,7 @@ public class MainWindow extends javax.swing.JFrame {
         exitItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                ew.visible(true);
+                exitApp();
             }
         });
         MenuItem restoreItem = new MenuItem("Restore " + Settings.APP_NAME);
@@ -186,7 +202,7 @@ public class MainWindow extends javax.swing.JFrame {
                         try {
                             Thread.sleep(100);
                         } catch (InterruptedException ex) {
-                            LOG.log(Level.SEVERE, null, ex);
+                            MainWindow.showError(ex, "Could not pause running thread.");
                         }
                     }
                 }
@@ -229,7 +245,6 @@ public class MainWindow extends javax.swing.JFrame {
         pasteMenuItem = new javax.swing.JMenuItem();
         loginPanel = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
-        statusLabel = new javax.swing.JLabel();
         addLoginButton = new javax.swing.JButton();
         deleteLoginButton = new javax.swing.JButton();
         idleLabel = new javax.swing.JLabel();
@@ -325,11 +340,6 @@ public class MainWindow extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
 
-        statusLabel.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        statusLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        statusLabel.setText(" ");
-        statusLabel.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-
         addLoginButton.setAction(addLoginAction);
         addLoginButton.setText("+");
         addLoginButton.setToolTipText("Add Login");
@@ -393,38 +403,30 @@ public class MainWindow extends javax.swing.JFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(moveUpButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(moveDownButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(addLoginButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(deleteLoginButton)
-                        .addGap(0, 504, Short.MAX_VALUE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(idleLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(statusLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addComponent(moveUpButton)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(moveDownButton)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(addLoginButton)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(deleteLoginButton)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(idleLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
-            .addComponent(jScrollPane1)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 778, Short.MAX_VALUE)
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(statusLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(idleLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(moveDownButton)
-                    .addComponent(moveUpButton)
+                    .addComponent(idleLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(deleteLoginButton)
                     .addComponent(addLoginButton)
-                    .addComponent(deleteLoginButton))
+                    .addComponent(moveDownButton)
+                    .addComponent(moveUpButton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 381, Short.MAX_VALUE))
+                .addComponent(jScrollPane1))
         );
 
         javax.swing.GroupLayout loginPanelLayout = new javax.swing.GroupLayout(loginPanel);
@@ -489,7 +491,7 @@ public class MainWindow extends javax.swing.JFrame {
         fileMenu.add(jSeparator1);
 
         exitMenuItem.setAction(exitAction);
-        exitMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Q, java.awt.event.InputEvent.CTRL_MASK));
+        exitMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F4, java.awt.event.InputEvent.ALT_MASK));
         exitMenuItem.setText("Exit");
         fileMenu.add(exitMenuItem);
 
@@ -600,7 +602,7 @@ public class MainWindow extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(MainWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            MainWindow.showError(ex, "Could not initialize theme.");
         }
         java.awt.EventQueue.invokeLater(() -> {
             mw = new MainWindow();
@@ -666,19 +668,17 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JMenuItem saveMenuItem;
     private javax.swing.JMenuItem settingsMenuItem;
     private javax.swing.JCheckBoxMenuItem showPasswordsMenuItem;
-    public javax.swing.JLabel statusLabel;
     private javax.swing.JMenuItem undoMenuItem;
     private javax.swing.JMenuItem undoMenuItem1;
     private javax.swing.JMenu viewMenu;
     // End of variables declaration//GEN-END:variables
 
-    boolean popupToClose = false;
-
     private void initSettings() {
-
+        if(getClass().getPackage().getImplementationVersion() != null){
+            Settings.APP_VERSION = getClass().getPackage().getImplementationVersion();
+        }
         setTitle(Settings.APP_NAME + " v" + Settings.APP_VERSION);
         FileManagement.importSettingsFromFile();
-
         ew = new ExitWindow(MainWindow.this);
         pg = new PasswordGenerator();
         sw = new SettingsWindow(this);
@@ -688,6 +688,7 @@ public class MainWindow extends javax.swing.JFrame {
 
         loginList = new ArrayList();
         history = new History();
+        setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getClassLoader().getResource("ic_launcher.png")));
     }
 
     private void addListeners() {
@@ -791,7 +792,7 @@ public class MainWindow extends javax.swing.JFrame {
         @Override
         public void actionPerformed(ActionEvent ae) {
             stopTableEditing();
-            ew.visible(true);
+            exitApp();
         }
     };
 
@@ -824,6 +825,7 @@ public class MainWindow extends javax.swing.JFrame {
         showHidden = true;
         loginList = new ArrayList();
         updateTable();
+        showPasswords();
     }
 
     private final Action openAction = new AbstractAction("") {
@@ -866,14 +868,17 @@ public class MainWindow extends javax.swing.JFrame {
                     loginList.add(login);
                 }
                 updateHistory();
+                updateTable();
+                Settings.setDirectory(file.getParent());
+                showPasswords();
+                fileUnsaved = false;
             } catch (IOException | NullPointerException ex) {
-                LOG.log(Level.SEVERE, null, ex);
+                MainWindow.showError(ex, "Could not open file: " + file.getPath());
+            } catch (InvalidKeyException | InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException ex) {
+                JOptionPane.showMessageDialog(null,ex.getMessage()+"\nPossible wrong password.","Error!",JOptionPane.ERROR_MESSAGE);
             }
-            updateTable();
-            fileUnsaved = false;
-            showStatus("File " + file.getPath() + " opened successfully.");
-            Settings.setDirectory(file.getParent());
-            showPasswords();
+        } else {
+            MainWindow.showError(null, "Could not open file.");
         }
     }
 
@@ -886,7 +891,7 @@ public class MainWindow extends javax.swing.JFrame {
                 try {
                     Thread.sleep(100);
                 } catch (InterruptedException ex) {
-                    LOG.log(Level.SEVERE, null, ex);
+                    MainWindow.showError(ex, "Could not pause running thread.");
                 }
             }
         }
@@ -938,12 +943,13 @@ public class MainWindow extends javax.swing.JFrame {
      * This method saves the file, provided that the user has selected the "Show
      * Passwords" menu item.
      */
-    public void saveFile() {
+    public boolean saveFile() {
         if (!showHidden) {
             showHidden("save");
-            return;
+            return false;
         }
         new SaveFile().start();
+        return true;
     }
 
     private class SaveFile extends Thread {
@@ -959,7 +965,7 @@ public class MainWindow extends javax.swing.JFrame {
                     getPassword(false);
                 }
                 writeLogins();
-                showStatus("Saved file " + file.getPath());
+                showStatus("File :" + file.getPath() + " saved.");
             }
         }
     }
@@ -989,7 +995,7 @@ public class MainWindow extends javax.swing.JFrame {
                 }
                 writeLogins();
             }
-            showStatus("Saved file " + file.getPath());
+            showStatus("File: " + file.getPath() + " saved.");
         }
     }
 
@@ -1006,9 +1012,9 @@ public class MainWindow extends javax.swing.JFrame {
                 fos.write(cipher.encrypt(plaintext, encryptionKey));
                 fos.close();
             } catch (FileNotFoundException ex) {
-                LOG.log(Level.SEVERE, null, ex);
+                MainWindow.showError(ex, "File was not found.");
             } catch (IOException ex) {
-                LOG.log(Level.SEVERE, null, ex);
+                MainWindow.showError(ex, "Could not write logins file.");
             }
         }
     }
@@ -1083,7 +1089,7 @@ public class MainWindow extends javax.swing.JFrame {
                 try {
                     Thread.sleep(100);
                 } catch (InterruptedException ex) {
-                    LOG.log(Level.SEVERE, null, ex);
+                    MainWindow.showError(ex, "Could not pause running thread.");
                 }
             }
         }
@@ -1184,7 +1190,6 @@ public class MainWindow extends javax.swing.JFrame {
     private void undo() {
         stopTableEditing();
         loginList = history.undo();
-        showStatus("Undo.");
         updateTable();
     }
 
@@ -1201,14 +1206,12 @@ public class MainWindow extends javax.swing.JFrame {
     private void redo() {
         stopTableEditing();
         loginList = history.redo();
-        showStatus("Redo.");
         updateTable();
     }
 
     private void updateHistory() {
         fileUnsaved = true;
         history.insert(loginList);
-        showStatus("");
         updateTable();
     }
 
@@ -1276,9 +1279,9 @@ public class MainWindow extends javax.swing.JFrame {
                 addFirefoxJSONLogin(array.getJSONObject(i));
             }
         } catch (FileNotFoundException ex) {
-            Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+            MainWindow.showError(ex, "Could not find file: " + login.getPath());
         } catch (IOException ex) {
-            Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+            MainWindow.showError(ex, "Could not import logins from Firefox.");
         }
     }
 
@@ -1308,13 +1311,11 @@ public class MainWindow extends javax.swing.JFrame {
             if (Desktop.isDesktopSupported()) {
                 try {
                     Desktop.getDesktop().browse(new URI(website));
-                    showStatus("Website " + website + " opened.");
                 } catch (URISyntaxException | IOException ex) {
-                    showStatus("Could not open website" + website + ".");
-                    LOG.log(Level.SEVERE, null, ex);
+                    MainWindow.showError(ex, "Could not open websit: " + website);
                 }
             } else {
-                showStatus("Could not open website" + website + ".");
+                showError(null, "Cannot open website" + website + ".");
             }
         }
     };
@@ -1407,7 +1408,8 @@ public class MainWindow extends javax.swing.JFrame {
                     timer = new IdleTimer();
                     timer.start();
                 } else {
-                    if(!timer.isAlive()){
+                    if(!timerRunning){
+                        timer = new IdleTimer();
                         timer.start();
                     }
                 }
@@ -1423,16 +1425,18 @@ public class MainWindow extends javax.swing.JFrame {
             idleTimer = false;
         }
     }
-
+    
+    private boolean timerRunning = false;
     private class IdleTimer extends Thread {
 
         @Override
         public void run() {
+            timerRunning = true;
             while (idleTimer) {
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException ex) {
-                    LOG.log(Level.SEVERE, null, ex);
+                    MainWindow.showError(ex, "Could pause running thread.");
                 }
                 int idleTime = Win32IdleTime.getIdleTimeSeconds();
                 idleLabel.setText("Idle for:" + idleTime + "/" + Settings.getUserIdleSeconds());
@@ -1443,18 +1447,19 @@ public class MainWindow extends javax.swing.JFrame {
                     }
                 }
             }
+            timerRunning = false;
         }
     }
 
     private final Action pasteAction = new AbstractAction("") {
         @Override
         public void actionPerformed(ActionEvent e) {
-            Clipboard clpbrd = Toolkit.getDefaultToolkit().getSystemClipboard();
+            Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
             try {
-                model.setValueAt(clpbrd.getData(DataFlavor.stringFlavor), row, col);
-                showStatus("Pasted text:" + clpbrd.getData(DataFlavor.stringFlavor));
+                model.setValueAt(clipboard.getData(DataFlavor.stringFlavor), row, col);
+                showStatus("Pasted text: " + clipboard.getData(DataFlavor.stringFlavor));
             } catch (UnsupportedFlavorException | IOException ex) {
-                Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+                MainWindow.showError(ex, "Could not paste.");
             }
         }
     };
@@ -1548,14 +1553,14 @@ public class MainWindow extends javax.swing.JFrame {
     public void showHidden(String action) {
         showStatus("Cannot " + action + ". You need to click on 'Hide Information' first in order to deselect it.");
     }
-
-    /**
-     * Shows a status text in the Status Label.
-     *
-     * @param status
-     */
-    public void showStatus(String status) {
-        statusLabel.setText(status);
-        statusLabel.setToolTipText(status);
+    
+    public static void showStatus(String status) {
+        trayIcon.displayMessage(Settings.getAppTitle(), status, TrayIcon.MessageType.NONE);
+    }
+    
+    public static void showError(Throwable t, String title) {
+        LOG.log(Level.SEVERE, null, t);
+//        JOptionPane.showMessageDialog(null, t.getMessage(), title, JOptionPane.ERROR_MESSAGE);
+        trayIcon.displayMessage(Settings.getAppTitle(), title, TrayIcon.MessageType.ERROR);
     }
 }

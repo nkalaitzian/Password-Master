@@ -1,7 +1,15 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * 	https://github.com/nikoskalai/Password-Master
+ *
+ * 	Copyright (c) 2018 Nikos Kalaitzian
+ * 	Licensed under the WTFPL
+ * 	You may obtain a copy of the License at
+ *
+ * 	http://www.wtfpl.net/about/
+ *
+ * 	Unless required by applicable law or agreed to in writing, software
+ * 	distributed under the License is distributed on an "AS IS" BASIS,
+ * 	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  */
 package Other;
 
@@ -11,8 +19,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.logging.Level;
 import java.util.logging.Logger;
+import passwordMaster.MainWindow;
 
 /**
  *
@@ -38,7 +46,7 @@ public class FileManagement {
             bw.write(Login.getStringPreferences());
             bw.close();
         } catch (IOException ex) {
-            LOG.log(Level.SEVERE, null, ex);
+            MainWindow.showError(ex, "Could not save settings file.");
         }
     }
     
@@ -64,7 +72,7 @@ public class FileManagement {
                 br.close();
             }
         } catch (IOException ex) {
-            LOG.log(Level.SEVERE, null, ex);
+            MainWindow.showError(ex, "Could not import settings from file.");
         }
     }
 }
