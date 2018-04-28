@@ -42,7 +42,7 @@
                   <Group type="102" alignment="0" attributes="0">
                       <Component id="createShortcutButton" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="createDesktopShortcut" min="-2" max="-2" attributes="0"/>
+                      <Component id="createDesktopShortcutButton" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                   </Group>
               </Group>
@@ -66,7 +66,7 @@
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="createShortcutButton" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="createDesktopShortcut" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="createDesktopShortcutButton" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="32767" attributes="0"/>
               <Component id="changeEncKeyButton" min="-2" max="-2" attributes="0"/>
@@ -462,12 +462,12 @@
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="createShortcutButtonActionPerformed"/>
       </Events>
     </Component>
-    <Component class="javax.swing.JButton" name="createDesktopShortcut">
+    <Component class="javax.swing.JButton" name="createDesktopShortcutButton">
       <Properties>
         <Property name="text" type="java.lang.String" value="Create Desktop Shortcut"/>
       </Properties>
       <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="createDesktopShortcutActionPerformed"/>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="createDesktopShortcutButtonActionPerformed"/>
       </Events>
     </Component>
   </SubComponents>

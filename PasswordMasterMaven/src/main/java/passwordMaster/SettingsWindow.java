@@ -104,7 +104,7 @@ public class SettingsWindow extends javax.swing.JFrame {
         bypassExitWindowComboBox = new javax.swing.JComboBox<>();
         jLabel5 = new javax.swing.JLabel();
         createShortcutButton = new javax.swing.JButton();
-        createDesktopShortcut = new javax.swing.JButton();
+        createDesktopShortcutButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
 
@@ -349,10 +349,10 @@ public class SettingsWindow extends javax.swing.JFrame {
             }
         });
 
-        createDesktopShortcut.setText("Create Desktop Shortcut");
-        createDesktopShortcut.addActionListener(new java.awt.event.ActionListener() {
+        createDesktopShortcutButton.setText("Create Desktop Shortcut");
+        createDesktopShortcutButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                createDesktopShortcutActionPerformed(evt);
+                createDesktopShortcutButtonActionPerformed(evt);
             }
         });
 
@@ -378,7 +378,7 @@ public class SettingsWindow extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(createShortcutButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(createDesktopShortcut)
+                        .addComponent(createDesktopShortcutButton)
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
@@ -398,7 +398,7 @@ public class SettingsWindow extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(createShortcutButton)
-                    .addComponent(createDesktopShortcut))
+                    .addComponent(createDesktopShortcutButton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(changeEncKeyButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -479,9 +479,9 @@ public class SettingsWindow extends javax.swing.JFrame {
         createShortcut(false);
     }//GEN-LAST:event_createShortcutButtonActionPerformed
 
-    private void createDesktopShortcutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_createDesktopShortcutActionPerformed
+    private void createDesktopShortcutButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_createDesktopShortcutButtonActionPerformed
         createShortcut(true);
-    }//GEN-LAST:event_createDesktopShortcutActionPerformed
+    }//GEN-LAST:event_createDesktopShortcutButtonActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -491,7 +491,7 @@ public class SettingsWindow extends javax.swing.JFrame {
     private javax.swing.JComboBox<String> bypassExitWindowComboBox;
     private javax.swing.JButton cancelButton;
     private javax.swing.JButton changeEncKeyButton;
-    private javax.swing.JButton createDesktopShortcut;
+    private javax.swing.JButton createDesktopShortcutButton;
     private javax.swing.JButton createShortcutButton;
     private javax.swing.JButton defaultDirectoryButton;
     private javax.swing.JButton defaultWindowSizeButton;
@@ -611,6 +611,8 @@ public class SettingsWindow extends javax.swing.JFrame {
         setTheme(Settings.getTheme());
         applyWindowSize(Settings.getUserSize());
         applyWindowState(Settings.getWindowState());
+        createShortcutButton.setEnabled(System.getProperty("os.name").contains("Windows"));
+        createDesktopShortcutButton.setEnabled(System.getProperty("os.name").contains("Windows"));
     }
 
     private void applyWindowSize(Dimension userSize) {
