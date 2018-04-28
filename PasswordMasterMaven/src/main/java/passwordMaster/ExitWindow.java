@@ -13,13 +13,11 @@
  */
 package passwordMaster;
 
-import Other.Settings;
+import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JFrame;
 
 /**
  *
@@ -49,6 +47,7 @@ public class ExitWindow extends javax.swing.JFrame {
             }
         };
         addWindowListener(windowListener);
+        setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getClassLoader().getResource("ic_launcher.png")));
     }
 
     /**
@@ -63,9 +62,6 @@ public class ExitWindow extends javax.swing.JFrame {
         saveExitButton = new javax.swing.JButton();
         exitButton = new javax.swing.JButton();
         cancelButton = new javax.swing.JButton();
-        minimizeToTaskbarButton = new javax.swing.JButton();
-        minimizeToSysTrayButton = new javax.swing.JButton();
-        dontAskMeAgainCheckBox = new javax.swing.JCheckBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
 
@@ -90,45 +86,17 @@ public class ExitWindow extends javax.swing.JFrame {
             }
         });
 
-        minimizeToTaskbarButton.setText("Minimize to taskbar");
-        minimizeToTaskbarButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                minimizeToTaskbarButtonActionPerformed(evt);
-            }
-        });
-
-        minimizeToSysTrayButton.setText("Minimize to system tray");
-        minimizeToSysTrayButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                minimizeToSysTrayButtonActionPerformed(evt);
-            }
-        });
-
-        dontAskMeAgainCheckBox.setText("Don't ask me again");
-        dontAskMeAgainCheckBox.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                dontAskMeAgainCheckBoxActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(dontAskMeAgainCheckBox)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(saveExitButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(exitButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cancelButton))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(minimizeToTaskbarButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(minimizeToSysTrayButton)))
+                .addComponent(saveExitButton)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(exitButton)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(cancelButton)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -139,12 +107,6 @@ public class ExitWindow extends javax.swing.JFrame {
                     .addComponent(saveExitButton)
                     .addComponent(exitButton)
                     .addComponent(cancelButton))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(minimizeToTaskbarButton)
-                    .addComponent(minimizeToSysTrayButton))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(dontAskMeAgainCheckBox)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -152,16 +114,10 @@ public class ExitWindow extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void saveExitButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveExitButtonActionPerformed
-        if(dontAskMeAgainCheckBox.isSelected()){
-            Settings.bypassMode = Settings.bypassAndSaveExit;
-        }
         new SaveAndExit().start();
     }//GEN-LAST:event_saveExitButtonActionPerformed
 
     private void exitButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitButtonActionPerformed
-        if(dontAskMeAgainCheckBox.isSelected()){
-            Settings.bypassMode = Settings.bypassAndExit;
-        }
         mw.exitApp();
     }//GEN-LAST:event_exitButtonActionPerformed
 
@@ -169,55 +125,14 @@ public class ExitWindow extends javax.swing.JFrame {
         visible(false);
     }//GEN-LAST:event_cancelButtonActionPerformed
 
-    private void minimizeToTaskbarButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_minimizeToTaskbarButtonActionPerformed
-        if(dontAskMeAgainCheckBox.isSelected()){
-            Settings.bypassMode = Settings.bypassAndMinimize;
-        }
-        minimizeMainFrame();
-        visible(false);
-    }//GEN-LAST:event_minimizeToTaskbarButtonActionPerformed
-
-    private void minimizeToSysTrayButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_minimizeToSysTrayButtonActionPerformed
-        if(dontAskMeAgainCheckBox.isSelected()){
-            Settings.bypassMode = Settings.bypassAndMinimizeToSysTray;
-        }
-        minimizeToSysTrayMainFrame();
-        visible(false);
-    }//GEN-LAST:event_minimizeToSysTrayButtonActionPerformed
-
-    private void dontAskMeAgainCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dontAskMeAgainCheckBoxActionPerformed
-        Settings.bypassExitWindow = dontAskMeAgainCheckBox.isSelected();
-    }//GEN-LAST:event_dontAskMeAgainCheckBoxActionPerformed
-
     /**
      * This method toggles the visibility of the ExitWindow.
      * @param visibility The boolean variable that is used to toggle the ExitWindow visibility.
      */
     public void visible(boolean visibility) {
-        dontAskMeAgainCheckBox.setSelected(Settings.bypassExitWindow);
         if (visibility) {
-            if (Settings.bypassExitWindow) {
-                switch (Settings.bypassMode) {
-                    case Settings.bypassAndExit:
-                        if(!mw.fileUnsaved){
-                            mw.exitApp();
-                        }
-                        break;
-                    case Settings.bypassAndSaveExit:
-                        new SaveAndExit().start();
-                        visibility = false;
-                        break;
-                    case Settings.bypassAndMinimize:
-                        minimizeMainFrame();
-                        visibility = false;
-                        break;
-                    case Settings.bypassAndMinimizeToSysTray:
-                        visibility = false;
-                        minimizeToSysTrayMainFrame();
-                        break;
-                    default:
-                        break;
-                }
+            if (!mw.fileNotSaved) {
+                mw.exitApp();
             }
         }
         mw.setEnabled(!visibility);
@@ -226,45 +141,32 @@ public class ExitWindow extends javax.swing.JFrame {
         setEnabled(visibility);
     }
 
-    private void minimizeMainFrame() {
-        if (mw != null) {
-            mw.setState(JFrame.ICONIFIED);
-        }
-    }
-
-    private void minimizeToSysTrayMainFrame() {
-        if (mw != null) {
-            mw.setVisible(false);
-        }
-    }
-
     private class SaveAndExit extends Thread {
 
         @Override
         public void run() {
-            if(mw.saveFile()){
-                while (true) {
+            if (mw.saveFile()) {
+                while (mw.writingFile) {
                     try {
                         Thread.sleep(300);
                     } catch (InterruptedException ex) {
                         MainWindow.showError(ex, "Could not pause running thread.");
                     }
-                    if (!mw.fileUnsaved) {
+                    if (!mw.fileNotSaved) {
                         break;
                     }
                 }
-                dispose();
-                mw.exitApp();
+                if(!mw.fileNotSaved){
+                    dispose();
+                    mw.exitApp();
+                }
             }
         }
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton cancelButton;
-    private javax.swing.JCheckBox dontAskMeAgainCheckBox;
     private javax.swing.JButton exitButton;
-    private javax.swing.JButton minimizeToSysTrayButton;
-    private javax.swing.JButton minimizeToTaskbarButton;
     private javax.swing.JButton saveExitButton;
     // End of variables declaration//GEN-END:variables
 }

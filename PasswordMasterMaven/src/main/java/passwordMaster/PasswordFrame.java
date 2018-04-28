@@ -13,6 +13,7 @@
  */
 package passwordMaster;
 
+import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
@@ -51,6 +52,7 @@ public class PasswordFrame extends javax.swing.JFrame {
             setTitle("Verify existing encryption key.");
         }
         pack();
+        setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getClassLoader().getResource("ic_launcher.png")));
     }
 
     /**

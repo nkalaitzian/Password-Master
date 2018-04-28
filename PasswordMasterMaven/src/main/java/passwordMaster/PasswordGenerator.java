@@ -33,6 +33,7 @@ public class PasswordGenerator extends javax.swing.JFrame {
         initComponents();
         initSettings();
         initGenerator();
+        setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getClassLoader().getResource("ic_launcher.png")));
     }
 
     /**

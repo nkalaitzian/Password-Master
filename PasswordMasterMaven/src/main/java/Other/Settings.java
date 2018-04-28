@@ -15,7 +15,7 @@ package Other;
 
 import java.awt.Dimension;
 import java.io.File;
-import java.util.logging.Logger;
+import javax.swing.JFrame;
 import passwordMaster.MainWindow;
 
 /**
@@ -23,8 +23,6 @@ import passwordMaster.MainWindow;
  * @author Nikos
  */
 public class Settings {
-
-    private static final Logger LOG = Logger.getLogger(Settings.class.getName());
     public static final String SEPARATOR = ",";
 
     /**
@@ -33,7 +31,7 @@ public class Settings {
     public static final Login STANDARD_LOGIN = new Login(0, "https://www.website.com", "username", "password", "comment");
     public static final String APP_NAME = "Password Master";
     public static final String SETTINGS_NAME = "Settings";
-    public static String APP_VERSION = "3.5.0";
+    public static String APP_VERSION = "3.5";
     
     public static String getAppTitle() {
         return APP_NAME + " - " + APP_VERSION;
@@ -54,19 +52,15 @@ public class Settings {
      */
     public static final int DEFAULT_IDLE_SECONDS = 20;
     private static int userIdleSeconds = -1;
-
-    public static boolean bypassExitWindow = false;
-    public static int bypassMode = 2;
-    public static final int bypassAndExit = 1,
-            bypassAndSaveExit = 2,
-            bypassAndMinimize = 3,
-            bypassAndMinimizeToSysTray = 4;
+    
+    public static boolean minimizeToSystemTray = false;
 
     /**
      * This method sets all settings from a String variable.
      * @param fromString The String variable.
      */
     public static void setFromString(String fromString) {
+        System.out.println(fromString);
         if (!fromString.contains("Settings")) {
             return;
         }
@@ -85,12 +79,10 @@ public class Settings {
                 setUserSizeFromString(s.replaceAll("userSize=", "").trim());
             } else if (s.contains("userIdleSeconds=")) {
                 setUserIdleSeconds(new Integer(s.replaceAll("userIdleSeconds=", "")));
-            } else if (s.contains("bypassExitWindow=")) {
-                bypassExitWindow = Boolean.valueOf(s.replace("bypassExitWindow=", ""));
-            } else if (s.contains("bypassMode=")) {
-                bypassMode = Integer.valueOf(s.replace("bypassMode=", ""));
             } else if (s.contains("alwaysDefaultDir=")){
                 alwaysDefaultDir = Boolean.valueOf(s.replace("alwaysDefaultDir=", ""));
+            } else if(s.contains("minimizeToSystemTray=")){
+                minimizeToSystemTray = Boolean.valueOf(s.replace("minimizeToSystemTray=", ""));
             }
         }
     }
@@ -266,11 +258,9 @@ public class Settings {
                 + SEPARATOR
                 + "userIdleSeconds=" + getUserIdleSeconds()
                 + SEPARATOR
-                + "bypassExitWindow=" + bypassExitWindow
+                + "alwaysDefaultDir=" + alwaysDefaultDir 
                 + SEPARATOR
-                + "bypassMode=" + bypassMode
-                + SEPARATOR
-                + "alwaysDefaultDir=" + alwaysDefaultDir + "}";
+                + "minimizeToSystemTray=" + minimizeToSystemTray + "}";
     }
 
     /**

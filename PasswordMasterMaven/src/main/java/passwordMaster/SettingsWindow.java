@@ -16,6 +16,7 @@ package passwordMaster;
 import Other.Login;
 import Other.Settings;
 import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
@@ -53,7 +54,7 @@ public class SettingsWindow extends javax.swing.JFrame {
     private String theme;
     private Dimension size;
     private int inactiveSeconds;
-    private boolean hideWebsites, hideUsernames, hideOthers;
+    private boolean hideWebsites, hideUsernames, hideOthers, minimizeToSystemTray;
 
     /**
      * Creates new form SettingsWindow
@@ -67,6 +68,7 @@ public class SettingsWindow extends javax.swing.JFrame {
         initWindowSettings();
         initIdleSeconds();
         loadSettings();
+        setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getClassLoader().getResource("ic_launcher.png")));
     }
 
     /**
@@ -78,7 +80,7 @@ public class SettingsWindow extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        changeEncKeyButton = new javax.swing.JButton();
+        minimizeButtonGroup = new javax.swing.ButtonGroup();
         jPanel1 = new javax.swing.JPanel();
         themeComboBox = new javax.swing.JComboBox<>();
         jLabel1 = new javax.swing.JLabel();
@@ -88,32 +90,27 @@ public class SettingsWindow extends javax.swing.JFrame {
         directoryTF = new javax.swing.JTextField();
         defaultDirectoryButton = new javax.swing.JButton();
         alwaysDefaultDir = new javax.swing.JCheckBox();
-        applyCloseButton = new javax.swing.JButton();
-        defaultWindowSizeButton = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
         idleSecondsTextField = new javax.swing.JTextField();
-        cancelButton = new javax.swing.JButton();
         jPanel4 = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
         hideWebsitesCheckBox = new javax.swing.JCheckBox();
         hideUsernamesCheckBox = new javax.swing.JCheckBox();
         hideOthersCheckBox = new javax.swing.JCheckBox();
-        jPanel5 = new javax.swing.JPanel();
-        bypassExitWindowCheckBox = new javax.swing.JCheckBox();
-        bypassExitWindowComboBox = new javax.swing.JComboBox<>();
-        jLabel5 = new javax.swing.JLabel();
+        jPanel6 = new javax.swing.JPanel();
+        jLabel6 = new javax.swing.JLabel();
+        taskbarMinRadioButton = new javax.swing.JRadioButton();
+        systrayMinRadioButton = new javax.swing.JRadioButton();
+        jPanel7 = new javax.swing.JPanel();
         createShortcutButton = new javax.swing.JButton();
         createDesktopShortcutButton = new javax.swing.JButton();
+        changeEncKeyButton = new javax.swing.JButton();
+        defaultWindowSizeButton = new javax.swing.JButton();
+        cancelButton = new javax.swing.JButton();
+        applyCloseButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
-
-        changeEncKeyButton.setText("Change Encryption Key");
-        changeEncKeyButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                changeEncKeyButtonActionPerformed(evt);
-            }
-        });
 
         jPanel1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
@@ -160,7 +157,7 @@ public class SettingsWindow extends javax.swing.JFrame {
         directoryTF.setText("user.dir");
         directoryTF.setBorder(null);
 
-        defaultDirectoryButton.setText("Set Default Directory");
+        defaultDirectoryButton.setText("Restore Default Directory");
         defaultDirectoryButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 defaultDirectoryButtonActionPerformed(evt);
@@ -180,19 +177,20 @@ public class SettingsWindow extends javax.swing.JFrame {
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createSequentialGroup()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
                         .addContainerGap()
                         .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createSequentialGroup()
+                    .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGap(12, 12, 12)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addComponent(defaultDirectoryButton)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(selectDirectoryButton))
-                            .addComponent(directoryTF)
-                            .addComponent(alwaysDefaultDir, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                        .addComponent(directoryTF, javax.swing.GroupLayout.PREFERRED_SIZE, 273, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 85, Short.MAX_VALUE)
+                        .addComponent(selectDirectoryButton))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(alwaysDefaultDir, javax.swing.GroupLayout.PREFERRED_SIZE, 173, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(defaultDirectoryButton)))
                 .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
@@ -201,29 +199,15 @@ public class SettingsWindow extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(directoryTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(directoryTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(selectDirectoryButton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(selectDirectoryButton)
-                    .addComponent(defaultDirectoryButton))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(alwaysDefaultDir)
+                    .addComponent(defaultDirectoryButton)
+                    .addComponent(alwaysDefaultDir))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
-
-        applyCloseButton.setText("Apply & Close");
-        applyCloseButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                applyCloseButtonActionPerformed(evt);
-            }
-        });
-
-        defaultWindowSizeButton.setText("Default Main Window Size");
-        defaultWindowSizeButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                defaultWindowSizeButtonActionPerformed(evt);
-            }
-        });
 
         jPanel3.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
@@ -250,13 +234,6 @@ public class SettingsWindow extends javax.swing.JFrame {
                 .addComponent(idleSecondsTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 10, Short.MAX_VALUE))
         );
-
-        cancelButton.setText("Cancel");
-        cancelButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cancelButtonActionPerformed(evt);
-            }
-        });
 
         jPanel4.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
@@ -299,48 +276,53 @@ public class SettingsWindow extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        jPanel5.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        jPanel6.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
-        bypassExitWindowCheckBox.setText("Dismiss Exit window with action:");
-        bypassExitWindowCheckBox.addActionListener(new java.awt.event.ActionListener() {
+        jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel6.setText("Default Minimize action:");
+
+        taskbarMinRadioButton.setText("Minimize to taskbar");
+        taskbarMinRadioButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                bypassExitWindowCheckBoxActionPerformed(evt);
+                taskbarMinRadioButtonActionPerformed(evt);
             }
         });
 
-        bypassExitWindowComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Exit", "Save and Exit", "Minimize", "Minimize to System Tray" }));
-        bypassExitWindowComboBox.addActionListener(new java.awt.event.ActionListener() {
+        systrayMinRadioButton.setText("Minimize to System tray");
+        systrayMinRadioButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                bypassExitWindowComboBoxActionPerformed(evt);
+                systrayMinRadioButtonActionPerformed(evt);
             }
         });
 
-        jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel5.setText("Default exit action.");
-
-        javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
-        jPanel5.setLayout(jPanel5Layout);
-        jPanel5Layout.setHorizontalGroup(
-            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel5Layout.createSequentialGroup()
+        javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
+        jPanel6.setLayout(jPanel6Layout);
+        jPanel6Layout.setHorizontalGroup(
+            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel6Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(bypassExitWindowComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(bypassExitWindowCheckBox, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(jPanel6Layout.createSequentialGroup()
+                        .addComponent(taskbarMinRadioButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(systrayMinRadioButton)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
-        jPanel5Layout.setVerticalGroup(
-            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
+        jPanel6Layout.setVerticalGroup(
+            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel6Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel5)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(bypassExitWindowCheckBox)
+                .addComponent(jLabel6)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(bypassExitWindowComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(taskbarMinRadioButton)
+                    .addComponent(systrayMinRadioButton))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
+
+        jPanel7.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
         createShortcutButton.setText("Create Shortcut");
         createShortcutButton.addActionListener(new java.awt.event.ActionListener() {
@@ -356,6 +338,72 @@ public class SettingsWindow extends javax.swing.JFrame {
             }
         });
 
+        changeEncKeyButton.setText("Change Encryption Key");
+        changeEncKeyButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                changeEncKeyButtonActionPerformed(evt);
+            }
+        });
+
+        defaultWindowSizeButton.setText("Default Main Window Size");
+        defaultWindowSizeButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                defaultWindowSizeButtonActionPerformed(evt);
+            }
+        });
+
+        cancelButton.setText("Cancel");
+        cancelButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cancelButtonActionPerformed(evt);
+            }
+        });
+
+        applyCloseButton.setText("Apply & Close");
+        applyCloseButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                applyCloseButtonActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
+        jPanel7.setLayout(jPanel7Layout);
+        jPanel7Layout.setHorizontalGroup(
+            jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel7Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel7Layout.createSequentialGroup()
+                        .addComponent(createShortcutButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(createDesktopShortcutButton)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel7Layout.createSequentialGroup()
+                        .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(changeEncKeyButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(jPanel7Layout.createSequentialGroup()
+                                .addComponent(defaultWindowSizeButton)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(cancelButton)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(applyCloseButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addContainerGap())))
+        );
+        jPanel7Layout.setVerticalGroup(
+            jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel7Layout.createSequentialGroup()
+                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(createShortcutButton)
+                    .addComponent(createDesktopShortcutButton))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(changeEncKeyButton)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(defaultWindowSizeButton)
+                    .addComponent(cancelButton)
+                    .addComponent(applyCloseButton)))
+        );
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -363,23 +411,12 @@ public class SettingsWindow extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPanel6, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(defaultWindowSizeButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cancelButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(applyCloseButton, javax.swing.GroupLayout.DEFAULT_SIZE, 135, Short.MAX_VALUE))
-                    .addComponent(changeEncKeyButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel5, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(createShortcutButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(createDesktopShortcutButton)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                    .addComponent(jPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -394,19 +431,10 @@ public class SettingsWindow extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(createShortcutButton)
-                    .addComponent(createDesktopShortcutButton))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(changeEncKeyButton)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(applyCloseButton)
-                    .addComponent(defaultWindowSizeButton)
-                    .addComponent(cancelButton))
-                .addContainerGap())
+                .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -456,14 +484,6 @@ public class SettingsWindow extends javax.swing.JFrame {
         setVisible(false);
     }//GEN-LAST:event_cancelButtonActionPerformed
 
-    private void bypassExitWindowComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bypassExitWindowComboBoxActionPerformed
-        Settings.bypassMode = bypassExitWindowComboBox.getSelectedIndex()+1;
-    }//GEN-LAST:event_bypassExitWindowComboBoxActionPerformed
-
-    private void bypassExitWindowCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bypassExitWindowCheckBoxActionPerformed
-        Settings.bypassExitWindow = bypassExitWindowCheckBox.isSelected();
-    }//GEN-LAST:event_bypassExitWindowCheckBoxActionPerformed
-
     private void alwaysDefaultDirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_alwaysDefaultDirActionPerformed
         Settings.alwaysDefaultDir = alwaysDefaultDir.isSelected();
         if(Settings.alwaysDefaultDir){
@@ -483,12 +503,18 @@ public class SettingsWindow extends javax.swing.JFrame {
         createShortcut(true);
     }//GEN-LAST:event_createDesktopShortcutButtonActionPerformed
 
+    private void taskbarMinRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_taskbarMinRadioButtonActionPerformed
+        Settings.minimizeToSystemTray = false;
+    }//GEN-LAST:event_taskbarMinRadioButtonActionPerformed
+
+    private void systrayMinRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_systrayMinRadioButtonActionPerformed
+        Settings.minimizeToSystemTray = false;
+    }//GEN-LAST:event_systrayMinRadioButtonActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBox alwaysDefaultDir;
     private javax.swing.JButton applyCloseButton;
-    private javax.swing.JCheckBox bypassExitWindowCheckBox;
-    private javax.swing.JComboBox<String> bypassExitWindowComboBox;
     private javax.swing.JButton cancelButton;
     private javax.swing.JButton changeEncKeyButton;
     private javax.swing.JButton createDesktopShortcutButton;
@@ -504,13 +530,17 @@ public class SettingsWindow extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
-    private javax.swing.JPanel jPanel5;
+    private javax.swing.JPanel jPanel6;
+    private javax.swing.JPanel jPanel7;
+    private javax.swing.ButtonGroup minimizeButtonGroup;
     private javax.swing.JButton selectDirectoryButton;
+    private javax.swing.JRadioButton systrayMinRadioButton;
+    private javax.swing.JRadioButton taskbarMinRadioButton;
     private javax.swing.JComboBox<String> themeComboBox;
     // End of variables declaration//GEN-END:variables
 
@@ -571,6 +601,8 @@ public class SettingsWindow extends javax.swing.JFrame {
                 hideOthers = hideOthersCheckBox.isSelected();
             }
         });
+        minimizeButtonGroup.add(taskbarMinRadioButton);
+        minimizeButtonGroup.add(systrayMinRadioButton);
     }
 
     private void initIdleSeconds() {
@@ -605,6 +637,7 @@ public class SettingsWindow extends javax.swing.JFrame {
         Login.setHideUsername(hideUsernames);
         Login.setHideOther(hideOthers);
         mw.updateTable();
+        Settings.minimizeToSystemTray = systrayMinRadioButton.isSelected();
     }
     
     private void loadSettings() {
@@ -613,6 +646,8 @@ public class SettingsWindow extends javax.swing.JFrame {
         applyWindowState(Settings.getWindowState());
         createShortcutButton.setEnabled(System.getProperty("os.name").contains("Windows"));
         createDesktopShortcutButton.setEnabled(System.getProperty("os.name").contains("Windows"));
+        systrayMinRadioButton.setSelected(Settings.minimizeToSystemTray);
+        taskbarMinRadioButton.setSelected(!Settings.minimizeToSystemTray);
     }
 
     private void applyWindowSize(Dimension userSize) {
@@ -654,10 +689,6 @@ public class SettingsWindow extends javax.swing.JFrame {
         getUserSize();
         getInactiveSeconds();
         getLoginPreferences();
-        bypassExitWindowCheckBox.setSelected(Settings.bypassExitWindow);
-        if(Settings.bypassMode != 0){
-            bypassExitWindowComboBox.setSelectedIndex(Settings.bypassMode-1);
-        }
     }
 
     private void getTheme() {

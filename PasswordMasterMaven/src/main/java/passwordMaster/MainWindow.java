@@ -104,7 +104,7 @@ public class MainWindow extends javax.swing.JFrame {
     private History history;
 
     boolean showHidden = false;
-    boolean fileUnsaved = false;
+    boolean fileNotSaved = false;
 
     /**
      * The ExitWindow variable.
@@ -129,8 +129,10 @@ public class MainWindow extends javax.swing.JFrame {
         addListeners();
         new TryToOpenFiles().start();
     }
-    
+
     public static TrayIcon trayIcon;
+    public static boolean trayIconSetupSuccessful = false;
+
     private void initSystemTray() {
         if (!SystemTray.isSupported()) {
             return;
@@ -140,9 +142,10 @@ public class MainWindow extends javax.swing.JFrame {
         trayIcon.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(isVisible()){
+                if (isVisible()) {
                     setVisible(false);
                 } else {
+                    setExtendedState(NORMAL);
                     setVisible(true);
                 }
             }
@@ -152,11 +155,13 @@ public class MainWindow extends javax.swing.JFrame {
         final SystemTray tray = SystemTray.getSystemTray();
         try {
             tray.add(trayIcon);
+            trayIconSetupSuccessful = true;
         } catch (AWTException e) {
-            System.out.println("TrayIcon could not be added.");
+            showStatus("Could not initialize tray icon.");
+            trayIconSetupSuccessful = false;
         }
     }
-    
+
     private PopupMenu initPopupMenu() {
         PopupMenu popupMenu = new PopupMenu();
         MenuItem exitItem = new MenuItem("Exit");
@@ -166,15 +171,24 @@ public class MainWindow extends javax.swing.JFrame {
                 exitApp();
             }
         });
-        MenuItem restoreItem = new MenuItem("Restore " + Settings.APP_NAME);
+        MenuItem restoreItem = new MenuItem("Show " + Settings.APP_NAME);
         restoreItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                setState(java.awt.Frame.NORMAL);
+                setState(NORMAL);
                 setVisible(true);
             }
         });
+        MenuItem hideItem = new MenuItem("Hide " + Settings.APP_NAME);
+        hideItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                setVisible(false);
+            }
+        });
         popupMenu.add(restoreItem);
+        popupMenu.add(hideItem);
+        popupMenu.addSeparator();
         popupMenu.add(exitItem);
         return popupMenu;
     }
@@ -207,7 +221,7 @@ public class MainWindow extends javax.swing.JFrame {
                     }
                 }
                 if (pf.cancel) {
-                    fileUnsaved = false;
+                    fileNotSaved = false;
                     return;
                 }
                 encryptionKey = pf.getPassword();
@@ -587,6 +601,7 @@ public class MainWindow extends javax.swing.JFrame {
     }//GEN-LAST:event_moveDownButtonActionPerformed
 
     static MainWindow mw;
+
     /**
      * @param args the command line arguments
      */
@@ -607,6 +622,9 @@ public class MainWindow extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(() -> {
             mw = new MainWindow();
             mw.setVisible(true);
+            if (Settings.minimizeToSystemTray && Settings.getWindowState() == 1 && trayIconSetupSuccessful) {
+                mw.setVisible(false);
+            }
         });
     }
 
@@ -674,7 +692,7 @@ public class MainWindow extends javax.swing.JFrame {
     // End of variables declaration//GEN-END:variables
 
     private void initSettings() {
-        if(getClass().getPackage().getImplementationVersion() != null){
+        if (getClass().getPackage().getImplementationVersion() != null) {
             Settings.APP_VERSION = getClass().getPackage().getImplementationVersion();
         }
         setTitle(Settings.APP_NAME + " v" + Settings.APP_VERSION);
@@ -710,6 +728,11 @@ public class MainWindow extends javax.swing.JFrame {
         WindowStateListener wsl = new WindowAdapter() {
             @Override
             public void windowStateChanged(WindowEvent e) {
+                if (getExtendedState() == MainWindow.ICONIFIED) {
+                    if (Settings.minimizeToSystemTray) {
+                        setVisible(false);
+                    }
+                }
                 Settings.setWindowState(getExtendedState());
             }
         };
@@ -752,7 +775,7 @@ public class MainWindow extends javax.swing.JFrame {
             updateTable();
             return;
         }
-        fileUnsaved = true;
+        fileNotSaved = true;
         int i = 0;
         ArrayList<Login> temp = loginList;
         loginList = new ArrayList();
@@ -780,11 +803,13 @@ public class MainWindow extends javax.swing.JFrame {
      * This method exits the program.
      */
     public void exitApp() {
-        if (Settings.getWindowState() != JFrame.MAXIMIZED_BOTH) {
-            Settings.setUserSize(getSize());
+        if (showHidden) {
+            if (Settings.getWindowState() != JFrame.MAXIMIZED_BOTH) {
+                Settings.setUserSize(getSize());
+            }
+            Settings.setWindowState(getExtendedState());
+            FileManagement.saveSettingsToFile();
         }
-        Settings.setWindowState(getExtendedState());
-        FileManagement.saveSettingsToFile();
         System.exit(0);
     }
 
@@ -804,7 +829,7 @@ public class MainWindow extends javax.swing.JFrame {
     };
 
     private void newFile() {
-        if (fileUnsaved) {
+        if (fileNotSaved) {
             int result = JOptionPane.showConfirmDialog(null, "Do you want to save this file before making a new one?", "Warning! This file is unsaved.", JOptionPane.OK_CANCEL_OPTION);
             if (result == JOptionPane.OK_OPTION) {
                 saveFile();
@@ -818,7 +843,7 @@ public class MainWindow extends javax.swing.JFrame {
 
     private void clearFile() {
         model.setRowCount(0);
-        fileUnsaved = false;
+        fileNotSaved = false;
         file = null;
         encryptionKey = null;
         showPasswordsMenuItem.setSelected(false);
@@ -871,11 +896,11 @@ public class MainWindow extends javax.swing.JFrame {
                 updateTable();
                 Settings.setDirectory(file.getParent());
                 showPasswords();
-                fileUnsaved = false;
+                fileNotSaved = false;
             } catch (IOException | NullPointerException ex) {
                 MainWindow.showError(ex, "Could not open file: " + file.getPath());
             } catch (InvalidKeyException | InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException ex) {
-                JOptionPane.showMessageDialog(null,ex.getMessage()+"\nPossible wrong password.","Error!",JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, ex.getMessage() + "\nPossible wrong password.", "Error!", JOptionPane.ERROR_MESSAGE);
             }
         } else {
             MainWindow.showError(null, "Could not open file.");
@@ -939,6 +964,9 @@ public class MainWindow extends javax.swing.JFrame {
         }
     };
 
+
+    public boolean writingFile = false;
+    
     /**
      * This method saves the file, provided that the user has selected the "Show
      * Passwords" menu item.
@@ -948,10 +976,11 @@ public class MainWindow extends javax.swing.JFrame {
             showHidden("save");
             return false;
         }
+        writingFile = true;
         new SaveFile().start();
         return true;
     }
-
+    
     private class SaveFile extends Thread {
 
         @Override
@@ -964,8 +993,7 @@ public class MainWindow extends javax.swing.JFrame {
                 if (encryptionKey == null) {
                     getPassword(false);
                 }
-                writeLogins();
-                showStatus("File :" + file.getPath() + " saved.");
+                saveLogins();
             }
         }
     }
@@ -982,6 +1010,7 @@ public class MainWindow extends javax.swing.JFrame {
             showHidden("save as");
             return;
         }
+        writingFile = true;
         new SaveAsFile().start();
     }
 
@@ -993,15 +1022,14 @@ public class MainWindow extends javax.swing.JFrame {
                 if (encryptionKey == null) {
                     getPassword(false);
                 }
-                writeLogins();
+                saveLogins();
             }
-            showStatus("File: " + file.getPath() + " saved.");
         }
     }
 
-    private void writeLogins() {
+    private void saveLogins() {
         stopTableEditing();
-        fileUnsaved = false;
+        fileNotSaved = false;
         if (file != null) {
             try {
                 String plaintext = "AAAAAAAAAAAAAAAA";
@@ -1017,6 +1045,8 @@ public class MainWindow extends javax.swing.JFrame {
                 MainWindow.showError(ex, "Could not write logins file.");
             }
         }
+        showStatus("Saved file: " + file.getPath());
+        writingFile = false;
     }
 
     private final Action addLoginAction = new AbstractAction("") {
@@ -1026,7 +1056,7 @@ public class MainWindow extends javax.swing.JFrame {
             Login newLogin = Login.fromString(Settings.STANDARD_LOGIN.toString().replace("--!--", ""));
             int rows = model.getRowCount();
             int lastId;
-            if(rows > 0){
+            if (rows > 0) {
                 lastId = new Integer((String) model.getValueAt(rows - 1, 0));
             } else {
                 lastId = 0;
@@ -1072,7 +1102,7 @@ public class MainWindow extends javax.swing.JFrame {
                 }
             } catch (ArrayIndexOutOfBoundsException ex) {
             }
-            fileUnsaved = true;
+            fileNotSaved = true;
             updateHistory();
         }
     };
@@ -1113,6 +1143,7 @@ public class MainWindow extends javax.swing.JFrame {
     };
 
     public class ShowPasswords extends Thread {
+
         @Override
         public void run() {
             if (showPasswordsMenuItem.isSelected()) {
@@ -1150,15 +1181,16 @@ public class MainWindow extends javax.swing.JFrame {
         addLoginButton.setEnabled(enable);
         deleteLoginButton.setEnabled(enable);
     }
-    
-    private void updateIDNumbers(){
+
+    private void updateIDNumbers() {
         int maxID = 0;
-        for(Login l:loginList){
-            if(l.getIntId() > maxID)
+        for (Login l : loginList) {
+            if (l.getIntId() > maxID) {
                 maxID = l.getIntId();
+            }
         }
         int numberOfZeroes = (int) Math.log10(maxID);
-        for(Login l:loginList){
+        for (Login l : loginList) {
             l.setNumberOfZeroes(numberOfZeroes - (int) Math.log10(l.getIntId()));
         }
     }
@@ -1210,7 +1242,7 @@ public class MainWindow extends javax.swing.JFrame {
     }
 
     private void updateHistory() {
-        fileUnsaved = true;
+        fileNotSaved = true;
         history.insert(loginList);
         updateTable();
     }
@@ -1387,14 +1419,15 @@ public class MainWindow extends javax.swing.JFrame {
             }
         }
     };
-    
-    public static void startStaticIdleTimer(){
+
+    public static void startStaticIdleTimer() {
         mw.startIdleTimer();
     }
-    
+
     IdleTimer timer;
+
     private void startIdleTimer() {
-        if(file == null){
+        if (file == null) {
             idleLabel.setVisible(false);
             idleLabel.setEnabled(false);
             return;
@@ -1404,11 +1437,11 @@ public class MainWindow extends javax.swing.JFrame {
                 idleLabel.setVisible(true);
                 idleLabel.setEnabled(true);
                 idleTimer = true;
-                if(timer == null){
+                if (timer == null) {
                     timer = new IdleTimer();
                     timer.start();
                 } else {
-                    if(!timerRunning){
+                    if (!timerRunning) {
                         timer = new IdleTimer();
                         timer.start();
                     }
@@ -1425,8 +1458,9 @@ public class MainWindow extends javax.swing.JFrame {
             idleTimer = false;
         }
     }
-    
+
     private boolean timerRunning = false;
+
     private class IdleTimer extends Thread {
 
         @Override
@@ -1442,7 +1476,7 @@ public class MainWindow extends javax.swing.JFrame {
                 idleLabel.setText("Idle for:" + idleTime + "/" + Settings.getUserIdleSeconds());
                 if (idleTime >= Settings.getUserIdleSeconds()) {
                     idleLabel.setText("Idle for:" + idleTime + "s");
-                    if(idleTimer){
+                    if (idleTimer) {
                         hidePasswords();
                     }
                 }
@@ -1512,7 +1546,7 @@ public class MainWindow extends javax.swing.JFrame {
         aboveLogin.setId(selectedLogin.getIntId() + 1);
         loginList.sort(new LoginComparator());
         updateHistory();
-        fileUnsaved = true;
+        fileNotSaved = true;
         row--;
     }
 
@@ -1546,21 +1580,30 @@ public class MainWindow extends javax.swing.JFrame {
         belowLogin.setId(selectedLogin.getIntId() - 1);
         loginList.sort(new LoginComparator());
         updateHistory();
-        fileUnsaved = true;
+        fileNotSaved = true;
         row++;
     }
 
     public void showHidden(String action) {
         showStatus("Cannot " + action + ". You need to click on 'Hide Information' first in order to deselect it.");
     }
-    
+
     public static void showStatus(String status) {
         trayIcon.displayMessage(Settings.getAppTitle(), status, TrayIcon.MessageType.NONE);
     }
-    
+
     public static void showError(Throwable t, String title) {
         LOG.log(Level.SEVERE, null, t);
 //        JOptionPane.showMessageDialog(null, t.getMessage(), title, JOptionPane.ERROR_MESSAGE);
         trayIcon.displayMessage(Settings.getAppTitle(), title, TrayIcon.MessageType.ERROR);
     }
+
+    @Override
+    public void setVisible(boolean b) {
+        super.setVisible(b);
+        if (b) {
+            toFront();
+        }
+    }
+
 }
