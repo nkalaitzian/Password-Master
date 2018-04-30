@@ -51,6 +51,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.InvalidAlgorithmParameterException;
@@ -1595,14 +1597,18 @@ public class MainWindow extends javax.swing.JFrame {
     public static void showError(Throwable t, String title) {
         LOG.log(Level.SEVERE, null, t);
 //        JOptionPane.showMessageDialog(null, t.getMessage(), title, JOptionPane.ERROR_MESSAGE);
-        trayIcon.displayMessage(Settings.getAppTitle(), title, TrayIcon.MessageType.ERROR);
+        trayIcon.displayMessage(Settings.getAppTitle(), title + "\n"+t.getLocalizedMessage(), TrayIcon.MessageType.ERROR);
     }
 
     @Override
     public void setVisible(boolean b) {
-        super.setVisible(b);
         if (b) {
+            super.setVisible(b);
             toFront();
+        } else {
+            if(trayIconSetupSuccessful){
+                super.setVisible(b);
+            }
         }
     }
 

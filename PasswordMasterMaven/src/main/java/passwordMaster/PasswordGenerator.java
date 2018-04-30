@@ -59,7 +59,7 @@ public class PasswordGenerator extends javax.swing.JFrame {
         numberField = new javax.swing.JTextField();
         jPanel5 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
-        lengthField = new javax.swing.JTextField();
+        passwordLengthSpinner = new javax.swing.JSpinner();
         passwordField = new javax.swing.JTextField();
         copyButton = new javax.swing.JButton();
         generatePasswordButton = new javax.swing.JButton();
@@ -158,14 +158,15 @@ public class PasswordGenerator extends javax.swing.JFrame {
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
                 .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lengthField))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(passwordLengthSpinner)
+                .addContainerGap())
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                .addComponent(lengthField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addComponent(jLabel1))
+                .addComponent(jLabel1)
+                .addComponent(passwordLengthSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         passwordField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
@@ -262,7 +263,7 @@ public class PasswordGenerator extends javax.swing.JFrame {
         StringSelection stringSelection = new StringSelection(myString);
         Clipboard clpbrd = Toolkit.getDefaultToolkit().getSystemClipboard();
         clpbrd.setContents(stringSelection, null);
-        passwordField.setText("Password " + myString + " copied to clipboard.");
+        MainWindow.showStatus("Password copied to clipboard.");
     }//GEN-LAST:event_copyButtonActionPerformed
 
     private void restoreDefaultsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_restoreDefaultsButtonActionPerformed
@@ -282,12 +283,12 @@ public class PasswordGenerator extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
-    private javax.swing.JTextField lengthField;
     private javax.swing.JCheckBox lowercaseCB;
     private javax.swing.JTextField lowercaseField;
     private javax.swing.JCheckBox numberCB;
     private javax.swing.JTextField numberField;
     private javax.swing.JTextField passwordField;
+    private javax.swing.JSpinner passwordLengthSpinner;
     private javax.swing.JButton restoreDefaultsButton;
     private javax.swing.JButton shufflePasswordButton;
     private javax.swing.JCheckBox symbolCB;
@@ -361,7 +362,7 @@ public class PasswordGenerator extends javax.swing.JFrame {
     }
     
     private void initLength(){
-        lengthField.setText(Generator.getLength()+"");
+        passwordLengthSpinner.setValue(Generator.getLength());
     }
 
     private void initDefaults() {
@@ -417,7 +418,7 @@ public class PasswordGenerator extends javax.swing.JFrame {
     }
     
     private void setLength(){
-        Generator.setLength(lengthField.getText());
+        Generator.setLength((Integer)passwordLengthSpinner.getValue());
     }
 
     private void setArrays() {

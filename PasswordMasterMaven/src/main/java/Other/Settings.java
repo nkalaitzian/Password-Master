@@ -60,7 +60,6 @@ public class Settings {
      * @param fromString The String variable.
      */
     public static void setFromString(String fromString) {
-        System.out.println(fromString);
         if (!fromString.contains("Settings")) {
             return;
         }

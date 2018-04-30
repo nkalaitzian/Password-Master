@@ -68,23 +68,32 @@ public class Login {
     public static Login fromString(String s) {
         s = s.replace("--!--", "");
         String[] temp = s.split("---");
-        if (temp.length == 5) {
-            int id = new Integer(temp[0].replace("id:", ""));
-            String website = temp[1].replace("website:", "");
-            String username = temp[2].replace("username:", "");
-            String password = temp[3].replace("password:", "");
-            String other = temp[4].replace("other:", "");
-            Login login = new Login(id, website, username, password, other);
-            return login;
-        } else if (temp.length == 4) {
-            String website = temp[0].replace("website:", "");
-            String username = temp[1].replace("username:", "");
-            String password = temp[2].replace("password:", "");
-            String other = temp[3].replace("other:", "");
-            Login login = new Login(0, website, username, password, other);
-            return login;
+        String idStr = null, website = null, username = null, password = null, other = null;
+        for(String t: temp) {
+            if(t.contains("id:")){
+                idStr = t.replaceAll("id:", "");
+            } else if(t.contains("website:")){
+                website = t.replaceAll("website:", "");
+            } else if(t.contains("username:")){
+                username = t.replaceAll("username:", "");
+            } else if(t.contains("password:")){
+                password = t.replaceAll("password:", "");
+            } else if(t.contains("other:")){
+                other = t.replaceAll("other:", "");
+            }
         }
-        return null;
+        if(website == null || username == null || password == null || other == null){
+            return null;
+        }
+        int id = 0;
+        try {
+            id = Integer.valueOf(idStr);
+        } catch (Exception ex){
+            id = 0;
+        }
+        Login login = new Login(id, website, username, password, other);
+        
+        return login;
     }
 
     /**
@@ -100,7 +109,7 @@ public class Login {
      * @param website
      */
     public void setWebsite(String website) {
-        this.website = website;
+        this.website = website.replaceAll("--!--", "").replaceAll("---", "");
     }
 
     /**
@@ -116,7 +125,7 @@ public class Login {
      * @param username
      */
     public void setUsername(String username) {
-        this.username = username;
+        this.username = username.replaceAll("--!--", "").replaceAll("---", "");
     }
 
     /**
@@ -132,7 +141,7 @@ public class Login {
      * @param password
      */
     public void setPassword(String password) {
-        this.password = password;
+        this.password = password.replaceAll("--!--", "").replaceAll("---", "");
     }
 
     /**
@@ -148,7 +157,7 @@ public class Login {
      * @param other
      */
     public void setOther(String other) {
-        this.other = other;
+        this.other = other.replaceAll("--!--", "").replaceAll("---", "");
     }
 
     /**
