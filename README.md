@@ -2,7 +2,10 @@
 
 A login manager, created with Java.
 
-## [Download](https://github.com/nikoskalai/Password-Master/releases)
+## Download
+[Desktop Version](https://github.com/nikoskalai/Password-Master/releases)
+Android Version TODO...
+
 
 ## Features
 1) AES encryption on login file.
