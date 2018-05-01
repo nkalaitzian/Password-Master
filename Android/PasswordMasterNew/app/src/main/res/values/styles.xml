@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:textColorPrimary">@color/blackFontColor</item>
+        <item name="android:textColorSecondary">@color/grayFontColor</item>
+    </style>
+
+    <style name="AppTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="DarkTheme" parent="AppTheme">
+        <item name="colorPrimary">@color/colorPrimary2</item>
+        <item name="colorPrimaryDark">@color/colorPrimary2</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:textColorPrimary">@color/dark_theme_text_color</item>
+        <item name="android:colorBackground">@color/dark_theme_bg_color</item>
+        <item name="android:colorForeground">@color/dark_theme_text_color</item>
+        <item name="android:textColorSecondary">@color/dark_theme_text_color</item>
+        <item name="android:textColorPrimaryInverse">@color/dark_theme_text_color</item>
+        <item name="android:textColorSecondaryInverse">@color/dark_theme_text_color</item>
+        <item name="android:colorButtonNormal">@color/dark_theme_button_color</item>
+        <item name="android:textColorHint">@color/dark_theme_button_color</item>
+    </style>
+
+    <style name="DarkTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="Theme.DarkTheme.Light.NoActionBar" parent="Theme.AppCompat.Light.NoActionBar" />
+
+</resources>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <item
+        android:id="@+id/settingsMenuItem"
+        android:icon="@drawable/ic_menu_settings_dark"
+        android:title="@string/action_settings"/>
+    <item
+        android:id="@+id/changePasswordMenuItem"
+        android:icon="@drawable/ic_menu_edit"
+        android:title="@string/button_text_change_password" />
+    <item
+        android:id="@+id/generatePasswordMenuItem"
+        android:title="@string/button_text_generate_password"
+        android:icon="@drawable/add_icon_white" />
+    <item
+        android:id="@+id/shareLoginsMenuItem"
+        android:title="@string/menu_item_share_logins"
+        android:icon="@drawable/ic_menu_share"/>
+    <item
+        android:id="@+id/importLoginsFromFile"
+        android:icon="@drawable/ic_menu_import"
+        android:title="@string/menu_item_import_logins" />
+    <item
+        android:id="@+id/importAndDeleteLoginsFromFile"
+        android:icon="@drawable/ic_menu_import"
+        android:title="@string/menu_item_import_and_delete_logins"/>
+</menu>
