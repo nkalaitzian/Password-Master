@@ -7,7 +7,7 @@ A login manager, created with Java.
 ## Features
 1) AES encryption on login file.
 
-2) Hideable login information after the user set inactivity timer expires(only on Windows OS currently).
+2) Hideable login information after the user set inactivity timer expires (timer available only on Windows OS currently).
 
 ## TODOs
 1) Import logins from browsers.
@@ -17,10 +17,6 @@ A login manager, created with Java.
 ## Prerequisites
 You need to have the newest version of Java installed.
 https://www.java.com/
-
-You will also need a file archiver like 7zip, winzip, winrar, etc.
-7zip is an open-source file archiver and a good one too.
-http://www.7-zip.org/download.html
 
 ## How to install
 
