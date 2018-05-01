@@ -1,1 +1,4 @@
 theme: jekyll-theme-minimal
+title: Password Master
+logo: /PasswordMasterMaven/ic_launcher.png
+description: Password Master is a login manager made using the Java Programming Language for Android & Desktop.
