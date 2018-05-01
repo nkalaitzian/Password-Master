@@ -2,18 +2,17 @@
 
 A login manager, created with Java.
 
-# Download
-https://github.com/nikoskalai/Password-Master/releases
+## [Download](https://github.com/nikoskalai/Password-Master/releases)
 
-# Features
+## Features
 1) AES encryption on login file.
 2) Hideable login information after the user set inactivity timer expires(only on Windows OS currently).
 
-# TODOs
+## TODOs
 1) Import logins from browsers.
-2) Any ideas?
+2) ?
 
-# Prerequisites
+## Prerequisites
 You need to have the newest version of Java installed.
 https://www.java.com/
 
@@ -21,11 +20,11 @@ You will also need a file archiver like 7zip, winzip, winrar, etc.
 7zip is an open-source file archiver and a good one too.
 http://www.7-zip.org/download.html
 
-# How to install
+## How to install
 
 Unzip the contents of the compressed archive you downloaded.
  
-# How to use
+## How to use
 1) Open the PasswordMaster.jar file. Either:
    1) Double-click it.
    2) Press Windows Key + R.
