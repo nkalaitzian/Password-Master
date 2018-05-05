@@ -143,12 +143,7 @@ public class MainWindow extends javax.swing.JFrame {
         trayIcon.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (isVisible()) {
-                    setVisible(false);
-                } else {
-                    setExtendedState(Settings.getWindowState());
-                    setVisible(true);
-                }
+                toggleVisibility();
             }
         });
         PopupMenu popup = initPopupMenu();
@@ -178,14 +173,7 @@ public class MainWindow extends javax.swing.JFrame {
         toggleMWVisibilityMenuItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (mw.isVisible()) {
-                    setVisible(false);
-                    toggleMWVisibilityMenuItem.setLabel("Show " + Settings.APP_NAME);
-                } else {
-                    setState(Settings.getWindowState());
-                    toggleMWVisibilityMenuItem.setLabel("Hide " + Settings.APP_NAME);
-                    setVisible(true);
-                }
+                toggleVisibility();
             }
         });
         MenuItem openPasswordGeneratorMenuItem = new MenuItem("Open Password Generator");
@@ -634,7 +622,7 @@ public class MainWindow extends javax.swing.JFrame {
             mw = new MainWindow();
             mw.setVisible(true);
             if (Settings.minimizeToSystemTray && Settings.startPMMinimized && trayIconSetupSuccessful) {
-                mw.setVisible(false);
+                toggleVisibility();
             }
         });
         if (trayIconSetupSuccessful) {
@@ -751,9 +739,7 @@ public class MainWindow extends javax.swing.JFrame {
             @Override
             public void windowStateChanged(WindowEvent e) {
                 if (getExtendedState() == MainWindow.ICONIFIED) {
-                    if (Settings.minimizeToSystemTray && trayIconSetupSuccessful) {
-                        setVisible(false);
-                    }
+                    toggleVisibility();
                 }
                 Settings.setWindowState(getExtendedState());
             }
@@ -1620,15 +1606,17 @@ public class MainWindow extends javax.swing.JFrame {
         trayIcon.displayMessage(Settings.getAppTitle(), title + "\n" + t.getLocalizedMessage(), TrayIcon.MessageType.ERROR);
     }
 
-    @Override
-    public void setVisible(boolean b) {
-        if (b) {
-            super.setVisible(b);
-            toFront();
-        } else {
+    public static void toggleVisibility() {
+        if (mw.isVisible() && trayIconSetupSuccessful) {
+            mw.setVisible(false);
+            toggleMWVisibilityMenuItem.setLabel("Show " + Settings.APP_NAME);
+        } else if (!mw.isVisible()) {
             if (trayIconSetupSuccessful) {
-                super.setVisible(b);
+                toggleMWVisibilityMenuItem.setLabel("Hide " + Settings.APP_NAME);
             }
+            mw.setExtendedState(Settings.getWindowState());
+            mw.setVisible(true);
+            mw.toFront();
         }
     }
 
