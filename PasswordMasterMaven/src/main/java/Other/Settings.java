@@ -54,6 +54,7 @@ public class Settings {
     private static int userIdleSeconds = -1;
     
     public static boolean minimizeToSystemTray = false;
+    public static boolean startPMMinimized = false;
 
     /**
      * This method sets all settings from a String variable.
@@ -82,6 +83,8 @@ public class Settings {
                 alwaysDefaultDir = Boolean.valueOf(s.replace("alwaysDefaultDir=", ""));
             } else if(s.contains("minimizeToSystemTray=")){
                 minimizeToSystemTray = Boolean.valueOf(s.replace("minimizeToSystemTray=", ""));
+            } else if(s.contains("startPMMinimized=")){
+                startPMMinimized = Boolean.valueOf(s.replace("startPMMinimized=", ""));
             }
         }
     }
@@ -167,7 +170,9 @@ public class Settings {
      * @param windowState The window state.
      */
     public static void setWindowState(int windowState) {
-        Settings.windowState = windowState;
+        if(windowState == 0 || windowState == 6){
+            Settings.windowState = windowState;
+        }
     }
 
     /**
@@ -259,7 +264,9 @@ public class Settings {
                 + SEPARATOR
                 + "alwaysDefaultDir=" + alwaysDefaultDir 
                 + SEPARATOR
-                + "minimizeToSystemTray=" + minimizeToSystemTray + "}";
+                + "minimizeToSystemTray=" + minimizeToSystemTray
+                + SEPARATOR 
+                + "startPMMinimized=" + startPMMinimized + "}";
     }
 
     /**

@@ -51,8 +51,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.InvalidAlgorithmParameterException;
@@ -137,6 +135,7 @@ public class MainWindow extends javax.swing.JFrame {
 
     private void initSystemTray() {
         if (!SystemTray.isSupported()) {
+            trayIconSetupSuccessful = false;
             return;
         }
         trayIcon = new TrayIcon(Toolkit.getDefaultToolkit().getImage(getClass().getClassLoader().getResource("ic_launcher.png")));
@@ -147,7 +146,7 @@ public class MainWindow extends javax.swing.JFrame {
                 if (isVisible()) {
                     setVisible(false);
                 } else {
-                    setExtendedState(NORMAL);
+                    setExtendedState(Settings.getWindowState());
                     setVisible(true);
                 }
             }
@@ -164,6 +163,8 @@ public class MainWindow extends javax.swing.JFrame {
         }
     }
 
+    private static MenuItem toggleMWVisibilityMenuItem;
+
     private PopupMenu initPopupMenu() {
         PopupMenu popupMenu = new PopupMenu();
         MenuItem exitItem = new MenuItem("Exit");
@@ -173,23 +174,31 @@ public class MainWindow extends javax.swing.JFrame {
                 exitApp();
             }
         });
-        MenuItem restoreItem = new MenuItem("Show " + Settings.APP_NAME);
-        restoreItem.addActionListener(new ActionListener() {
+        toggleMWVisibilityMenuItem = new MenuItem("Hide " + Settings.APP_NAME);
+        toggleMWVisibilityMenuItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                setState(NORMAL);
-                setVisible(true);
+                if (mw.isVisible()) {
+                    setVisible(false);
+                    toggleMWVisibilityMenuItem.setLabel("Show " + Settings.APP_NAME);
+                } else {
+                    setState(Settings.getWindowState());
+                    toggleMWVisibilityMenuItem.setLabel("Hide " + Settings.APP_NAME);
+                    setVisible(true);
+                }
             }
         });
-        MenuItem hideItem = new MenuItem("Hide " + Settings.APP_NAME);
-        hideItem.addActionListener(new ActionListener() {
+        MenuItem openPasswordGeneratorMenuItem = new MenuItem("Open Password Generator");
+        openPasswordGeneratorMenuItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                setVisible(false);
+                stopTableEditing();
+                pg.showWindow(true);
             }
         });
-        popupMenu.add(restoreItem);
-        popupMenu.add(hideItem);
+        popupMenu.add(toggleMWVisibilityMenuItem);
+        popupMenu.addSeparator();
+        popupMenu.add(openPasswordGeneratorMenuItem);
         popupMenu.addSeparator();
         popupMenu.add(exitItem);
         return popupMenu;
@@ -624,10 +633,21 @@ public class MainWindow extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(() -> {
             mw = new MainWindow();
             mw.setVisible(true);
-            if (Settings.minimizeToSystemTray && Settings.getWindowState() == 1 && trayIconSetupSuccessful) {
+            if (Settings.minimizeToSystemTray && Settings.startPMMinimized && trayIconSetupSuccessful) {
                 mw.setVisible(false);
             }
         });
+        if (trayIconSetupSuccessful) {
+            if (mw.isVisible()) {
+                toggleMWVisibilityMenuItem.setLabel("Hide " + Settings.APP_NAME);
+            } else {
+                toggleMWVisibilityMenuItem.setLabel("Show " + Settings.APP_NAME);
+            }
+        } else {
+            if (toggleMWVisibilityMenuItem != null) {
+                toggleMWVisibilityMenuItem.setEnabled(false);
+            }
+        }
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -731,7 +751,7 @@ public class MainWindow extends javax.swing.JFrame {
             @Override
             public void windowStateChanged(WindowEvent e) {
                 if (getExtendedState() == MainWindow.ICONIFIED) {
-                    if (Settings.minimizeToSystemTray) {
+                    if (Settings.minimizeToSystemTray && trayIconSetupSuccessful) {
                         setVisible(false);
                     }
                 }
@@ -966,9 +986,8 @@ public class MainWindow extends javax.swing.JFrame {
         }
     };
 
-
     public boolean writingFile = false;
-    
+
     /**
      * This method saves the file, provided that the user has selected the "Show
      * Passwords" menu item.
@@ -982,7 +1001,7 @@ public class MainWindow extends javax.swing.JFrame {
         new SaveFile().start();
         return true;
     }
-    
+
     private class SaveFile extends Thread {
 
         @Override
@@ -1592,12 +1611,13 @@ public class MainWindow extends javax.swing.JFrame {
 
     public static void showStatus(String status) {
         trayIcon.displayMessage(Settings.getAppTitle(), status, TrayIcon.MessageType.NONE);
+        System.out.println(status);
     }
 
     public static void showError(Throwable t, String title) {
         LOG.log(Level.SEVERE, null, t);
 //        JOptionPane.showMessageDialog(null, t.getMessage(), title, JOptionPane.ERROR_MESSAGE);
-        trayIcon.displayMessage(Settings.getAppTitle(), title + "\n"+t.getLocalizedMessage(), TrayIcon.MessageType.ERROR);
+        trayIcon.displayMessage(Settings.getAppTitle(), title + "\n" + t.getLocalizedMessage(), TrayIcon.MessageType.ERROR);
     }
 
     @Override
@@ -1606,7 +1626,7 @@ public class MainWindow extends javax.swing.JFrame {
             super.setVisible(b);
             toFront();
         } else {
-            if(trayIconSetupSuccessful){
+            if (trayIconSetupSuccessful) {
                 super.setVisible(b);
             }
         }

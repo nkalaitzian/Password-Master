@@ -102,6 +102,7 @@ public class SettingsWindow extends javax.swing.JFrame {
         jLabel6 = new javax.swing.JLabel();
         taskbarMinRadioButton = new javax.swing.JRadioButton();
         systrayMinRadioButton = new javax.swing.JRadioButton();
+        startPasswordMasterMinimizedCheckBox = new javax.swing.JCheckBox();
         jPanel7 = new javax.swing.JPanel();
         createShortcutButton = new javax.swing.JButton();
         createDesktopShortcutButton = new javax.swing.JButton();
@@ -295,6 +296,13 @@ public class SettingsWindow extends javax.swing.JFrame {
             }
         });
 
+        startPasswordMasterMinimizedCheckBox.setText("Start Password Master minimized");
+        startPasswordMasterMinimizedCheckBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                startPasswordMasterMinimizedCheckBoxActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
         jPanel6Layout.setHorizontalGroup(
@@ -304,9 +312,12 @@ public class SettingsWindow extends javax.swing.JFrame {
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(jPanel6Layout.createSequentialGroup()
-                        .addComponent(taskbarMinRadioButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(systrayMinRadioButton)
+                        .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel6Layout.createSequentialGroup()
+                                .addComponent(taskbarMinRadioButton)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(systrayMinRadioButton))
+                            .addComponent(startPasswordMasterMinimizedCheckBox))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
@@ -319,6 +330,8 @@ public class SettingsWindow extends javax.swing.JFrame {
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(taskbarMinRadioButton)
                     .addComponent(systrayMinRadioButton))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(startPasswordMasterMinimizedCheckBox)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -392,6 +405,7 @@ public class SettingsWindow extends javax.swing.JFrame {
         jPanel7Layout.setVerticalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel7Layout.createSequentialGroup()
+                .addContainerGap()
                 .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(createShortcutButton)
                     .addComponent(createDesktopShortcutButton))
@@ -401,7 +415,8 @@ public class SettingsWindow extends javax.swing.JFrame {
                 .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(defaultWindowSizeButton)
                     .addComponent(cancelButton)
-                    .addComponent(applyCloseButton)))
+                    .addComponent(applyCloseButton))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -504,12 +519,16 @@ public class SettingsWindow extends javax.swing.JFrame {
     }//GEN-LAST:event_createDesktopShortcutButtonActionPerformed
 
     private void taskbarMinRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_taskbarMinRadioButtonActionPerformed
-        Settings.minimizeToSystemTray = false;
+        
     }//GEN-LAST:event_taskbarMinRadioButtonActionPerformed
 
     private void systrayMinRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_systrayMinRadioButtonActionPerformed
-        Settings.minimizeToSystemTray = false;
+        
     }//GEN-LAST:event_systrayMinRadioButtonActionPerformed
+
+    private void startPasswordMasterMinimizedCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startPasswordMasterMinimizedCheckBoxActionPerformed
+        
+    }//GEN-LAST:event_startPasswordMasterMinimizedCheckBoxActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -539,6 +558,7 @@ public class SettingsWindow extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel7;
     private javax.swing.ButtonGroup minimizeButtonGroup;
     private javax.swing.JButton selectDirectoryButton;
+    private javax.swing.JCheckBox startPasswordMasterMinimizedCheckBox;
     private javax.swing.JRadioButton systrayMinRadioButton;
     private javax.swing.JRadioButton taskbarMinRadioButton;
     private javax.swing.JComboBox<String> themeComboBox;
@@ -638,16 +658,13 @@ public class SettingsWindow extends javax.swing.JFrame {
         Login.setHideOther(hideOthers);
         mw.updateTable();
         Settings.minimizeToSystemTray = systrayMinRadioButton.isSelected();
+        Settings.startPMMinimized = startPasswordMasterMinimizedCheckBox.isSelected();
     }
     
     private void loadSettings() {
         setTheme(Settings.getTheme());
         applyWindowSize(Settings.getUserSize());
         applyWindowState(Settings.getWindowState());
-        createShortcutButton.setEnabled(System.getProperty("os.name").contains("Windows"));
-        createDesktopShortcutButton.setEnabled(System.getProperty("os.name").contains("Windows"));
-        systrayMinRadioButton.setSelected(Settings.minimizeToSystemTray);
-        taskbarMinRadioButton.setSelected(!Settings.minimizeToSystemTray);
     }
 
     private void applyWindowSize(Dimension userSize) {
@@ -689,6 +706,16 @@ public class SettingsWindow extends javax.swing.JFrame {
         getUserSize();
         getInactiveSeconds();
         getLoginPreferences();
+        createShortcutButton.setEnabled(System.getProperty("os.name").contains("Windows"));
+        createDesktopShortcutButton.setEnabled(System.getProperty("os.name").contains("Windows"));
+        startPasswordMasterMinimizedCheckBox.setSelected(Settings.startPMMinimized);
+        if(MainWindow.trayIconSetupSuccessful){
+            systrayMinRadioButton.setSelected(Settings.minimizeToSystemTray);
+            taskbarMinRadioButton.setSelected(!Settings.minimizeToSystemTray);
+        } else {
+            systrayMinRadioButton.setEnabled(false);
+            taskbarMinRadioButton.setEnabled(false);
+        }
     }
 
     private void getTheme() {
