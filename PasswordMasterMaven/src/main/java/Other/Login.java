@@ -33,6 +33,7 @@ public class Login {
     private String other = "";
     private String otherHidden = "";
     private static boolean hideOther = false;
+    private boolean favorite = false;
 
     /**
      *
@@ -60,6 +61,37 @@ public class Login {
             otherHidden += "●";
         }
         this.other = other;
+        favorite = false;
+    }
+    
+    /**
+     *
+     * @param id
+     * @param website
+     * @param username
+     * @param password
+     * @param other
+     * @param favorite
+     */
+    public Login(int id, String website, String username, String password, String other, boolean favorite) {
+        this.id = id;
+        this.website = website;
+        this.username = username;
+        this.password = password;
+        for (int i = 0; i < 10; i++) {
+            websiteHidden += "●";
+        }
+        for (int i = 0; i < 10; i++) {
+            usernameHidden += "●";
+        }
+        for (int i = 0; i < 10; i++) {
+            passwordHidden += "●";
+        }
+        for (int i = 0; i < 10; i++) {
+            otherHidden += "●";
+        }
+        this.other = other;
+        this.favorite = favorite;
     }
 
     public Login() {
@@ -69,6 +101,7 @@ public class Login {
         s = s.replace("--!--", "");
         String[] temp = s.split("---");
         String idStr = null, website = null, username = null, password = null, other = null;
+        boolean favorite = false;
         for(String t: temp) {
             if(t.contains("id:")){
                 idStr = t.replaceAll("id:", "");
@@ -80,6 +113,12 @@ public class Login {
                 password = t.replaceAll("password:", "");
             } else if(t.contains("other:")){
                 other = t.replaceAll("other:", "");
+            } else if(t.contains("favorite:")){
+                try {
+                    favorite = Boolean.valueOf(t.replaceAll("favorite:", ""));
+                } catch (Exception e) {
+                    favorite = false;
+                }
             }
         }
         if(website == null || username == null || password == null || other == null){
@@ -91,7 +130,12 @@ public class Login {
         } catch (Exception ex){
             id = 0;
         }
-        Login login = new Login(id, website, username, password, other);
+        Login login;
+        if(favorite){
+            login = new Login(id, website, username, password, other, favorite);
+        } else {
+            login = new Login(id, website, username, password, other);
+        }
         
         return login;
     }
@@ -183,6 +227,14 @@ public class Login {
     public void setId(int id) {
         this.id = id;
     }
+
+    public boolean isFavorite() {
+        return favorite;
+    }
+
+    public void setFavorite(boolean favorite) {
+        this.favorite = favorite;
+    }
     
     public void setNumberOfZeroes(int numberOfZeroes){
         this.numberOfZeroes = numberOfZeroes;
@@ -229,7 +281,7 @@ public class Login {
 
     @Override
     public String toString() {
-        return "id:" + id + "---website:" + website + "---username:" + username + "---password:" + password + "---other:" + other + "--!--";
+        return "id:" + id + "---website:" + website + "---username:" + username + "---password:" + password + "---other:" + other + "---favorite:" + favorite + "--!--";
     }
 
     /**
@@ -237,7 +289,7 @@ public class Login {
      * @return
      */
     public Object[] toObject() {
-        Object[] obj = new Object[]{strID + "", website, username, password, other};
+        Object[] obj = new Object[]{strID + "", website, username, password, other, favorite};
         return obj;
     }
 
@@ -258,7 +310,7 @@ public class Login {
         if (isHideOther()) {
             other = otherHidden;
         }
-        Object[] obj = new Object[]{strID + "", website, username, passwordHidden, other};
+        Object[] obj = new Object[]{strID + "", website, username, passwordHidden, other, favorite};
         return obj;
     }
 

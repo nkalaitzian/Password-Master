@@ -14,6 +14,7 @@
 package passwordMaster;
 
 import Other.Generator;
+import Other.Strings;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
@@ -298,7 +299,7 @@ public class PasswordGenerator extends javax.swing.JFrame {
     // End of variables declaration//GEN-END:variables
 
     private void initSettings() {
-        setTitle("Password Generator");
+        setTitle(Strings.getPasswordGeneratorTitle());
         setLocationRelativeTo(null);
         setResizable(false);
         setAlwaysOnTop(true);

@@ -21,7 +21,9 @@ import Other.Settings;
 import Other.RXTable;
 import Other.MyTableCellEditor;
 import Other.Login;
+import Other.Strings;
 import java.awt.AWTException;
+import java.awt.CheckboxMenuItem;
 import java.awt.Desktop;
 import java.awt.MenuItem;
 import java.awt.Point;
@@ -38,6 +40,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
@@ -68,6 +72,8 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
@@ -103,7 +109,7 @@ public class MainWindow extends javax.swing.JFrame {
 
     private History history;
 
-    boolean showHidden = false;
+    boolean showingLoginData = false;
     boolean fileNotSaved = false;
 
     /**
@@ -138,7 +144,7 @@ public class MainWindow extends javax.swing.JFrame {
             trayIconSetupSuccessful = false;
             return;
         }
-        trayIcon = new TrayIcon(Toolkit.getDefaultToolkit().getImage(getClass().getClassLoader().getResource("ic_launcher.png")));
+        trayIcon = new TrayIcon(Toolkit.getDefaultToolkit().getImage(getClass().getClassLoader().getResource(Strings.ICON_NAME)));
         trayIcon.setImageAutoSize(true);
         trayIcon.addActionListener(new ActionListener() {
             @Override
@@ -146,37 +152,40 @@ public class MainWindow extends javax.swing.JFrame {
                 toggleVisibility();
             }
         });
-        PopupMenu popup = initPopupMenu();
-        trayIcon.setPopupMenu(popup);
+        systemTrayMenu = new PopupMenu();
+        updateSystemTrayMenu();
+        trayIcon.setPopupMenu(systemTrayMenu);
         final SystemTray tray = SystemTray.getSystemTray();
         try {
             tray.add(trayIcon);
             trayIconSetupSuccessful = true;
         } catch (AWTException e) {
-            showStatus("Could not initialize tray icon.");
+            showStatus(Strings.ErrorStrings.ERROR_COULD_NOT_INITIALIZE_TRAY_ICON);
             trayIconSetupSuccessful = false;
         }
     }
 
     private static MenuItem toggleMWVisibilityMenuItem;
+    private static CheckboxMenuItem hideInformationMenuItem;
+    private PopupMenu systemTrayMenu;
 
-    private PopupMenu initPopupMenu() {
-        PopupMenu popupMenu = new PopupMenu();
-        MenuItem exitItem = new MenuItem("Exit");
+    public void updateSystemTrayMenu() {
+        systemTrayMenu.removeAll();
+        MenuItem exitItem = new MenuItem(Strings.MainWindowStrings.EXIT_STRING);
         exitItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 exitApp();
             }
         });
-        toggleMWVisibilityMenuItem = new MenuItem("Hide " + Settings.APP_NAME);
+        toggleMWVisibilityMenuItem = new MenuItem(Strings.MainWindowStrings.HIDE_MAIN_WINDOW);
         toggleMWVisibilityMenuItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 toggleVisibility();
             }
         });
-        MenuItem openPasswordGeneratorMenuItem = new MenuItem("Open Password Generator");
+        MenuItem openPasswordGeneratorMenuItem = new MenuItem(Strings.MainWindowStrings.OPEN_PASSWORD_GENERATOR);
         openPasswordGeneratorMenuItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -184,24 +193,161 @@ public class MainWindow extends javax.swing.JFrame {
                 pg.showWindow(true);
             }
         });
-        popupMenu.add(toggleMWVisibilityMenuItem);
-        popupMenu.addSeparator();
-        popupMenu.add(openPasswordGeneratorMenuItem);
-        popupMenu.addSeparator();
-        popupMenu.add(exitItem);
-        return popupMenu;
+        MenuItem settingsMenuItem = new MenuItem(Strings.MainWindowStrings.OPEN_SETTINGS);
+        settingsMenuItem.addActionListener(settingsAction);
+        hideInformationMenuItem = new CheckboxMenuItem(Strings.MainWindowStrings.HIDE_INFORMATION);
+        hideInformationMenuItem.setState(!showingLoginData);
+        hideInformationMenuItem.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                showPasswordsMenuItem.setState(hideInformationMenuItem.getState());
+                hideInformationMenuItem.setState(hideInformationMenuItem.getState());
+                stopTableEditing();
+                new ShowPasswords().start();
+            }
+        });
+        if(Settings.displayFavoritesInSystemTrayPopupMenu){
+            addFavorites();
+        }
+        systemTrayMenu.add(toggleMWVisibilityMenuItem);
+        systemTrayMenu.addSeparator();
+        systemTrayMenu.add(hideInformationMenuItem);
+        systemTrayMenu.add(openPasswordGeneratorMenuItem);
+        systemTrayMenu.add(settingsMenuItem);
+        systemTrayMenu.addSeparator();
+        systemTrayMenu.add(exitItem);
+    }
+    
+    private void addFavorites(){
+        if(systemTrayMenu == null){
+            return;
+        }
+        ArrayList<Login> favs = getFavorites();
+        if(favs == null){
+            return;
+        }
+        for(Login l: favs){
+            addFavoriteToPopupMenu(l);
+        }
+        systemTrayMenu.addSeparator();
+    }
+    
+    private void addFavoriteToPopupMenu(Login login) {
+        PopupMenu loginMenu;
+        if(showingLoginData){
+            switch (Settings.favoriteDisplay){
+                case 0:
+                    loginMenu = new PopupMenu(login.getId());
+                    break;
+                case 1:
+                    loginMenu = new PopupMenu(login.getWebsite());
+                    break;
+                case 2:
+                    loginMenu = new PopupMenu(login.getUsername());
+                    break;
+                case 3:
+                    loginMenu = new PopupMenu(login.getOther().split(" ")[0]);
+                    break;
+                default:
+                    loginMenu = new PopupMenu(login.getWebsite());
+                    break;
+            }
+        } else {
+            loginMenu = new PopupMenu(login.getId());
+        }
+        MenuItem copyUsernameMI = new MenuItem(Strings.MainWindowStrings.COPY_USERNAME);
+        copyUsernameMI.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (Login.isHideUsername()) {
+                    if (showingLoginData) {
+                        StringSelection stringSelection = new StringSelection(login.getUsername());
+                        Clipboard clpbrd = Toolkit.getDefaultToolkit().getSystemClipboard();
+                        clpbrd.setContents(stringSelection, null);
+                        showStatus(Strings.StatusStrings.CLIPBOARD_COPY_USERNAME + login.getUsername() + Strings.StatusStrings.CLIPBOARD_COPY);
+                    } else {
+                        displayErrorWhenHidingInformation(Strings.ErrorStrings.HIDING_INFORMATION_COPY_USERNAME);
+                    }
+                } else {
+                    StringSelection stringSelection = new StringSelection(login.getUsername());
+                    Clipboard clpbrd = Toolkit.getDefaultToolkit().getSystemClipboard();
+                    clpbrd.setContents(stringSelection, null);
+                    showStatus(Strings.StatusStrings.CLIPBOARD_COPY_USERNAME + login.getUsername() + Strings.StatusStrings.CLIPBOARD_COPY);
+                }
+            }
+        });
+        MenuItem copyPasswordMI = new MenuItem(Strings.MainWindowStrings.COPY_PASSWORD);
+        copyPasswordMI.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (showingLoginData) {
+                    StringSelection stringSelection = new StringSelection(login.getPassword());
+                    Clipboard clpbrd = Toolkit.getDefaultToolkit().getSystemClipboard();
+                    clpbrd.setContents(stringSelection, null);
+                    showStatus(Strings.StatusStrings.CLIPBOARD_COPY_PASSWORD_FOR_WEBSITE + login.getWebsite() + Strings.StatusStrings.CLIPBOARD_COPY);
+                } else {
+                    displayErrorWhenHidingInformation(Strings.ErrorStrings.HIDING_INFORMATION_COPY_PASSWORD);
+                }
+            }
+        });
+        MenuItem copyWebsiteMI = new MenuItem(Strings.MainWindowStrings.COPY_WEBSITE);
+        copyWebsiteMI.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (Login.isHideWebsite()) {
+                    if (showingLoginData) {
+                        StringSelection stringSelection = new StringSelection(login.getWebsite());
+                        Clipboard clpbrd = Toolkit.getDefaultToolkit().getSystemClipboard();
+                        clpbrd.setContents(stringSelection, null);
+                        showStatus(Strings.StatusStrings.CLIPBOARD_COPY_WEBSITE + login.getWebsite() + Strings.StatusStrings.CLIPBOARD_COPY);
+                    } else {
+                        displayErrorWhenHidingInformation(Strings.ErrorStrings.HIDING_INFORMATION_COPY_WEBSITE);
+                    }
+                } else {
+                    StringSelection stringSelection = new StringSelection(login.getWebsite());
+                    Clipboard clpbrd = Toolkit.getDefaultToolkit().getSystemClipboard();
+                    clpbrd.setContents(stringSelection, null);
+                    showStatus(Strings.StatusStrings.CLIPBOARD_COPY_WEBSITE + login.getWebsite() + Strings.StatusStrings.CLIPBOARD_COPY);
+                }
+            }
+        });
+        MenuItem openWebsiteMI = new MenuItem(Strings.MainWindowStrings.OPEN_WEBSITE);
+        openWebsiteMI.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (showingLoginData) {
+                    String website = getWebsite(login.getWebsite());
+                    if (Desktop.isDesktopSupported()) {
+                        try {
+                            Desktop.getDesktop().browse(new URI(website));
+                        } catch (URISyntaxException | IOException ex) {
+                            MainWindow.showError(ex, Strings.ErrorStrings.ERROR_COULD_NOT_OPEN_WEBSITE + website);
+                        }
+                    } else {
+                        showError(null, Strings.ErrorStrings.ERROR_COULD_NOT_OPEN_WEBSITE + website);
+                    }
+                } else {
+                    displayErrorWhenHidingInformation(Strings.ErrorStrings.HIDING_INFORMATION_OPEN_WEBSITE);
+                }
+            }
+        });
+        loginMenu.add(copyUsernameMI);
+        loginMenu.add(copyPasswordMI);
+        loginMenu.add(copyWebsiteMI);
+        loginMenu.addSeparator();
+        loginMenu.add(openWebsiteMI);
+        systemTrayMenu.add(loginMenu);
     }
 
     private class TryToOpenFiles extends Thread {
 
         @Override
         public void run() {
-            File parent;
-            parent = new File(Settings.getDirectory());
+            File parent = new File(Settings.getDirectory());
             ArrayList<String> files = new ArrayList();
             int i = 0;
             for (File f : parent.listFiles()) {
-                if (f.getPath().endsWith(".pmaster")) {
+                if (f.getPath().endsWith(Strings.FILE_EXTENSION)) {
                     i++;
                     files.add(f.getPath());
                 }
@@ -215,7 +361,7 @@ public class MainWindow extends javax.swing.JFrame {
                         try {
                             Thread.sleep(100);
                         } catch (InterruptedException ex) {
-                            MainWindow.showError(ex, "Could not pause running thread.");
+                            MainWindow.showError(ex, Strings.ErrorStrings.EXCEPTION_INTERRUPTED);
                         }
                     }
                 }
@@ -239,7 +385,7 @@ public class MainWindow extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        popupMenu = new javax.swing.JPopupMenu();
+        tablePopupMenu = new javax.swing.JPopupMenu();
         addLoginMenuItem1 = new javax.swing.JMenuItem();
         deleteLoginMenuItem1 = new javax.swing.JMenuItem();
         jSeparator5 = new javax.swing.JPopupMenu.Separator();
@@ -302,54 +448,54 @@ public class MainWindow extends javax.swing.JFrame {
 
         addLoginMenuItem1.setAction(addLoginAction);
         addLoginMenuItem1.setText("Add Login.");
-        popupMenu.add(addLoginMenuItem1);
+        tablePopupMenu.add(addLoginMenuItem1);
 
         deleteLoginMenuItem1.setAction(deleteLoginAction);
         deleteLoginMenuItem1.setText("Delete Login.");
-        popupMenu.add(deleteLoginMenuItem1);
-        popupMenu.add(jSeparator5);
+        tablePopupMenu.add(deleteLoginMenuItem1);
+        tablePopupMenu.add(jSeparator5);
 
         moveUpMenuItem.setAction(moveUpAction);
         moveUpMenuItem.setText("Move Up");
-        popupMenu.add(moveUpMenuItem);
+        tablePopupMenu.add(moveUpMenuItem);
 
         moveDownMenuItem.setAction(moveDownAction);
         moveDownMenuItem.setText("Move Down");
-        popupMenu.add(moveDownMenuItem);
-        popupMenu.add(jSeparator11);
+        tablePopupMenu.add(moveDownMenuItem);
+        tablePopupMenu.add(jSeparator11);
 
         undoMenuItem1.setAction(undoAction);
         undoMenuItem1.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Z, java.awt.event.InputEvent.CTRL_MASK));
         undoMenuItem1.setText("Undo");
-        popupMenu.add(undoMenuItem1);
+        tablePopupMenu.add(undoMenuItem1);
 
         redoMenuItem1.setAction(redoAction);
         redoMenuItem1.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Y, java.awt.event.InputEvent.CTRL_MASK));
         redoMenuItem1.setText("Redo");
-        popupMenu.add(redoMenuItem1);
-        popupMenu.add(jSeparator8);
+        tablePopupMenu.add(redoMenuItem1);
+        tablePopupMenu.add(jSeparator8);
 
         openLinkMenuItem1.setAction(openLinkAction);
         openLinkMenuItem1.setText("Open website in browser.");
-        popupMenu.add(openLinkMenuItem1);
-        popupMenu.add(jSeparator10);
+        tablePopupMenu.add(openLinkMenuItem1);
+        tablePopupMenu.add(jSeparator10);
 
         copyWebsiteMenuItem.setAction(copyWebsiteAction);
         copyWebsiteMenuItem.setText("Copy Website");
-        popupMenu.add(copyWebsiteMenuItem);
+        tablePopupMenu.add(copyWebsiteMenuItem);
 
         copyUsernameMenuItem.setAction(copyUsernameAction);
         copyUsernameMenuItem.setText("Copy Username");
-        popupMenu.add(copyUsernameMenuItem);
+        tablePopupMenu.add(copyUsernameMenuItem);
 
         copyPasswordMenuItem.setAction(copyPasswordAction);
         copyPasswordMenuItem.setText("Copy Password");
-        popupMenu.add(copyPasswordMenuItem);
-        popupMenu.add(jSeparator12);
+        tablePopupMenu.add(copyPasswordMenuItem);
+        tablePopupMenu.add(jSeparator12);
 
         pasteMenuItem.setAction(pasteAction);
         pasteMenuItem.setText("Paste");
-        popupMenu.add(pasteMenuItem);
+        tablePopupMenu.add(pasteMenuItem);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
 
@@ -381,7 +527,7 @@ public class MainWindow extends javax.swing.JFrame {
             }
         });
 
-        jScrollPane1.setComponentPopupMenu(popupMenu);
+        jScrollPane1.setComponentPopupMenu(tablePopupMenu);
 
         loginTable.setAutoCreateRowSorter(true);
         loginTable.setModel(new javax.swing.table.DefaultTableModel(
@@ -389,11 +535,11 @@ public class MainWindow extends javax.swing.JFrame {
 
             },
             new String [] {
-                "#", "Name/Website", "Username", "Password", "Other"
+                "#", "Name/Website", "Username", "Password", "Other", "Favorite"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
+                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Boolean.class
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -402,7 +548,7 @@ public class MainWindow extends javax.swing.JFrame {
         });
         loginTable.setCellEditor(new MyTableCellEditor());
         loginTable.setColumnSelectionAllowed(true);
-        loginTable.setComponentPopupMenu(popupMenu);
+        loginTable.setComponentPopupMenu(tablePopupMenu);
         jScrollPane1.setViewportView(loginTable);
         loginTable.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         if (loginTable.getColumnModel().getColumnCount() > 0) {
@@ -616,7 +762,7 @@ public class MainWindow extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
-            MainWindow.showError(ex, "Could not initialize theme.");
+            showError(ex, Strings.ErrorStrings.ERROR_COULD_NOT_INITIALIZE_THEME);
         }
         java.awt.EventQueue.invokeLater(() -> {
             mw = new MainWindow();
@@ -627,9 +773,9 @@ public class MainWindow extends javax.swing.JFrame {
         });
         if (trayIconSetupSuccessful) {
             if (mw.isVisible()) {
-                toggleMWVisibilityMenuItem.setLabel("Hide " + Settings.APP_NAME);
+                toggleMWVisibilityMenuItem.setLabel(Strings.MainWindowStrings.HIDE_MAIN_WINDOW);
             } else {
-                toggleMWVisibilityMenuItem.setLabel("Show " + Settings.APP_NAME);
+                toggleMWVisibilityMenuItem.setLabel(Strings.MainWindowStrings.SHOW_MAIN_WINDOW);
             }
         } else {
             if (toggleMWVisibilityMenuItem != null) {
@@ -688,7 +834,6 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JMenuItem openLinkMenuItem1;
     private javax.swing.JMenuItem operaImportMenuItem;
     private javax.swing.JMenuItem pasteMenuItem;
-    private javax.swing.JPopupMenu popupMenu;
     private javax.swing.JMenuItem redoMenuItem;
     private javax.swing.JMenuItem redoMenuItem1;
     private javax.swing.JMenuItem safariImportMenuItem;
@@ -696,6 +841,7 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JMenuItem saveMenuItem;
     private javax.swing.JMenuItem settingsMenuItem;
     private javax.swing.JCheckBoxMenuItem showPasswordsMenuItem;
+    private javax.swing.JPopupMenu tablePopupMenu;
     private javax.swing.JMenuItem undoMenuItem;
     private javax.swing.JMenuItem undoMenuItem1;
     private javax.swing.JMenu viewMenu;
@@ -703,9 +849,9 @@ public class MainWindow extends javax.swing.JFrame {
 
     private void initSettings() {
         if (getClass().getPackage().getImplementationVersion() != null) {
-            Settings.APP_VERSION = getClass().getPackage().getImplementationVersion();
+            Strings.APP_VERSION = getClass().getPackage().getImplementationVersion();
         }
-        setTitle(Settings.APP_NAME + " v" + Settings.APP_VERSION);
+        setTitle(Strings.getAppTitle());
         FileManagement.importSettingsFromFile();
         ew = new ExitWindow(MainWindow.this);
         pg = new PasswordGenerator();
@@ -716,7 +862,7 @@ public class MainWindow extends javax.swing.JFrame {
 
         loginList = new ArrayList();
         history = new History();
-        setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getClassLoader().getResource("ic_launcher.png")));
+        setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getClassLoader().getResource(Strings.ICON_NAME)));
     }
 
     private void addListeners() {
@@ -779,7 +925,7 @@ public class MainWindow extends javax.swing.JFrame {
         if (bypassListChange) {
             return;
         }
-        if (!showHidden) {
+        if (!showingLoginData) {
             updateTable();
             return;
         }
@@ -793,10 +939,11 @@ public class MainWindow extends javax.swing.JFrame {
                 t.setId((String) model.getValueAt(i, 0));
                 t.setWebsite((String) model.getValueAt(i, 1));
                 t.setUsername((String) model.getValueAt(i, 2));
-                if (showHidden) {
+                if (showingLoginData) {
                     t.setPassword((String) model.getValueAt(i, 3));
                 }
                 t.setOther((String) model.getValueAt(i, 4));
+                t.setFavorite((Boolean) model.getValueAt(i, 5));
                 loginList.add(t);
                 i++;
             } else {
@@ -805,13 +952,32 @@ public class MainWindow extends javax.swing.JFrame {
         }
         loginList.sort(new LoginComparator());
         updateHistory();
+        if(trayIconSetupSuccessful){
+            updateSystemTrayMenu();
+        }
+    }
+    
+    private ArrayList<Login> getFavorites () {
+        if(loginList == null){
+            return null;
+        }
+        ArrayList<Login> favs = new ArrayList();
+        for (Login l: loginList){
+            if(l.isFavorite()){
+                favs.add(l);
+            }
+        }
+        if(favs.isEmpty()){
+            return null;
+        }
+        return favs;
     }
 
     /**
      * This method exits the program.
      */
     public void exitApp() {
-        if (showHidden) {
+        if (showingLoginData) {
             if (Settings.getWindowState() != JFrame.MAXIMIZED_BOTH) {
                 Settings.setUserSize(getSize());
             }
@@ -821,7 +987,7 @@ public class MainWindow extends javax.swing.JFrame {
         System.exit(0);
     }
 
-    private final Action exitAction = new AbstractAction("") {
+    private final Action exitAction = new AbstractAction() {
         @Override
         public void actionPerformed(ActionEvent ae) {
             stopTableEditing();
@@ -829,7 +995,7 @@ public class MainWindow extends javax.swing.JFrame {
         }
     };
 
-    private final Action newAction = new AbstractAction("") {
+    private final Action newAction = new AbstractAction() {
         @Override
         public void actionPerformed(ActionEvent ae) {
             newFile();
@@ -838,7 +1004,7 @@ public class MainWindow extends javax.swing.JFrame {
 
     private void newFile() {
         if (fileNotSaved) {
-            int result = JOptionPane.showConfirmDialog(null, "Do you want to save this file before making a new one?", "Warning! This file is unsaved.", JOptionPane.OK_CANCEL_OPTION);
+            int result = JOptionPane.showConfirmDialog(null, Strings.MainWindowStrings.WARNING_FILE_UNSAVED_CONTENT, Strings.MainWindowStrings.WARNING_FILE_UNSAVED_TITLE, JOptionPane.OK_CANCEL_OPTION);
             if (result == JOptionPane.OK_OPTION) {
                 saveFile();
             } else if (result == JOptionPane.CANCEL_OPTION) {
@@ -855,10 +1021,11 @@ public class MainWindow extends javax.swing.JFrame {
         file = null;
         encryptionKey = null;
         showPasswordsMenuItem.setSelected(false);
-        showHidden = true;
+        showingLoginData = true;
         loginList = new ArrayList();
         updateTable();
         showPasswords();
+        setTitle(Strings.getAppTitle());
     }
 
     private final Action openAction = new AbstractAction("") {
@@ -904,14 +1071,15 @@ public class MainWindow extends javax.swing.JFrame {
                 updateTable();
                 Settings.setDirectory(file.getParent());
                 showPasswords();
+                setTitle(Strings.getAppTitle() + " - File:" + file.getPath());
                 fileNotSaved = false;
             } catch (IOException | NullPointerException ex) {
-                MainWindow.showError(ex, "Could not open file: " + file.getPath());
+                MainWindow.showError(ex, Strings.ErrorStrings.ERROR_COULD_NOT_OPEN_FILE + file.getPath());
             } catch (InvalidKeyException | InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException ex) {
-                JOptionPane.showMessageDialog(null, ex.getMessage() + "\nPossible wrong password.", "Error!", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, Strings.ErrorStrings.ERROR_WRONG_PASSWORD + "\n" + ex.getMessage(), Strings.ErrorStrings.ERROR, JOptionPane.ERROR_MESSAGE);
             }
         } else {
-            MainWindow.showError(null, "Could not open file.");
+            MainWindow.showError(null, Strings.ErrorStrings.ERROR_NULL_FILE);
         }
     }
 
@@ -924,7 +1092,7 @@ public class MainWindow extends javax.swing.JFrame {
                 try {
                     Thread.sleep(100);
                 } catch (InterruptedException ex) {
-                    MainWindow.showError(ex, "Could not pause running thread.");
+                    MainWindow.showError(ex, Strings.ErrorStrings.EXCEPTION_INTERRUPTED);
                 }
             }
         }
@@ -955,10 +1123,9 @@ public class MainWindow extends javax.swing.JFrame {
         int returnVal = fc.showOpenDialog(null);
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             file = fc.getSelectedFile();
-            if (!file.getPath().endsWith(".pmaster") && !file.getPath().endsWith(".txt")) {
-                file = new File(file.getPath() + ".pmaster");
+            if (!file.getPath().endsWith(Strings.FILE_EXTENSION) && !file.getPath().endsWith(".txt")) {
+                file = new File(file.getPath() + Strings.FILE_EXTENSION);
             }
-            setTitle(Settings.APP_NAME + " v" + Settings.APP_VERSION + " - File:" + file.getPath());
             return true;
         } else {
             return false;
@@ -979,8 +1146,8 @@ public class MainWindow extends javax.swing.JFrame {
      * Passwords" menu item.
      */
     public boolean saveFile() {
-        if (!showHidden) {
-            showHidden("save");
+        if (!showingLoginData) {
+            displayErrorWhenHidingInformation("save file");
             return false;
         }
         writingFile = true;
@@ -1013,8 +1180,8 @@ public class MainWindow extends javax.swing.JFrame {
     };
 
     private void saveAsFile() {
-        if (!showHidden) {
-            showHidden("save as");
+        if (!showingLoginData) {
+            displayErrorWhenHidingInformation("save as");
             return;
         }
         writingFile = true;
@@ -1047,9 +1214,9 @@ public class MainWindow extends javax.swing.JFrame {
                 fos.write(cipher.encrypt(plaintext, encryptionKey));
                 fos.close();
             } catch (FileNotFoundException ex) {
-                MainWindow.showError(ex, "File was not found.");
+                showError(ex, "File was not found.");
             } catch (IOException ex) {
-                MainWindow.showError(ex, "Could not write logins file.");
+                showError(ex, "Could not write logins file.");
             }
         }
         showStatus("Saved file: " + file.getPath());
@@ -1086,8 +1253,8 @@ public class MainWindow extends javax.swing.JFrame {
         @Override
         public void actionPerformed(ActionEvent ae) {
             stopTableEditing();
-            if (!showHidden) {
-                showHidden("delete logins");
+            if (!showingLoginData) {
+                displayErrorWhenHidingInformation("delete logins");
                 return;
             }
             try {
@@ -1126,7 +1293,7 @@ public class MainWindow extends javax.swing.JFrame {
                 try {
                     Thread.sleep(100);
                 } catch (InterruptedException ex) {
-                    MainWindow.showError(ex, "Could not pause running thread.");
+                    MainWindow.showError(ex, Strings.ErrorStrings.EXCEPTION_INTERRUPTED);
                 }
             }
         }
@@ -1150,18 +1317,17 @@ public class MainWindow extends javax.swing.JFrame {
     };
 
     public class ShowPasswords extends Thread {
-
         @Override
         public void run() {
-            if (showPasswordsMenuItem.isSelected()) {
+            if (showPasswordsMenuItem.getState()) {
                 hidePasswords();
                 return;
             }
             if (checkPassword()) {
                 showPasswords();
             } else {
-                JOptionPane.showMessageDialog(null, "Wrong encryption key.", "Wrong Input.", JOptionPane.WARNING_MESSAGE);
-                showPasswordsMenuItem.setSelected(false);
+                showError(null, "Wrong encryption key.");
+                hidePasswords();
             }
         }
     }
@@ -1180,13 +1346,15 @@ public class MainWindow extends javax.swing.JFrame {
     private void updateGUI(boolean enable) {
         idleLabel.setEnabled(enable);
         idleTimer = enable;
-        showHidden = enable;
+        showingLoginData = enable;
         showPasswordsMenuItem.setSelected(!enable);
         editMenu.setEnabled(enable);
         moveUpButton.setEnabled(enable);
         moveDownButton.setEnabled(enable);
         addLoginButton.setEnabled(enable);
         deleteLoginButton.setEnabled(enable);
+        settingsMenuItem.setEnabled(enable);
+        hideInformationMenuItem.setState(!enable);
     }
 
     private void updateIDNumbers() {
@@ -1207,19 +1375,22 @@ public class MainWindow extends javax.swing.JFrame {
         model.setRowCount(0);
         updateIDNumbers();
         for (Login l : loginList) {
-            if (showHidden) {
+            if (showingLoginData) {
                 model.addRow(l.toObject());
             } else {
                 model.addRow(l.toObjectHidden());
             }
         }
         bypassListChange = false;
+        if(trayIconSetupSuccessful){
+            updateSystemTrayMenu();
+        }
     }
 
     private final Action undoAction = new AbstractAction("") {
         @Override
         public void actionPerformed(ActionEvent e) {
-            if (!showHidden) {
+            if (!showingLoginData) {
                 return;
             }
             undo();
@@ -1235,7 +1406,7 @@ public class MainWindow extends javax.swing.JFrame {
     private final Action redoAction = new AbstractAction("") {
         @Override
         public void actionPerformed(ActionEvent e) {
-            if (!showHidden) {
+            if (!showingLoginData) {
                 return;
             }
             redo();
@@ -1258,7 +1429,11 @@ public class MainWindow extends javax.swing.JFrame {
         @Override
         public void actionPerformed(ActionEvent e) {
             stopTableEditing();
-            sw.showWindow();
+            if(showingLoginData){
+                sw.showWindow();
+            } else {
+                displayErrorWhenHidingInformation(Strings.ErrorStrings.HIDING_INFORMATION_OPEN_SETTINGS);
+            }
         }
     };
 
@@ -1346,15 +1521,19 @@ public class MainWindow extends javax.swing.JFrame {
     private final Action openLinkAction = new AbstractAction("") {
         @Override
         public void actionPerformed(ActionEvent e) {
-            String website = getWebsite();
-            if (Desktop.isDesktopSupported()) {
-                try {
-                    Desktop.getDesktop().browse(new URI(website));
-                } catch (URISyntaxException | IOException ex) {
-                    MainWindow.showError(ex, "Could not open websit: " + website);
+            if (showingLoginData) {
+                String website = getWebsite();
+                if (Desktop.isDesktopSupported()) {
+                    try {
+                        Desktop.getDesktop().browse(new URI(website));
+                    } catch (URISyntaxException | IOException ex) {
+                        MainWindow.showError(ex, "Could not open websit: " + website);
+                    }
+                } else {
+                    showError(null, "Cannot open website" + website + ".");
                 }
             } else {
-                showError(null, "Cannot open website" + website + ".");
+                displayErrorWhenHidingInformation("open website");
             }
         }
     };
@@ -1370,24 +1549,36 @@ public class MainWindow extends javax.swing.JFrame {
         }
         return website;
     }
+    
+    private String getWebsite(String w) {
+        String website = w.toString();
+        if (!website.startsWith("http://") && !website.startsWith("https://")) {
+            if (website.startsWith("www.")) {
+                website = "https://" + website;
+            } else {
+                website = "https://www." + website;
+            }
+        }
+        return website;
+    }
 
     private final Action copyWebsiteAction = new AbstractAction("") {
         @Override
         public void actionPerformed(ActionEvent e) {
             if (Login.isHideWebsite()) {
-                if (showHidden) {
+                if (showingLoginData) {
                     StringSelection stringSelection = new StringSelection(getWebsite());
                     Clipboard clpbrd = Toolkit.getDefaultToolkit().getSystemClipboard();
                     clpbrd.setContents(stringSelection, null);
-                    showStatus("Website: " + getWebsite() + " copied to clipboard.");
+                    showStatus(Strings.StatusStrings.CLIPBOARD_COPY_WEBSITE + getWebsite() + Strings.StatusStrings.CLIPBOARD_COPY);
                 } else {
-                    showHidden("copy website");
+                    displayErrorWhenHidingInformation(Strings.ErrorStrings.HIDING_INFORMATION_COPY_WEBSITE);
                 }
             } else {
                 StringSelection stringSelection = new StringSelection(getWebsite());
                 Clipboard clpbrd = Toolkit.getDefaultToolkit().getSystemClipboard();
                 clpbrd.setContents(stringSelection, null);
-                showStatus("Website: " + getWebsite() + " copied to clipboard.");
+                showStatus(Strings.StatusStrings.CLIPBOARD_COPY_WEBSITE + getWebsite() + Strings.StatusStrings.CLIPBOARD_COPY);
             }
         }
     };
@@ -1396,19 +1587,19 @@ public class MainWindow extends javax.swing.JFrame {
         @Override
         public void actionPerformed(ActionEvent e) {
             if (Login.isHideUsername()) {
-                if (showHidden) {
+                if (showingLoginData) {
                     StringSelection stringSelection = new StringSelection((String) model.getValueAt(row, 2));
                     Clipboard clpbrd = Toolkit.getDefaultToolkit().getSystemClipboard();
                     clpbrd.setContents(stringSelection, null);
-                    showStatus("Username: " + (String) model.getValueAt(row, 2) + " copied to clipboard.");
+                    showStatus(Strings.StatusStrings.CLIPBOARD_COPY_USERNAME + (String) model.getValueAt(row, 2) + Strings.StatusStrings.CLIPBOARD_COPY);
                 } else {
-                    showHidden("copy username");
+                    displayErrorWhenHidingInformation(Strings.ErrorStrings.HIDING_INFORMATION_COPY_USERNAME);
                 }
             } else {
                 StringSelection stringSelection = new StringSelection((String) model.getValueAt(row, 2));
                 Clipboard clpbrd = Toolkit.getDefaultToolkit().getSystemClipboard();
                 clpbrd.setContents(stringSelection, null);
-                showStatus("Username: " + (String) model.getValueAt(row, 2) + " copied to clipboard.");
+                showStatus(Strings.StatusStrings.CLIPBOARD_COPY_USERNAME + (String) model.getValueAt(row, 2) + Strings.StatusStrings.CLIPBOARD_COPY);
             }
         }
     };
@@ -1416,13 +1607,13 @@ public class MainWindow extends javax.swing.JFrame {
     private final Action copyPasswordAction = new AbstractAction("") {
         @Override
         public void actionPerformed(ActionEvent e) {
-            if (showHidden) {
+            if (showingLoginData) {
                 StringSelection stringSelection = new StringSelection((String) model.getValueAt(row, 3));
                 Clipboard clpbrd = Toolkit.getDefaultToolkit().getSystemClipboard();
                 clpbrd.setContents(stringSelection, null);
-                showStatus("Password for website: " + (String) model.getValueAt(row, 1) + " copied to clipboard.");
+                showStatus(Strings.StatusStrings.CLIPBOARD_COPY_PASSWORD + (String) model.getValueAt(row, 1) + Strings.StatusStrings.CLIPBOARD_COPY);
             } else {
-                showHidden("copy password");
+                displayErrorWhenHidingInformation(Strings.ErrorStrings.HIDING_INFORMATION_COPY_PASSWORD);
             }
         }
     };
@@ -1459,7 +1650,7 @@ public class MainWindow extends javax.swing.JFrame {
                 idleTimer = false;
             }
         } else {
-            showStatus("Cannot calculate user idle time on this OS.");
+            showStatus(Strings.ErrorStrings.ERROR_CANNOT_CALCULATE_IDLE_TIME);
             idleLabel.setVisible(false);
             idleLabel.setEnabled(false);
             idleTimer = false;
@@ -1477,7 +1668,7 @@ public class MainWindow extends javax.swing.JFrame {
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException ex) {
-                    MainWindow.showError(ex, "Could pause running thread.");
+                    MainWindow.showError(ex, Strings.ErrorStrings.EXCEPTION_INTERRUPTED);
                 }
                 int idleTime = Win32IdleTime.getIdleTimeSeconds();
                 idleLabel.setText("Idle for:" + idleTime + "/" + Settings.getUserIdleSeconds());
@@ -1492,15 +1683,15 @@ public class MainWindow extends javax.swing.JFrame {
         }
     }
 
-    private final Action pasteAction = new AbstractAction("") {
+    private final Action pasteAction = new AbstractAction() {
         @Override
         public void actionPerformed(ActionEvent e) {
             Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
             try {
                 model.setValueAt(clipboard.getData(DataFlavor.stringFlavor), row, col);
-                showStatus("Pasted text: " + clipboard.getData(DataFlavor.stringFlavor));
+                showStatus(Strings.StatusStrings.PASTED_TEXT + clipboard.getData(DataFlavor.stringFlavor));
             } catch (UnsupportedFlavorException | IOException ex) {
-                MainWindow.showError(ex, "Could not paste.");
+                MainWindow.showError(ex, Strings.ErrorStrings.ERROR_PASTE);
             }
         }
     };
@@ -1523,7 +1714,7 @@ public class MainWindow extends javax.swing.JFrame {
         }
     }
 
-    private final Action moveUpAction = new AbstractAction("") {
+    private final Action moveUpAction = new AbstractAction() {
         @Override
         public void actionPerformed(ActionEvent e) {
             moveUp();
@@ -1531,7 +1722,7 @@ public class MainWindow extends javax.swing.JFrame {
     };
 
     private void moveUp() {
-        if (!showHidden) {
+        if (!showingLoginData) {
             return;
         }
         if (row == 0) {
@@ -1565,7 +1756,7 @@ public class MainWindow extends javax.swing.JFrame {
     };
 
     private void moveDown() {
-        if (!showHidden) {
+        if (!showingLoginData) {
             return;
         }
         if (row == model.getRowCount()) {
@@ -1591,28 +1782,31 @@ public class MainWindow extends javax.swing.JFrame {
         row++;
     }
 
-    public void showHidden(String action) {
-        showStatus("Cannot " + action + ". You need to click on 'Hide Information' first in order to deselect it.");
+    public void displayErrorWhenHidingInformation(String action) {
+        showStatus("Cannot " + action + ". You need to click on 'Hide Information' first.");
     }
 
     public static void showStatus(String status) {
-        trayIcon.displayMessage(Settings.getAppTitle(), status, TrayIcon.MessageType.NONE);
+        trayIcon.displayMessage(Strings.getAppTitle(), status, TrayIcon.MessageType.NONE);
         System.out.println(status);
     }
 
-    public static void showError(Throwable t, String title) {
-        LOG.log(Level.SEVERE, null, t);
-//        JOptionPane.showMessageDialog(null, t.getMessage(), title, JOptionPane.ERROR_MESSAGE);
-        trayIcon.displayMessage(Settings.getAppTitle(), title + "\n" + t.getLocalizedMessage(), TrayIcon.MessageType.ERROR);
+    public static void showError(Throwable t, String errorDescription) {
+        if(t != null){
+            LOG.log(Level.SEVERE, null, t);
+            trayIcon.displayMessage(Strings.getAppTitle(), errorDescription + "\n" + t.getLocalizedMessage(), TrayIcon.MessageType.ERROR);
+        } else {
+            trayIcon.displayMessage(Strings.getAppTitle(), errorDescription, TrayIcon.MessageType.ERROR);
+        }
     }
 
     public static void toggleVisibility() {
         if (mw.isVisible() && trayIconSetupSuccessful) {
             mw.setVisible(false);
-            toggleMWVisibilityMenuItem.setLabel("Show " + Settings.APP_NAME);
+            toggleMWVisibilityMenuItem.setLabel(Strings.MainWindowStrings.SHOW_MAIN_WINDOW);
         } else if (!mw.isVisible()) {
             if (trayIconSetupSuccessful) {
-                toggleMWVisibilityMenuItem.setLabel("Hide " + Settings.APP_NAME);
+                toggleMWVisibilityMenuItem.setLabel(Strings.MainWindowStrings.HIDE_MAIN_WINDOW);
             }
             mw.setExtendedState(Settings.getWindowState());
             mw.setVisible(true);

@@ -29,13 +29,7 @@ public class Settings {
      * A "blank" login variable.
      */
     public static final Login STANDARD_LOGIN = new Login(0, "https://www.website.com", "username", "password", "comment");
-    public static final String APP_NAME = "Password Master";
-    public static final String SETTINGS_NAME = "Settings";
-    public static String APP_VERSION = "3.5";
     
-    public static String getAppTitle() {
-        return APP_NAME + " - " + APP_VERSION;
-    }
 
     private static String theme = "Windows";
     public static final String DEFAULT_THEME = "Windows";
@@ -55,6 +49,10 @@ public class Settings {
     
     public static boolean minimizeToSystemTray = false;
     public static boolean startPMMinimized = false;
+    
+    public static boolean displayFavoritesInSystemTrayPopupMenu = true;
+    
+    public static int favoriteDisplay = 1;
 
     /**
      * This method sets all settings from a String variable.
@@ -85,6 +83,10 @@ public class Settings {
                 minimizeToSystemTray = Boolean.valueOf(s.replace("minimizeToSystemTray=", ""));
             } else if(s.contains("startPMMinimized=")){
                 startPMMinimized = Boolean.valueOf(s.replace("startPMMinimized=", ""));
+            } else if(s.contains("displayFavoritesInSystemTrayPopupMenu=")){
+                displayFavoritesInSystemTrayPopupMenu = Boolean.valueOf(s.replace("displayFavoritesInSystemTrayPopupMenu=", ""));
+            } else if(s.contains("favoriteDisplay=")){
+                setFavoriteDisplay(s.replace("favoriteDisplay=", ""));
             }
         }
     }
@@ -266,7 +268,11 @@ public class Settings {
                 + SEPARATOR
                 + "minimizeToSystemTray=" + minimizeToSystemTray
                 + SEPARATOR 
-                + "startPMMinimized=" + startPMMinimized + "}";
+                + "startPMMinimized=" + startPMMinimized
+                + SEPARATOR
+                + "displayFavoritesInSystemTrayPopupMenu=" + displayFavoritesInSystemTrayPopupMenu
+                + SEPARATOR
+                + "favoriteDisplay=" + favoriteDisplay + "}";
     }
 
     /**
@@ -290,5 +296,13 @@ public class Settings {
             userIdleSeconds = -1;
         }
         Settings.userIdleSeconds = userIdleSeconds;
+    }
+
+    private static void setFavoriteDisplay(String string) {
+        try {
+            favoriteDisplay = Integer.valueOf(string);
+        } catch (Exception ex){
+            favoriteDisplay = 1;
+        }
     }
 }
