@@ -15,7 +15,6 @@ package Other;
 
 import java.awt.Dimension;
 import java.io.File;
-import javax.swing.JFrame;
 import passwordMaster.MainWindow;
 
 /**
@@ -23,13 +22,13 @@ import passwordMaster.MainWindow;
  * @author Nikos
  */
 public class Settings {
+
     public static final String SEPARATOR = ",";
 
     /**
      * A "blank" login variable.
      */
     public static final Login STANDARD_LOGIN = new Login(0, "https://www.website.com", "username", "password", "comment");
-    
 
     private static String theme = "Windows";
     public static final String DEFAULT_THEME = "Windows";
@@ -46,16 +45,21 @@ public class Settings {
      */
     public static final int DEFAULT_IDLE_SECONDS = 20;
     private static int userIdleSeconds = -1;
-    
+
     public static boolean minimizeToSystemTray = false;
     public static boolean startPMMinimized = false;
-    
+
     public static boolean displayFavoritesInSystemTrayPopupMenu = true;
-    
+
     public static int favoriteDisplay = 1;
+
+    public static boolean hideSystemTrayPopupInformationWhenHidingInformation = false;
+
+    public static String lastOpenedItem = "";
 
     /**
      * This method sets all settings from a String variable.
+     *
      * @param fromString The String variable.
      */
     public static void setFromString(String fromString) {
@@ -77,22 +81,27 @@ public class Settings {
                 setUserSizeFromString(s.replaceAll("userSize=", "").trim());
             } else if (s.contains("userIdleSeconds=")) {
                 setUserIdleSeconds(new Integer(s.replaceAll("userIdleSeconds=", "")));
-            } else if (s.contains("alwaysDefaultDir=")){
+            } else if (s.contains("alwaysDefaultDir=")) {
                 alwaysDefaultDir = Boolean.valueOf(s.replace("alwaysDefaultDir=", ""));
-            } else if(s.contains("minimizeToSystemTray=")){
+            } else if (s.contains("minimizeToSystemTray=")) {
                 minimizeToSystemTray = Boolean.valueOf(s.replace("minimizeToSystemTray=", ""));
-            } else if(s.contains("startPMMinimized=")){
+            } else if (s.contains("startPMMinimized=")) {
                 startPMMinimized = Boolean.valueOf(s.replace("startPMMinimized=", ""));
-            } else if(s.contains("displayFavoritesInSystemTrayPopupMenu=")){
+            } else if (s.contains("displayFavoritesInSystemTrayPopupMenu=")) {
                 displayFavoritesInSystemTrayPopupMenu = Boolean.valueOf(s.replace("displayFavoritesInSystemTrayPopupMenu=", ""));
-            } else if(s.contains("favoriteDisplay=")){
+            } else if (s.contains("favoriteDisplay=")) {
                 setFavoriteDisplay(s.replace("favoriteDisplay=", ""));
+            } else if (s.contains("hideSystemTrayPopupInformationWhenHidingInformation=")) {
+                hideSystemTrayPopupInformationWhenHidingInformation = Boolean.valueOf(s.replace("hideSystemTrayPopupInformationWhenHidingInformation=", ""));
+            } else if (s.contains("lastOpenedItem=")) {
+                lastOpenedItem = s.replace("lastOpenedItem=", "");
             }
         }
     }
 
     /**
      * This method returns the theme the user has selected.
+     *
      * @return The selected theme.
      */
     public static String getTheme() {
@@ -105,6 +114,7 @@ public class Settings {
 
     /**
      * Sets the theme the user has selected.
+     *
      * @param theme The selected theme.
      */
     public static void setTheme(String theme) {
@@ -122,7 +132,7 @@ public class Settings {
      * @return The user directory.
      */
     public static String getDirectory() {
-        if(alwaysDefaultDir){
+        if (alwaysDefaultDir) {
             return DEFAULT_DIR;
         }
         if (DEFAULT_DIR.contains(File.separator)) {
@@ -143,6 +153,7 @@ public class Settings {
 
     /**
      * This method sets the directory the user has selected.
+     *
      * @param userDir The selected directory.
      */
     public static void setDirectory(String userDir) {
@@ -157,6 +168,7 @@ public class Settings {
 
     /**
      * This method returns the window state for the MainWindow class. If 0, state is normal. If 6, state is maximized.
+     *
      * @see <a href="../passwordMaster/MainWindow.html">MainWindow.class</a>
      * @return The window state.
      */
@@ -172,7 +184,7 @@ public class Settings {
      * @param windowState The window state.
      */
     public static void setWindowState(int windowState) {
-        if(windowState == 0 || windowState == 6){
+        if (windowState == 0 || windowState == 6) {
             Settings.windowState = windowState;
         }
     }
@@ -194,6 +206,7 @@ public class Settings {
 
     /**
      * This method returns the window size for the MainWindow class as a Dimension variable.
+     *
      * @see <a href="../passwordMaster/MainWindow.html">MainWindow.class</a>
      * @return The window size.
      */
@@ -231,6 +244,7 @@ public class Settings {
 
     /**
      * This method sets the window size for the MainWindow class from a Dimension variable.
+     *
      * @see <a href="../passwordMaster/MainWindow.html">MainWindow.class</a>
      * @param userSize The window size in a String variable.
      */
@@ -240,6 +254,7 @@ public class Settings {
 
     /**
      * This method sets the window size for the MainWindow class from two integer variables.
+     *
      * @see <a href="../passwordMaster/MainWindow.html">MainWindow.class</a>
      * @param width The width of the window.
      * @param height The height of the window.
@@ -264,15 +279,20 @@ public class Settings {
                 + SEPARATOR
                 + "userIdleSeconds=" + getUserIdleSeconds()
                 + SEPARATOR
-                + "alwaysDefaultDir=" + alwaysDefaultDir 
+                + "alwaysDefaultDir=" + alwaysDefaultDir
                 + SEPARATOR
                 + "minimizeToSystemTray=" + minimizeToSystemTray
-                + SEPARATOR 
+                + SEPARATOR
                 + "startPMMinimized=" + startPMMinimized
                 + SEPARATOR
                 + "displayFavoritesInSystemTrayPopupMenu=" + displayFavoritesInSystemTrayPopupMenu
                 + SEPARATOR
-                + "favoriteDisplay=" + favoriteDisplay + "}";
+                + "favoriteDisplay=" + favoriteDisplay
+                + SEPARATOR
+                + "hideSystemTrayPopupInformationWhenHidingInformation=" + hideSystemTrayPopupInformationWhenHidingInformation
+                + SEPARATOR
+                + "lastOpenedItem=" + lastOpenedItem
+                + "}";
     }
 
     /**
@@ -301,7 +321,7 @@ public class Settings {
     private static void setFavoriteDisplay(String string) {
         try {
             favoriteDisplay = Integer.valueOf(string);
-        } catch (Exception ex){
+        } catch (Exception ex) {
             favoriteDisplay = 1;
         }
     }

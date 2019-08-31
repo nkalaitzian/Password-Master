@@ -13,6 +13,7 @@
  */
 package passwordMaster;
 
+import Other.Strings;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -30,8 +31,8 @@ import javax.swing.event.ChangeListener;
 public class PasswordFrame extends javax.swing.JFrame {
 
     PasswordGenerator pg;
-    boolean done = false;
-    boolean cancel = false;
+    public boolean done = false;
+    public boolean cancel = false;
     
     /**
      * Creates new form PasswordFrame
@@ -52,7 +53,6 @@ public class PasswordFrame extends javax.swing.JFrame {
             setTitle("Verify existing encryption key.");
         }
         pack();
-        setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getClassLoader().getResource("ic_launcher.png")));
     }
 
     /**
@@ -204,6 +204,7 @@ public class PasswordFrame extends javax.swing.JFrame {
     // End of variables declaration//GEN-END:variables
 
     private void initSettings() {
+        setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getClassLoader().getResource(Strings.ICON_NAME)));
         WindowListener exitListener = new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {

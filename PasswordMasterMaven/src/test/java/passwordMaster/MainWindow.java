@@ -245,13 +245,7 @@ public class MainWindow extends javax.swing.JFrame {
                     loginMenu = new PopupMenu(login.getUsername());
                     break;
                 case 3:
-                    String other = login.getOther();
-                    if (other!= null && !"".equals(other)) {
-                        if (other.trim().length() > 25){
-                            other = other.trim().substring(0, 25).trim();
-                        }
-                    }
-                    loginMenu = new PopupMenu(other);
+                    loginMenu = new PopupMenu(login.getOther().split(" ")[0]);
                     break;
                 default:
                     loginMenu = new PopupMenu(login.getWebsite());
@@ -369,23 +363,10 @@ public class MainWindow extends javax.swing.JFrame {
             File parent = new File(Settings.getDirectory());
             ArrayList<String> files = new ArrayList();
             int i = 0;
-            if (Settings.lastOpenedItem != null && !"".equals(Settings.lastOpenedItem)){
-                files.add(Settings.lastOpenedItem);
-                i++;
-            }
             for (File f : parent.listFiles()) {
                 if (f.getPath().endsWith(Strings.FILE_EXTENSION)) {
-                    boolean alreadyInList = false;
-                    for (String s: files){
-                        if (s.equalsIgnoreCase(f.getPath())){
-                            alreadyInList = true;
-                            break;
-                        }
-                    }
-                    if (!alreadyInList){
-                        i++;
-                        files.add(f.getPath());
-                    }
+                    i++;
+                    files.add(f.getPath());
                 }
             }
             if (i > 0) {
@@ -600,6 +581,11 @@ public class MainWindow extends javax.swing.JFrame {
                 filterTextFieldMouseClicked(evt);
             }
         });
+        filterTextField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                filterTextFieldActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -618,7 +604,7 @@ public class MainWindow extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(filterTextField)
                 .addGap(12, 12, 12)
-                .addComponent(idleLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(idleLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -793,6 +779,10 @@ public class MainWindow extends javax.swing.JFrame {
         moveDown();
     }//GEN-LAST:event_moveDownButtonActionPerformed
 
+    private void filterTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_filterTextFieldActionPerformed
+        
+    }//GEN-LAST:event_filterTextFieldActionPerformed
+
     private void filterTextFieldMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_filterTextFieldMouseClicked
         if(filterTextField.hasFocus() && "Filter".equals(filterTextField.getText())){
             filterTextField.setText("");
@@ -957,6 +947,7 @@ public class MainWindow extends javax.swing.JFrame {
                 }
             }
         });
+
         model.addTableModelListener(new TableModelListener() {
             @Override
             public void tableChanged(TableModelEvent e) {
@@ -965,20 +956,28 @@ public class MainWindow extends javax.swing.JFrame {
         });
         filterTextField.addKeyListener(new KeyAdapter() {
             @Override
+            public void keyTyped(KeyEvent e) {
+//                String filterText = filterTextField.getText();
+//                if(!"".equals(filterText)){
+//                    filterLogins(filterText);
+//                }
+            }
+
+            @Override
             public void keyReleased(KeyEvent e) {
                 String filterText = filterTextField.getText();
-                if(!"".equals(filterText) && !"Filter".equals(filterText)){
+                if(!"".equals(filterText)){
                     filterLogins(filterText);
                 } else {
                     filtering = false;
-                    updateTable();
                 }
             }
         });
     }
     
-    static boolean filtering = false;
+    boolean filtering = false;
     private void filterLogins(String filter){
+        System.out.println("Filtering logins " + filter);
         filtering = true;
         String[] filterWords = filter.split(" ");
         String filterU = null, filterO = null, filterW = null;
@@ -989,14 +988,15 @@ public class MainWindow extends javax.swing.JFrame {
             if(s.startsWith("o:")){
                 filterO = s.replace("o:", "");
             }
-            if(s.startsWith("w:") || s.startsWith("n:")){
-                filterW = s.replace("w:", "").replace("n:", "");
+            if(s.startsWith("w:")){
+                filterW = s.replace("w:", "");
             }
         }
         boolean appliedFiltering = false;
         for(Login l: loginList){
             if(filterU != null && !"".equals(filterU)){
                 if(!l.getUsername().toLowerCase().contains(filterU.toLowerCase())){
+                    System.out.println("Filtering login:" + l.toString());
                     l.filterHide = true;
                     appliedFiltering = true;
                 } else {
@@ -1005,6 +1005,7 @@ public class MainWindow extends javax.swing.JFrame {
                 }
             } else if(filterO != null && !"".equals(filterO)){
                 if(!l.getOther().toLowerCase().contains(filterO.toLowerCase())){
+                    System.out.println("Filtering login:" + l.toString());
                     l.filterHide = true;
                     appliedFiltering = true;
                 } else {
@@ -1013,6 +1014,7 @@ public class MainWindow extends javax.swing.JFrame {
                 }
             } else if(filterW != null && !"".equals(filterW)){
                 if(!l.getWebsite().toLowerCase().contains(filterW.toLowerCase())){
+                    System.out.println("Filtering login:" + l.toString());
                     l.filterHide = true;
                     appliedFiltering = true;
                 } else {
@@ -1024,9 +1026,7 @@ public class MainWindow extends javax.swing.JFrame {
                 appliedFiltering = true;
             }
         }
-        if(appliedFiltering){
-            updateTable();
-        }
+        updateTable();
     }
 
     private void updateList() {
@@ -1052,6 +1052,7 @@ public class MainWindow extends javax.swing.JFrame {
                 t.setOther((String) model.getValueAt(i, 4));
                 t.setFavorite((Boolean) model.getValueAt(i, 5));
                 loginList.add(t);
+                break;
             }
         } else {
             return;
@@ -1184,7 +1185,6 @@ public class MainWindow extends javax.swing.JFrame {
                 Settings.setDirectory(file.getParent());
                 setTitle(Strings.getAppFileTitle(file));
                 fileNotSaved = false;
-                Settings.lastOpenedItem = file.getPath();
             } catch (IOException | NullPointerException ex) {
                 MainWindow.showError(ex, Strings.ErrorStrings.ERROR_COULD_NOT_OPEN_FILE + file.getPath());
             } catch (InvalidKeyException | InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException ex) {

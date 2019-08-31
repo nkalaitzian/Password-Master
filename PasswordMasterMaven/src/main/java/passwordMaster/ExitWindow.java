@@ -25,7 +25,7 @@ import java.util.logging.Logger;
  */
 public class ExitWindow extends javax.swing.JFrame {
 
-    MainWindow mw;
+    public MainWindow mw;
 
     private final Logger LOG = Logger.getLogger(ExitWindow.class.getName());
 

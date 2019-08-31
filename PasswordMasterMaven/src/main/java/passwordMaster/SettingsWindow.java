@@ -27,7 +27,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
@@ -99,6 +98,7 @@ public class SettingsWindow extends javax.swing.JFrame {
         hideWebsitesCheckBox = new javax.swing.JCheckBox();
         hideUsernamesCheckBox = new javax.swing.JCheckBox();
         hideOthersCheckBox = new javax.swing.JCheckBox();
+        hidePasswordsCheckBox = new javax.swing.JCheckBox();
         jPanel6 = new javax.swing.JPanel();
         jLabel6 = new javax.swing.JLabel();
         taskbarMinRadioButton = new javax.swing.JRadioButton();
@@ -116,6 +116,7 @@ public class SettingsWindow extends javax.swing.JFrame {
         displayFavoritesInSysTrayPopupMenuCheckBox = new javax.swing.JCheckBox();
         favoriteDisplayComboBox = new javax.swing.JComboBox<>();
         jLabel7 = new javax.swing.JLabel();
+        dontHidePopupWhenHiddenCheckBox = new javax.swing.JCheckBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
 
@@ -254,6 +255,11 @@ public class SettingsWindow extends javax.swing.JFrame {
 
         hideOthersCheckBox.setText("Others");
 
+        hidePasswordsCheckBox.setSelected(true);
+        hidePasswordsCheckBox.setText("Passwords");
+        hidePasswordsCheckBox.setToolTipText("Passwords hide by default.");
+        hidePasswordsCheckBox.setEnabled(false);
+
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
@@ -265,9 +271,11 @@ public class SettingsWindow extends javax.swing.JFrame {
                     .addGroup(jPanel4Layout.createSequentialGroup()
                         .addComponent(hideWebsitesCheckBox)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(hideUsernamesCheckBox, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(hideUsernamesCheckBox)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(hideOthersCheckBox)))
+                        .addComponent(hidePasswordsCheckBox)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(hideOthersCheckBox, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanel4Layout.setVerticalGroup(
@@ -279,7 +287,8 @@ public class SettingsWindow extends javax.swing.JFrame {
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(hideWebsitesCheckBox)
                     .addComponent(hideUsernamesCheckBox)
-                    .addComponent(hideOthersCheckBox))
+                    .addComponent(hideOthersCheckBox)
+                    .addComponent(hidePasswordsCheckBox))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -416,6 +425,11 @@ public class SettingsWindow extends javax.swing.JFrame {
         jLabel5.setText("Favorites");
 
         displayFavoritesInSysTrayPopupMenuCheckBox.setText("Display favorites in system tray popup menu");
+        displayFavoritesInSysTrayPopupMenuCheckBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                displayFavoritesInSysTrayPopupMenuCheckBoxActionPerformed(evt);
+            }
+        });
 
         favoriteDisplayComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Id", "Website", "Username", "Other" }));
         favoriteDisplayComboBox.setSelectedIndex(1);
@@ -425,6 +439,13 @@ public class SettingsWindow extends javax.swing.JFrame {
         jLabel7.setText("Display each favorite using its:");
         jLabel7.setToolTipText("Select how to display each favorite in the System Tray popup menu.");
 
+        dontHidePopupWhenHiddenCheckBox.setText("Display as id when hiding information");
+        dontHidePopupWhenHiddenCheckBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                dontHidePopupWhenHiddenCheckBoxActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
         jPanel5Layout.setHorizontalGroup(
@@ -432,6 +453,7 @@ public class SettingsWindow extends javax.swing.JFrame {
             .addGroup(jPanel5Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(dontHidePopupWhenHiddenCheckBox, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
                         .addComponent(jLabel7)
@@ -451,6 +473,8 @@ public class SettingsWindow extends javax.swing.JFrame {
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(favoriteDisplayComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel7))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(dontHidePopupWhenHiddenCheckBox)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -484,8 +508,8 @@ public class SettingsWindow extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -506,6 +530,7 @@ public class SettingsWindow extends javax.swing.JFrame {
         applySettings();
         setVisible(false);
         mw.updateSystemTrayMenu();
+        mw.startIdleTimer();
     }//GEN-LAST:event_applyCloseButtonActionPerformed
 
     private void defaultDirectoryButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_defaultDirectoryButtonActionPerformed
@@ -540,6 +565,14 @@ public class SettingsWindow extends javax.swing.JFrame {
         createShortcut(true);
     }//GEN-LAST:event_createDesktopShortcutButtonActionPerformed
 
+    private void dontHidePopupWhenHiddenCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dontHidePopupWhenHiddenCheckBoxActionPerformed
+        Settings.hideSystemTrayPopupInformationWhenHidingInformation = dontHidePopupWhenHiddenCheckBox.isSelected();
+    }//GEN-LAST:event_dontHidePopupWhenHiddenCheckBoxActionPerformed
+
+    private void displayFavoritesInSysTrayPopupMenuCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_displayFavoritesInSysTrayPopupMenuCheckBoxActionPerformed
+        dontHidePopupWhenHiddenCheckBox.setEnabled(displayFavoritesInSysTrayPopupMenuCheckBox.isSelected());
+    }//GEN-LAST:event_displayFavoritesInSysTrayPopupMenuCheckBoxActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBox alwaysDefaultDir;
@@ -552,8 +585,10 @@ public class SettingsWindow extends javax.swing.JFrame {
     private javax.swing.JButton defaultWindowSizeButton;
     private javax.swing.JTextField directoryTF;
     private javax.swing.JCheckBox displayFavoritesInSysTrayPopupMenuCheckBox;
+    private javax.swing.JCheckBox dontHidePopupWhenHiddenCheckBox;
     private javax.swing.JComboBox<String> favoriteDisplayComboBox;
     private javax.swing.JCheckBox hideOthersCheckBox;
+    private javax.swing.JCheckBox hidePasswordsCheckBox;
     private javax.swing.JCheckBox hideUsernamesCheckBox;
     private javax.swing.JCheckBox hideWebsitesCheckBox;
     private javax.swing.JTextField idleSecondsTextField;
@@ -661,13 +696,6 @@ public class SettingsWindow extends javax.swing.JFrame {
         Settings.setUserSize(size);
         Settings.setDirectory(directory);
         Settings.setUserIdleSeconds(inactiveSeconds);
-        if(inactiveSeconds <= 0){
-            MainWindow.idleTimer = false;
-            MainWindow.startStaticIdleTimer();
-        } else {
-            MainWindow.idleTimer = true;
-            MainWindow.startStaticIdleTimer();
-        }
         Login.setHideWebsite(hideWebsites);
         Login.setHideUsername(hideUsernames);
         Login.setHideOther(hideOthers);
@@ -676,6 +704,7 @@ public class SettingsWindow extends javax.swing.JFrame {
         Settings.startPMMinimized = startPasswordMasterMinimizedCheckBox.isSelected();
         Settings.displayFavoritesInSystemTrayPopupMenu = displayFavoritesInSysTrayPopupMenuCheckBox.isSelected();
         Settings.favoriteDisplay = favoriteDisplayComboBox.getSelectedIndex();
+        Settings.hideSystemTrayPopupInformationWhenHidingInformation = dontHidePopupWhenHiddenCheckBox.isSelected();
     }
     
     private void applySettings() {
@@ -739,6 +768,8 @@ public class SettingsWindow extends javax.swing.JFrame {
             taskbarMinRadioButton.setSelected(true);
         }
         favoriteDisplayComboBox.setSelectedIndex(Settings.favoriteDisplay);
+        dontHidePopupWhenHiddenCheckBox.setSelected(Settings.hideSystemTrayPopupInformationWhenHidingInformation);
+        dontHidePopupWhenHiddenCheckBox.setEnabled(displayFavoritesInSysTrayPopupMenuCheckBox.isSelected());
     }
 
     private void getTheme() {

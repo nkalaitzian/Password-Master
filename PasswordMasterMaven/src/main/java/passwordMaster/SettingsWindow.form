@@ -56,8 +56,8 @@
               <EmptySpace max="-2" attributes="0"/>
               <Component id="jPanel6" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="jPanel5" max="32767" attributes="0"/>
-              <EmptySpace max="-2" attributes="0"/>
+              <Component id="jPanel5" min="-2" max="-2" attributes="0"/>
+              <EmptySpace max="32767" attributes="0"/>
               <Component id="jPanel7" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
@@ -284,9 +284,11 @@
                       <Group type="102" attributes="0">
                           <Component id="hideWebsitesCheckBox" min="-2" max="-2" attributes="0"/>
                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                          <Component id="hideUsernamesCheckBox" max="32767" attributes="0"/>
+                          <Component id="hideUsernamesCheckBox" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="hideOthersCheckBox" min="-2" max="-2" attributes="0"/>
+                          <Component id="hidePasswordsCheckBox" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="hideOthersCheckBox" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
@@ -303,6 +305,7 @@
                       <Component id="hideWebsitesCheckBox" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="hideUsernamesCheckBox" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="hideOthersCheckBox" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="hidePasswordsCheckBox" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace max="32767" attributes="0"/>
               </Group>
@@ -330,6 +333,14 @@
         <Component class="javax.swing.JCheckBox" name="hideOthersCheckBox">
           <Properties>
             <Property name="text" type="java.lang.String" value="Others"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JCheckBox" name="hidePasswordsCheckBox">
+          <Properties>
+            <Property name="selected" type="boolean" value="true"/>
+            <Property name="text" type="java.lang.String" value="Passwords"/>
+            <Property name="toolTipText" type="java.lang.String" value="Passwords hide by default."/>
+            <Property name="enabled" type="boolean" value="false"/>
           </Properties>
         </Component>
       </SubComponents>
@@ -529,9 +540,10 @@
       <Layout>
         <DimensionLayout dim="0">
           <Group type="103" groupAlignment="0" attributes="0">
-              <Group type="102" attributes="0">
+              <Group type="102" alignment="0" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
+                      <Component id="dontHidePopupWhenHiddenCheckBox" max="32767" attributes="0"/>
                       <Component id="jLabel5" alignment="0" max="32767" attributes="0"/>
                       <Group type="102" alignment="1" attributes="0">
                           <Component id="jLabel7" min="-2" max="-2" attributes="0"/>
@@ -556,6 +568,8 @@
                       <Component id="favoriteDisplayComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="jLabel7" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="dontHidePopupWhenHiddenCheckBox" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="32767" attributes="0"/>
               </Group>
           </Group>
@@ -572,6 +586,9 @@
           <Properties>
             <Property name="text" type="java.lang.String" value="Display favorites in system tray popup menu"/>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="displayFavoritesInSysTrayPopupMenuCheckBoxActionPerformed"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JComboBox" name="favoriteDisplayComboBox">
           <Properties>
@@ -596,6 +613,14 @@
             <Property name="text" type="java.lang.String" value="Display each favorite using its:"/>
             <Property name="toolTipText" type="java.lang.String" value="Select how to display each favorite in the System Tray popup menu."/>
           </Properties>
+        </Component>
+        <Component class="javax.swing.JCheckBox" name="dontHidePopupWhenHiddenCheckBox">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Display as id when hiding information"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="dontHidePopupWhenHiddenCheckBoxActionPerformed"/>
+          </Events>
         </Component>
       </SubComponents>
     </Container>

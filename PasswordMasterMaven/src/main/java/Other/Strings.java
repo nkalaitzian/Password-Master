@@ -13,6 +13,8 @@
  */
 package Other;
 
+import java.io.File;
+
 public class Strings {
     //TODO transfer all hardcoded strings here
     
@@ -20,12 +22,16 @@ public class Strings {
     public static final String SETTINGS_NAME = "Settings";
     public static final String PASSWORD_GENERATOR_NAME = "Password Generator";
     public static final String ICON_NAME = "ic_launcher.png";
-    public static final String FILE_EXTENSION = ".pmster";
+    public static final String FILE_EXTENSION = ".pmaster";
     
     public static String APP_VERSION = "";
     
     public static String getAppTitle() {
         return APP_NAME + " v" + APP_VERSION;
+    }
+    
+    public static String getAppFileTitle(File file) {
+        return getAppTitle() + " - File:" + file.getPath();
     }
     
     public static String getSettingsTitle() {
@@ -55,6 +61,8 @@ public class Strings {
         
         public static final String HIDE_INFORMATION = "Hide Information";
         public static final String SHOW_INFORMATION = "Show Information";
+        
+        public static final String FILTER_TOOLTIP = "<html>Filter:<br>Name/Website with w: or n:<br>Usernames with u:<br>Other with o:<br>Examples: w:google u:myUsername o:Google</html>";
         
         public static final String WARNING_FILE_UNSAVED_CONTENT = "Do you want to save this file before making a new one?";
         public static final String WARNING_FILE_UNSAVED_TITLE = "Warning! This file is unsaved.";
@@ -93,10 +101,11 @@ public class Strings {
         public static final String CLIPBOARD_COPY = " copied to clipboard.";
         public static final String CLIPBOARD_COPY_USERNAME = "Username: ";
         public static final String CLIPBOARD_COPY_PASSWORD = "Password: ";
-        public static final String CLIPBOARD_COPY_PASSWORD_FOR_WEBSITE = "Password: ";
+        public static final String CLIPBOARD_COPY_PASSWORD_FOR_WEBSITE = "Password for website: ";
         public static final String CLIPBOARD_COPY_WEBSITE = "Website: ";
         public static final String OPEN_WEBSITE = "Website: ";
         public static final String PASTED_TEXT = "Pasted text: ";
+        public static final String HIDING_INFORMATION = "Hiding information.";
     }
     
     public static class ErrorStrings {
@@ -105,6 +114,9 @@ public class Strings {
         public static final String HIDING_INFORMATION_COPY_WEBSITE = "copy website";
         public static final String HIDING_INFORMATION_OPEN_WEBSITE = "open website";
         public static final String HIDING_INFORMATION_OPEN_SETTINGS = "open settings";
+        public static final String HIDING_INFORMATION_SAVE_FILE = "save file";
+        public static final String HIDING_INFORMATION_SAVE_AS_FILE = "save as file";
+        public static final String HIDING_INFORMATION_DELETE_LOGIN = "delete login";
         
         public static final String ERROR = "Error!";
         public static final String ERROR_COULD_NOT_INITIALIZE_TRAY_ICON = "Could not initialize tray icon.";
@@ -115,7 +127,18 @@ public class Strings {
         public static final String ERROR_PASTE = "Could not paste text.";
         public static final String ERROR_WRONG_PASSWORD = "Possible wrong password.";
         public static final String ERROR_CANNOT_CALCULATE_IDLE_TIME = "Cannot calculate user idle time on this OS.";
-        public static final String EXCEPTION_INTERRUPTED = "Could not pause running thread.";
         
+        public static final String EXCEPTION_INTERRUPTED = "Could not pause running thread.";
+        public static final String EXCEPTION_FILE_NOT_FOUND = "File was not found.";
+        public static final String EXCEPTION_FILE_IOEXCEPTION = "Could not write logins file.";
+        public static final String EXCEPTION_WRONG_ENCRYPTION_KEY = "Wrong encryption key.";
+        
+    }
+    
+    public static class WarningStrings {
+        public static final String WARNING = "Warning!";
+        
+        public static final String WARNING_SMALL_ENCRYPTION_KEY = "The password you have entered seems to be below 8 characters long.\n"
+                        + "Are you sure you want to continue?";
     }
 }

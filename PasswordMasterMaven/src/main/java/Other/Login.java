@@ -34,6 +34,8 @@ public class Login {
     private String otherHidden = "";
     private static boolean hideOther = false;
     private boolean favorite = false;
+    
+    public boolean filterHide = false;
 
     /**
      *
